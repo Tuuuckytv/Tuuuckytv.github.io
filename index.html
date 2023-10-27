@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="16x16" href "/favicon-16x16.png">
     <link rel="manifest" href="/site.webmanifest">
     <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
     <meta name="msapplication-TileColor" content="#da532c">
@@ -20,7 +20,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start;
+            justify-content: flex-start; /* Align content to the top */
         }
 
         .header {
@@ -28,14 +28,15 @@
             color: white;
             padding: 30px;
             font-size: 24px;
-            text-align: center;
+            width: 100%;
+            text-align: center; /* Center the text */
         }
 
         .header img {
-            display: inline;
-            vertical-align: middle;
-            margin-right: 10px;
-            height: 30px;
+            display: inline; /* Make the image inline with text */
+            vertical-align: middle; /* Align the image vertically with text */
+            margin-right: 10px; /* Add some spacing between the image and text */
+            height: 30px; /* Adjust the image height to 30px */
         }
 
         .countdown-timers {
@@ -62,6 +63,9 @@
         }
 
         .button {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
             background-color: #01A0C0;
             color: white;
             padding: 10px 20px;
@@ -71,28 +75,31 @@
             text-decoration: none;
         }
 
+        /* Media Query for Mobile Devices */
         @media screen and (max-width: 768px) {
             .header {
-                font-size: 20px;
-                padding: 15px;
+                font-size: 20px; /* Reduce the header font size for mobile devices */
+                padding: 15px; /* Adjust header padding */
             }
 
             .header img {
-                height: 20px;
+                height: 20px; /* Adjust the image height for mobile devices */
             }
 
             .countdown-timer {
-                font-size: 16px;
-                padding: 8px;
+                font-size: 16px; /* Reduce countdown timer font size for mobile devices */
+                padding: 8px; /* Adjust countdown timer padding */
             }
 
             .countdown-label {
-                font-size: 14px;
+                font-size: 14px; /* Reduce countdown label font size for mobile devices */
             }
 
             .button {
-                padding: 8px 15px;
-                font-size: 14px;
+                bottom: 10px; /* Adjust button position for mobile devices */
+                right: 10px;
+                padding: 8px 15px; /* Adjust button padding */
+                font-size: 14px; /* Reduce button font size for mobile devices */
             }
         }
     </style>
@@ -112,6 +119,7 @@
         </div>
     </div>
     <a class="button" href="https://youtu.be/dQw4w9WgXcQ?si=a0MVje-KSEOEXOJP" target="_blank">Learn More</a>
+
     <script>
         function updateCountdown(endTime, countdownElement) {
             const now = new Date().getTime();
@@ -130,7 +138,7 @@
 
             countdownElement.textContent = `${hours}h ${minutes}m ${seconds}s`;
 
-            if (hours === 0 && minutes === 0 && seconds === 0) {
+            if (hours === 0 && minutes === 0 and seconds === 0) {
                 countdownElement.style.backgroundColor = "red";
                 setTimeout(() => {
                     countdownElement.style.backgroundColor = "#EC008C";
