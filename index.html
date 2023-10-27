@@ -109,8 +109,8 @@
         <img src="spider.png" alt="Spider Image" style="height: 30px;"> Delivery cut-off
     </div>
     <div id="quote-container">
-               <p id="quote-text">Loading...</p>
-        <button id="new-quote-button">Do not Press</button>
+        <p id="quote-text">Loading...</p>
+        <button id="new-quote-button">Do not press</button>
     </div>
     <div class="countdown-timers">
         <div>
@@ -125,17 +125,19 @@
     <a class="button" href="https://youtu.be/dQw4w9WgXcQ?si=a0MVje-KSEOEXOJP" target="_blank">Learn More</a>
 
     <script>
+        // Countdown timer code here
+        // ...
+
+        // Quote generator code
         const quotes = [
-            "The right man in the wrong place can make all the difference in the world. - G-Man, Half-Life 2",
-            "It's dangerous to go alone! Take this. - Old Man, The Legend of Zelda",
-            "War. War never changes. - Narrator, Fallout series",
-            "Do a barrel roll! - Peppy Hare, Star Fox 64",
-            "I was born to be a gangster. - CJ, Grand Theft Auto: San Andreas",
-            "I'm Commander Shepard, and this is my favorite store on the Citadel. - Commander Shepard, Mass Effect 2",
-            "Hey! Listen! - Navi, The Legend of Zelda: Ocarina of Time",
-            "The cake is a lie. - GLaDOS, Portal",
-            "Would you kindly? - Atlas, BioShock",
-            "Fus Ro Dah! - Dragonborn, The Elder Scrolls V: Skyrim",
+            "The right man in the wrong place can make all the difference in the world.",
+            "It's dangerous to go alone! Take this.",
+            "War. War never changes.",
+            "Do a barrel roll!",
+            "Aw shit, here we go again.",
+            "The cake is a lie.",
+            "Would you kindly?",
+            "I used to be an adventurer like you, then I took an arrow in the knee.",
         ];
 
         const quoteContainer = document.getElementById("quote-container");
@@ -157,16 +159,6 @@
             const randomQuote = getRandomQuote();
             quoteText.textContent = randomQuote;
         });
-
-        function updateCountdown(endTime, countdownElement) {
-            const now = new Date().getTime();
-            let distance = endTime - now;
-
-            if (distance < 0) {
-                const tomorrow = new Date();
-                tomorrow.setDate(tomorrow.getDate() + 1);
-                tomorrow.setHours(endTime.getUTCHours(), endTime.getUTCMinutes(), endTime.getUTCSeconds(), 0);
-                distance = tomorrow - now;
-            }
-
-            const hours = Math.floor((distance % (1000 * 60
+    </script>
+</body>
+</html>
