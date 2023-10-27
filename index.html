@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="16x16" href "/favicon-16x16.png">
     <link rel="manifest" href="/site.webmanifest">
     <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
     <meta name="msapplication-TileColor" content="#da532c">
@@ -20,9 +20,9 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start; /* Align content to the top */
-            max-width: 100%; /* Ensure content does not exceed the viewport's width */
-            overflow-wrap: break-word; /* Allow text to wrap and prevent horizontal overflow */
+            justify-content: flex-start;
+            max-width: 100%;
+            overflow-wrap: break-word;
         }
 
         .header {
@@ -31,14 +31,14 @@
             padding: 30px;
             font-size: 24px;
             width: 100%;
-            text-align: center; /* Center the text */
+            text-align: center;
         }
 
         .header img {
-            display: inline; /* Make the image inline with text */
-            vertical-align: middle; /* Align the image vertically with text */
-            margin-right: 10px; /* Add some spacing between the image and text */
-            height: 30px; /* Adjust the image height to 30px */
+            display: inline;
+            vertical-align: middle;
+            margin-right: 10px;
+            height: 30px;
         }
 
         .countdown-timers {
@@ -77,31 +77,30 @@
             text-decoration: none;
         }
 
-        /* Media Query for Mobile Devices */
         @media screen and (max-width: 768px) {
             .header {
-                font-size: 20px; /* Reduce the header font size for mobile devices */
-                padding: 15px; /* Adjust header padding */
+                font-size: 20px;
+                padding: 15px;
             }
 
             .header img {
-                height: 20px; /* Adjust the image height for mobile devices */
+                height: 20px;
             }
 
             .countdown-timer {
-                font-size: 16px; /* Reduce countdown timer font size for mobile devices */
-                padding: 8px; /* Adjust countdown timer padding */
+                font-size: 16px;
+                padding: 8px;
             }
 
             .countdown-label {
-                font-size: 14px; /* Reduce countdown label font size for mobile devices */
+                font-size: 14px;
             }
 
             .button {
-                bottom: 10px; /* Adjust button position for mobile devices */
+                bottom: 10px;
                 right: 10px;
-                padding: 8px 15px; /* Adjust button padding */
-                font-size: 14px; /* Reduce button font size for mobile devices */
+                padding: 8px 15px;
+                font-size: 14px;
             }
         }
     </style>
@@ -121,15 +120,12 @@
         </div>
     </div>
     <a class="button" href="https://youtu.be/dQw4w9WgXcQ?si=a0MVje-KSEOEXOJP" target="_blank">Learn More</a>
-
     <script>
-        // Function to update the countdown
         function updateCountdown(endTime, countdownElement) {
             const now = new Date().getTime();
             let distance = endTime - now;
 
             if (distance < 0) {
-                // If the time has already passed today, reset it to the same time tomorrow
                 const tomorrow = new Date();
                 tomorrow.setDate(tomorrow.getDate() + 1);
                 tomorrow.setHours(endTime.getUTCHours(), endTime.getUTCMinutes(), endTime.getUTCSeconds(), 0);
@@ -142,7 +138,6 @@
 
             countdownElement.textContent = `${hours}h ${minutes}m ${seconds}s`;
 
-            // Check if the timer has reached the target time
             if (hours === 0 && minutes === 0 && seconds === 0) {
                 countdownElement.style.backgroundColor = "red";
                 setTimeout(() => {
@@ -151,13 +146,11 @@
             }
         }
 
-        // Set the target times (3 PM and 5 PM UK time)
         const dpdEndTime = new Date();
         dpdEndTime.setUTCHours(15, 0, 0, 0);
         const rmEndTime = new Date();
         rmEndTime.setUTCHours(17, 0, 0, 0);
 
-        // Update countdowns every second
         setInterval(function () {
             updateCountdown(dpdEndTime, document.getElementById("dpdCountdown"));
             updateCountdown(rmEndTime, document.getElementById("rmCountdown"));
