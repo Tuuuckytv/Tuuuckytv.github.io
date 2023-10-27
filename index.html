@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href "/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <link rel="manifest" href="/site.webmanifest">
     <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
     <meta name="msapplication-TileColor" content="#da532c">
@@ -108,6 +108,11 @@
     <div class="header">
         <img src="spider.png" alt="Spider Image" style="height: 30px;"> Delivery cut-off
     </div>
+    <div id="quote-container">
+        <h2>Random Gaming Quote</h2>
+        <p id="quote-text">Loading...</p>
+        <button id="new-quote-button">Get New Quote</button>
+    </div>
     <div class="countdown-timers">
         <div>
             <div class="countdown-label">DPD Next Day Cut-Off</div>
@@ -121,6 +126,39 @@
     <a class="button" href="https://youtu.be/dQw4w9WgXcQ?si=a0MVje-KSEOEXOJP" target="_blank">Learn More</a>
 
     <script>
+        const quotes = [
+            "The right man in the wrong place can make all the difference in the world. - G-Man, Half-Life 2",
+            "It's dangerous to go alone! Take this. - Old Man, The Legend of Zelda",
+            "War. War never changes. - Narrator, Fallout series",
+            "Do a barrel roll! - Peppy Hare, Star Fox 64",
+            "I was born to be a gangster. - CJ, Grand Theft Auto: San Andreas",
+            "I'm Commander Shepard, and this is my favorite store on the Citadel. - Commander Shepard, Mass Effect 2",
+            "Hey! Listen! - Navi, The Legend of Zelda: Ocarina of Time",
+            "The cake is a lie. - GLaDOS, Portal",
+            "Would you kindly? - Atlas, BioShock",
+            "Fus Ro Dah! - Dragonborn, The Elder Scrolls V: Skyrim",
+        ];
+
+        const quoteContainer = document.getElementById("quote-container");
+        const quoteText = document.getElementById("quote-text");
+        const newQuoteButton = document.getElementById("new-quote-button");
+
+        function getRandomQuote() {
+            const randomIndex = Math.floor(Math.random() * quotes.length);
+            return quotes[randomIndex];
+        }
+
+        newQuoteButton.addEventListener("click", () => {
+            const randomQuote = getRandomQuote();
+            quoteText.textContent = randomQuote;
+        });
+
+        // Display a random quote when the page loads
+        window.addEventListener("load", () => {
+            const randomQuote = getRandomQuote();
+            quoteText.textContent = randomQuote;
+        });
+
         function updateCountdown(endTime, countdownElement) {
             const now = new Date().getTime();
             let distance = endTime - now;
@@ -132,29 +170,4 @@
                 distance = tomorrow - now;
             }
 
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-            countdownElement.textContent = `${hours}h ${minutes}m ${seconds}s`;
-
-            if (hours === 0 && minutes === 0 and seconds === 0) {
-                countdownElement.style.backgroundColor = "red";
-                setTimeout(() => {
-                    countdownElement.style.backgroundColor = "#EC008C";
-                }, 1000);
-            }
-        }
-
-        const dpdEndTime = new Date();
-        dpdEndTime.setUTCHours(15, 0, 0, 0);
-        const rmEndTime = new Date();
-        rmEndTime.setUTCHours(17, 0, 0, 0);
-
-        setInterval(function () {
-            updateCountdown(dpdEndTime, document.getElementById("dpdCountdown"));
-            updateCountdown(rmEndTime, document.getElementById("rmCountdown"));
-        }, 1000);
-    </script>
-</body>
-</html>
+            const hours = Math.floor((distance % (1000 * 60
