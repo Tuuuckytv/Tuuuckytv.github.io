@@ -5,23 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href "/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <link rel="manifest" href="/site.webmanifest">
     <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
     <meta name="msapplication-TileColor" content="#da532c">
     <meta name="theme-color" content="#ffffff">
     <style>
-     body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    background-color: #F1F5F9;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start; /* Align content to the top */
-}
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #F1F5F9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start; /* Align content to the top */
+            max-width: 100%; /* Ensure content does not exceed the viewport's width */
+            overflow-wrap: break-word; /* Allow text to wrap and prevent horizontal overflow */
+        }
+
         .header {
             background-color: #01A0C0;
             color: white;
@@ -36,9 +39,6 @@
             vertical-align: middle; /* Align the image vertically with text */
             margin-right: 10px; /* Add some spacing between the image and text */
             height: 30px; /* Adjust the image height to 30px */
-            
-           <button style="background-color: #EC008C; color: white; padding: 10px 20px; border: none; border-radius: 5px; font-size: 18px; text-decoration: none;">Page 2</button>
-
         }
 
         .countdown-timers {
@@ -110,7 +110,7 @@
     <div class="header">
         <img src="spider.png" alt="Spider Image" style="height: 30px;"> Delivery cut-off
     </div>
-    <div class "countdown-timers">
+    <div class="countdown-timers">
         <div>
             <div class="countdown-label">DPD Next Day Cut-Off</div>
             <div class="countdown-timer" id="dpdCountdown">00h 00m 00s</div>
@@ -162,4 +162,6 @@
             updateCountdown(dpdEndTime, document.getElementById("dpdCountdown"));
             updateCountdown(rmEndTime, document.getElementById("rmCountdown"));
         }, 1000);
-    
+    </script>
+</body>
+</html>
