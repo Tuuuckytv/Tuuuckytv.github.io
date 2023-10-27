@@ -1,1 +1,31 @@
+body {
+    margin: 0;
+    overflow: hidden;
+}
 
+.zoom-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    perspective: 1000px;
+}
+
+.hole {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    transform: scale(0);
+    transform-origin: center center;
+    transition: transform 2s ease;
+}
+
+.content {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    transform: scale(1);
+    transform-origin: center center;
+    transition: transform 2s ease;
+}
