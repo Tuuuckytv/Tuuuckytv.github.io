@@ -114,11 +114,11 @@
     </div>
     <div class="countdown-timers">
         <div>
-            <div class="countdown-label">DPD Next Day Cut-Off</div>
+            <div class="countdown-label">DPD Next Day Cut-Off (3 PM UK Time)</div>
             <div class="countdown-timer" id="dpdCountdown">00h 00m 00s</div>
         </div>
         <div>
-            <div class="countdown-label">Royal Mail Express Cut-Off</div>
+            <div class="countdown-label">Royal Mail Express Cut-Off (5 PM UK Time)</div>
             <div class="countdown-timer" id="rmCountdown">00h 00m 00s</div>
         </div>
     </div>
@@ -148,9 +148,9 @@
             updateTime();
         }
 
-        // Set your desired cut-off times for DPD Next Day and Royal Mail Express in UTC
-        const dpdCutOffTime = new Date('2023-10-28T14:00:00Z');
-        const rmCutOffTime = new Date('2023-10-28T15:00:00Z');
+        // Set your desired cut-off times for DPD Next Day (15:00 UK Time) and Royal Mail Express (17:00 UK Time) in UTC
+        const dpdCutOffTime = new Date('2023-10-28T15:00:00Z');
+        const rmCutOffTime = new Date('2023-10-28T17:00:00Z');
 
         // Update countdown timers
         updateCountdown(dpdCutOffTime, "dpdCountdown");
