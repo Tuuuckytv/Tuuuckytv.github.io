@@ -110,7 +110,7 @@
     </div>
     <div id="quote-container">
         <p id="quote-text">Loading...</p>
-        <button id="new-quote-button">Do not press</button>
+        <button id="new-quote-button">Get Quote</button>
     </div>
     <div class="countdown-timers">
         <div>
@@ -173,4 +173,20 @@
         const newQuoteButton = document.getElementById("new-quote-button");
 
         function getRandomQuote() {
-            const randomIndex = Math
+            const randomIndex = Math.floor(Math.random() * quotes.length);
+            return quotes[randomIndex];
+        }
+
+        newQuoteButton.addEventListener("click", () => {
+            const randomQuote = getRandomQuote();
+            quoteText.textContent = randomQuote;
+        });
+
+        // Display a random quote when the page loads
+        window.addEventListener("load", () => {
+            const randomQuote = getRandomQuote();
+            quoteText.textContent = randomQuote;
+        });
+    </script>
+</body>
+</html>
