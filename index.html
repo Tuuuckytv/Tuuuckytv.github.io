@@ -2,18 +2,21 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Your Page Title</title>
     <style>
         body {
             background-image: url('Background_web.jpg');
             background-size: cover;
+            background-attachment: fixed; /* Ensures the background image remains fixed */
+            margin: 0; /* Remove default margin */
         }
 
-        @media (max-width: 768px) {
-            body {
-                background-size: contain;
-                background-repeat: no-repeat;
-            }
+        /* Common styles for both large and small screens */
+        .main-content {
+            padding: 20px;
+            text-align: center;
+            color: white;
         }
 
         /* Styling for the side panel */
@@ -58,6 +61,26 @@
         /* Styling for the text in the main content */
         .main-content {
             color: white;
+        }
+
+        /* Styling for the navigation links in the side panel */
+        .side-panel-content ul li a {
+            color: white;
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            /* Styles for small screens (e.g., mobile devices) */
+            .main-content {
+                padding: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            /* Further styles for smaller screens (e.g., smaller mobile devices) */
+            .main-content {
+                padding: 5px;
+            }
         }
     </style>
 </head>
