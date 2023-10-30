@@ -1,62 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Your head section with CSS and meta tags -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        /* Add styles for the burger menu icon */
-        .burger-menu {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            cursor: pointer;
-            z-index: 1000;
-            font-size: 24px;
+        body {
+            margin: 0;
+            padding: 0;
+            background-image: url('faith.gif');
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
         }
 
-        .burger-menu a {
-            text-decoration: none;
-            color: #fff;
+        p {
+            color: #ffffff;
+            text-align: center;
         }
     </style>
 </head>
 <body>
-    <!-- Add a burger menu icon that links to "Cut off timers.html" -->
-    <div class="burger-menu">
-        <a href="Cut%20off%20timers.html">
-            &#9776; <!-- The Unicode character for the three horizontal lines -->
-        </a>
-    </div>
-    
-    <div class="header">
-        <img src="spider.png" alt="Spider Image" style="height: 30px;"> Your Page Title
-    </div>
-    <div class="content">
-        <!-- Your content for the second page goes here -->
-        <p>Sean is a big Gimp</p>
-    </div>
-    <a class="button" href="https://youtu.be/dQw4w9WgXcQ?si=a0MVje-KSEOEXOJP" target="_blank">Learn More</a>
-
-    <script>
-        // Function to update the countdown
-        function updateCountdown(endTime, countdownElement) {
-            // Your existing countdown script here
-        }
-
-        // Set the target times (3 PM and 5 PM UK time)
-        const dpdEndTime = new Date();
-        dpdEndTime.setUTCHours(15, 0, 0, 0);
-        const rmEndTime = new Date();
-        rmEndTime.setUTCHours(17, 0, 0, 0);
-
-        // Function to initialize the countdown
-        function initializeCountdown() {
-            // Your existing countdown initialization code here
-        }
-
-        // Call initializeCountdown when the second page loads
-        if (window.location.href.endsWith("page2.html")) {
-            initializeCountdown();
-        }
-    </script>
+    <p>Sean is a big Gimp</p>
 </body>
 </html>
