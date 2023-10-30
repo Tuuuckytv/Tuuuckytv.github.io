@@ -17,9 +17,42 @@
             color: #ffffff;
             text-align: center;
         }
+
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
-    <p>Sean is a big Gimp</p>
+    <select id="pageSelector">
+        <option value="page1">Page 1</option>
+        <option value="page2">Page 2</option>
+    </select>
+
+    <div id="page1">
+        <p>Sean is a big Gimp</p>
+    </div>
+
+    <div id="page2" class="hidden">
+        <p>Woop Woop</p>
+    </div>
+
+    <script>
+        const pageSelector = document.getElementById('pageSelector');
+        const page1 = document.getElementById('page1');
+        const page2 = document.getElementById('page2');
+
+        pageSelector.addEventListener('change', () => {
+            const selectedPage = pageSelector.value;
+            page1.classList.add('hidden');
+            page2.classList.add('hidden');
+
+            if (selectedPage === 'page1') {
+                page1.classList.remove('hidden');
+            } else if (selectedPage === 'page2') {
+                page2.classList.remove('hidden');
+            }
+        });
+    </script>
 </body>
 </html>
