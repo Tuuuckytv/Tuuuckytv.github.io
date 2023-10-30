@@ -12,6 +12,25 @@
             background-repeat: no-repeat;
             background-attachment: fixed;
         }
+        <div class="burger-menu">
+    <div class="menu-icon" onclick="toggleMenu()">&#9776;</div>
+    <div class="menu">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="#">Page 2</a></li>
+            <!-- Add more menu items as needed -->
+        </ul>
+    </div>
+</div>
+
+<script>
+    // JavaScript to toggle the burger menu
+    function toggleMenu() {
+        const menu = document.querySelector(".menu");
+        menu.classList.toggle("show");
+    }
+</script>
+
 
         p {
             color: #ffffff;
