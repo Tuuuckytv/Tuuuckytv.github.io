@@ -1,126 +1,20 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Your Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
-            background-image: url('file:///C:/Users/PSL/Downloads/notepad/AHK/faith.gif'); /* Use 'file://' to specify a local file path */
+            margin: 0;
+            padding: 0;
+            background-image: url('faith.gif');
             background-size: cover;
-            background-attachment: fixed; /* Ensures the background image remains fixed */
-            margin: 0; /* Remove default margin */
-        }
-
-        /* Common styles for both large and small screens */
-        .main-content {
-            padding: 20px;
-            text-align: center;
-            color: white;
-        }
-
-        /* Styling for the side panel */
-        .side-panel {
-            height: 100%;
-            width: 0;
-            position: fixed;
-            top: 0;
-            right: 0;
-            background-color: #333; /* Background color of the panel */
-            overflow-x: hidden;
-            transition: 0.5s;
-        }
-
-        /* Styling for the side panel content */
-        .side-panel-content {
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-            color: white;
-        }
-
-        /* Styling for the menu button */
-        #menu-button {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background-color: #333; /* Background color of the button */
-            padding: 10px;
-            cursor: pointer;
-        }
-
-        /* Styling for the close button */
-        #close-button {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            color: white;
-            cursor: pointer;
-        }
-
-        /* Styling for the text in the main content */
-        .main-content {
-            color: white;
-        }
-
-        /* Styling for the navigation links in the side panel */
-        .side-panel-content ul li a {
-            color: white;
-            text-decoration: none;
-        }
-
-        @media (max-width: 768px) {
-            /* Styles for small screens (e.g., mobile devices) */
-            .main-content {
-                padding: 10px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            /* Further styles for smaller screens (e.g., smaller mobile devices) */
-            .main-content {
-                padding: 5px;
-            }
+            background-repeat: no-repeat;
+            background-attachment: fixed;
         }
     </style>
 </head>
 <body>
-    <!-- Menu button to open the side panel -->
-    <div id="menu-button">&#9776;</div>
-    
-    <!-- Side panel -->
-    <div id="side-panel" class="side-panel">
-        <div class="side-panel-content">
-            <span id="close-button">&times;</span>
-            <h2>Menu</h2>
-            <ul>
-                <li><a href="#">Home</a></li>
-                <li><a href="#">About</a></li>
-                <li><a href="#">Services</a></li>
-                <li><a href="#">Contact</a></li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Content for your webpage -->
-    <div class="main-content">
-        <h1>Under Maintenance</h1>
-        <p></p>
-    </div>
-
-    <script>
-        // JavaScript to control the side panel
-        const menuButton = document.getElementById("menu-button");
-        const sidePanel = document.getElementById("side-panel");
-        const closeButton = document.getElementById("close-button");
-
-        menuButton.addEventListener("click", () => {
-            sidePanel.style.width = "250px";
-        });
-
-        closeButton.addEventListener("click", () => {
-            sidePanel.style.width = "0";
-        });
-    </script>
+    <!-- Your content goes here -->
 </body>
 </html>
