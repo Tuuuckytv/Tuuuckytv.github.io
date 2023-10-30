@@ -34,7 +34,75 @@
     </div>
 
     <div id="page2" class="hidden">
-        <p>Woop Woop</p>
+        <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #F1F5F9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            justify-content: flex-start; /* Align content to the top */
+        }
+
+        .header {
+            background-color: #01A0C0;
+            color: white;
+            padding: 30px;
+            font-size: 24px;
+            width: 100%;
+            text-align: center; /* Center the text */
+        }
+
+        .header img {
+            display: inline; /* Make the image inline with text */
+            vertical-align: middle; /* Align the image vertically with text */
+            margin-right: 10px; /* Add some spacing between the image and text */
+            height: 30px; /* Adjust the image height to 30px */
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        /* Media Query for Mobile Devices */
+        @media screen and (max-width: 768px) {
+            .header {
+                font-size: 20px; /* Reduce the header font size for mobile devices */
+                padding: 15px; /* Adjust header padding */
+            }
+
+            .header img {
+                height: 20px; /* Adjust the image height for mobile devices */
+            }
+
+            .content {
+                padding: 10px; /* Adjust content padding for mobile devices */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="spider.png" alt="Spider Image" style="height: 30px;"> Your Page Title
+    </div>
+    <div class="content">
+        <!-- Your content for the second page goes here -->
+        <p>Sean is a big Gimp</p>
+    </div>
+
+    <a class="button" href="https://youtu.be/dQw4w9WgXcQ?si=a0MVje-KSEOEXOJP" target="_blank">Learn More</a>
+</body>
+</html>
+
     </div>
 
     <script>
