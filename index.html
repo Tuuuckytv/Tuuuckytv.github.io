@@ -1,25 +1,166 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Countdown Timer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href "/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
     <style>
         body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #F1F5F9;
             margin: 0;
             padding: 0;
-            background-image: url('faith.gif');
-            background-size: 100% 100%;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            justify-content: flex-start; /* Align content to the top */
         }
 
-        p {
-            color: #ffffff;
+        .header {
+            background-color: #01A0C0;
+            color: white;
+            padding: 30px;
+            font-size: 24px;
+            width: 100%;
+            text-align: center; /* Center the text */
+        }
+
+        .header img {
+            display: inline; /* Make the image inline with text */
+            vertical-align: middle; /* Align the image vertically with text */
+            margin-right: 10px; /* Add some spacing between the image and text */
+            height: 30px; /* Adjust the image height to 30px */
+        }
+
+        .countdown-timers {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .countdown-timer {
+            background-color: #EC008C;
+            color: white;
+            border-radius: 5px;
+            padding: 10px;
+            font-size: 20px;
             text-align: center;
+            transition: background-color 0.5s;
+        }
+
+        .countdown-label {
+            font-size: 18px;
+            margin-top: 10px;
+        }
+
+        .button {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background-color: #01A0C0;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            text-decoration: none;
+        }
+
+        /* Media Query for Mobile Devices */
+        @media screen and (max-width: 768px) {
+            .header {
+                font-size: 20px; /* Reduce the header font size for mobile devices */
+                padding: 15px; /* Adjust header padding */
+            }
+
+            .header img {
+                height: 20px; /* Adjust the image height for mobile devices */
+            }
+
+            .countdown-timer {
+                font-size: 16px; /* Reduce countdown timer font size for mobile devices */
+                padding: 8px; /* Adjust countdown timer padding */
+            }
+
+            .countdown-label {
+                font-size: 14px; /* Reduce countdown label font size for mobile devices */
+            }
+
+            .button {
+                bottom: 10px; /* Adjust button position for mobile devices */
+                right: 10px;
+                padding: 8px 15px; /* Adjust button padding */
+                font-size: 14px; /* Reduce button font size for mobile devices */
+            }
         }
     </style>
 </head>
 <body>
-    <p>Sean is a big Gimp</p>
+    <div class="header">
+        <img src="spider.png" alt="Spider Image" style="height: 30px;"> Delivery cut-off
+    </div>
+    <div class "countdown-timers">
+        <div>
+            <div class="countdown-label">DPD Next Day Cut-Off</div>
+            <div class="countdown-timer" id="dpdCountdown">00h 00m 00s</div>
+        </div>
+        <div>
+            <div class="countdown-label">Royal Mail Express Cut-Off</div>
+            <div class="countdown-timer" id="rmCountdown">00h 00m 00s</div>
+        </div>
+    </div>
+    <a class="button" href="https://youtu.be/dQw4w9WgXcQ?si=a0MVje-KSEOEXOJP" target="_blank">Learn More</a>
+
+    <script>
+        // Function to update the countdown
+        function updateCountdown(endTime, countdownElement) {
+            const now = new Date().getTime();
+            let distance = endTime - now;
+
+            if (distance < 0) {
+                // If the time has already passed today, reset it to the same time tomorrow
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                tomorrow.setHours(endTime.getUTCHours(), endTime.getUTCMinutes(), endTime.getUTCSeconds(), 0);
+                distance = tomorrow - now;
+            }
+
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            countdownElement.textContent = `${hours}h ${minutes}m ${seconds}s`;
+
+            // Check if the timer has reached the target time
+            if (hours === 0 && minutes === 0 && seconds === 0) {
+                countdownElement.style.backgroundColor = "red";
+                setTimeout(() => {
+                    countdownElement.style.backgroundColor = "#EC008C";
+                }, 1000);
+            }
+        }
+
+        // Set the target times (3 PM and 5 PM UK time)
+        const dpdEndTime = new Date();
+        dpdEndTime.setUTCHours(15, 0, 0, 0);
+        const rmEndTime = new Date();
+        rmEndTime.setUTCHours(17, 0, 0, 0);
+
+        // Update countdowns every second
+        setInterval(function () {
+            updateCountdown(dpdEndTime, document.getElementById("dpdCountdown"));
+            updateCountdown(rmEndTime, document.getElementById("rmCountdown"));
+        }, 1000);
+    </script>
 </body>
 </html>
