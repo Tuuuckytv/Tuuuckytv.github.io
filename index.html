@@ -17,9 +17,27 @@
             color: #ffffff;
             text-align: center;
         }
+
+        .floating-image {
+            position: absolute;
+            animation: floatImage 10s linear infinite;
+        }
+
+        @keyframes floatImage {
+            0% {
+                transform: translate(0, 0);
+            }
+            50% {
+                transform: translate(100px, 100px);
+            }
+            100% {
+                transform: translate(0, 0);
+            }
+        }
     </style>
 </head>
 <body>
     <p>Sean is a big Gimp</p>
+    <img src="Faith2.jpeg" alt="Floating Image" class="floating-image">
 </body>
 </html>
