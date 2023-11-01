@@ -1,25 +1,86 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
         body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
             margin: 0;
-            padding: 0;
-            background-image: url('homer_running.gif');
-            background-size: 100% 100%;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
+            background-color: black;
         }
 
-        p {
-            color: #ffffff;
+        #countdown, #merry-christmas {
+            font-size: 36px;
             text-align: center;
+            font-family: "Courier New", monospace;
+        }
+
+        #countdown {
+            color: red;
+        }
+        
+        #merry-christmas {
+            color: green;
+        }
+
+        @media (max-width: 768px) {
+            #countdown, #merry-christmas {
+                font-size: 24px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #countdown, #merry-christmas {
+                font-size: 18px;
+            }
         }
     </style>
 </head>
 <body>
-    <p>Sean is a big Gimp</p>
+    <div id="merry-christmas"></div>
+    <div id="countdown"></div>
+
+    <script>
+        function updateCountdown() {
+            const targetDate = new Date("02/04/2024").getTime();
+            const now = new Date().getTime();
+            const timeRemaining = targetDate - now;
+
+            if (timeRemaining <= 0) {
+                clearInterval(countdownInterval);
+                document.getElementById("countdown").innerHTML = "Countdown expired!";
+            } else {
+                const days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+
+                const countdownText = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+                document.getElementById("countdown").innerHTML = countdownText;
+            }
+        }
+
+        function checkAndDisplayChristmasMessage() {
+            const now = new Date();
+            const isChristmas = now.getMonth() === 11 && now.getDate() === 25;
+
+            if (isChristmas) {
+                document.getElementById("merry-christmas").innerHTML = "Merry Christmas!";
+            }
+        }
+
+        // Initial call to display the Christmas message
+        checkAndDisplayChristmasMessage();
+
+        // Check and display the Christmas message periodically (every 1 second)
+        const christmasMessageInterval = setInterval(checkAndDisplayChristmasMessage, 1000);
+
+        // Update the countdown
+        updateCountdown();
+        const countdownInterval = setInterval(updateCountdown, 1000);
+    </script>
 </body>
 </html>
