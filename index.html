@@ -14,18 +14,19 @@
 
         #content {
             text-align: center;
-            max-width: 90%; /* Adjust the maximum width as needed */
+            max-width: 90%;
             margin: 0 auto;
+            padding: 1em;
         }
 
         #countdown, #merry-christmas {
-            font-size: 5vh; /* Use vh units for font size to be responsive */
+            font-size: 5vw;
             font-family: 'Digital7', "Courier New", monospace;
         }
 
         @font-face {
             font-family: 'Digital7';
-            src: url('digital-7.ttf') format('truetype'); /* Specify the correct path to your font file */
+            src: url('digital-7.ttf') format('truetype');
         }
 
         #countdown {
@@ -37,7 +38,13 @@
         }
 
         .digital7 {
-            letter-spacing: 5px; /* Adjust the letter-spacing as needed */
+            letter-spacing: 0.2em;
+        }
+
+        @media (max-width: 768px) {
+            #countdown, #merry-christmas {
+                font-size: 8vw;
+            }
         }
     </style>
 </head>
