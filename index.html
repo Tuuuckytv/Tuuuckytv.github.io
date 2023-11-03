@@ -73,7 +73,7 @@
 <body>
     <div id="content">
         <div id="merry-christmas" class="digital7"></div>
-        <div id="countdown" class="digital7"></div>
+        <div id="countdown" class "digital7"></div>
         <div style="position: absolute; bottom: 0; left: 0; padding: 20px; color: white;">
             <button id="countdown-button" onclick="startCountdown()"></button>
             <img id="kaboom-image" src="kaboom.png">
@@ -93,7 +93,7 @@
                     var button = document.getElementById("countdown-button");
                     var image = document.getElementById("kaboom-image");
 
-                    button.style.display = "block";
+                    button.style display = "block";
                     image.style.display = "none";
                 }
             </script>
@@ -144,6 +144,59 @@
         // Update the countdown
         updateCountdown();
         const countdownInterval = setInterval(updateCountdown, 1000);
+    </script>
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Garfield Walking</title>
+    <style>
+        body {
+            background-color: black;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        #garfield-container {
+            position: absolute;
+            top: 0;
+            left: 0; /* Start from the left edge of the viewport */
+        }
+
+        #garfield {
+            width: 50%; /* Set the initial image size in percentage */
+            animation: moveGarfield 10s linear forwards; /* Adjust the animation duration as needed */
+        }
+
+        @keyframes moveGarfield {
+            0% {
+                transform: translateX(-80%); /* Start off the screen on the left */
+            }
+            100% {
+                transform: translateX(788%); /* Moves to the right edge of the viewport */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="garfield-container">
+        <img id="garfield" src="garfield-walking.gif" alt="Garfield Walking">
+    </div>
+
+    <script>
+        const garfield = document.getElementById("garfield");
+
+        function restartAnimation() {
+            garfield.style.animation = "none";
+            void garfield.offsetWidth; // Trigger reflow to restart the animation
+            garfield.style.animation = "moveGarfield 13s linear forwards";
+        }
+
+        setInterval(restartAnimation, 11000); // Restart animation every 4 seconds (4000 milliseconds)
     </script>
 </body>
 </html>
