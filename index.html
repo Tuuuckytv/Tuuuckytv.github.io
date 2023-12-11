@@ -94,6 +94,8 @@
   </div>
 
   <script>
+    let timeoutId;
+
     async function fetchMealsFromFile(file) {
       try {
         const response = await fetch(file);
@@ -133,6 +135,8 @@
     });
 
     async function generateMeal(category) {
+      clearTimeout(timeoutId); // Clear existing timeout
+
       const mealContainer = document.getElementById('meal-container');
       const categoryMeals = meals[category];
       if (categoryMeals.length === 0) {
@@ -149,8 +153,8 @@
       // Add a button to generate a new meal in the same category
       mealContainer.innerHTML += `<button class="generate-button" onclick="generateMeal('${category}')">Generate New ${category.charAt(0).toUpperCase() + category.slice(1)} Meal</button>`;
 
-      // Refresh the page after 20 seconds
-      setTimeout(() => {
+      // Set a new timeout to refresh the page after 20 seconds
+      timeoutId = setTimeout(() => {
         location.reload();
       }, 20 * 1000); // 20 seconds in milliseconds
     }
