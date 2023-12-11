@@ -78,7 +78,7 @@
       margin-top: 10px;
     }
   </style>
-  <title>Oh, fuck</title>
+  <title>Oh, What We Gonna Eat?</title>
 </head>
 
 <body>
@@ -105,12 +105,16 @@
   <script>
     let timeoutId;
 
-    // Disable the specified button and set a timeout to re-enable it
-    function disableButton(buttonId, timeout) {
-      const button = document.getElementById(buttonId);
-      button.disabled = true;
+    // Disable all buttons and set a timeout to re-enable them
+    function disableButtons(timeout) {
+      const buttons = document.querySelectorAll('button');
+      buttons.forEach(button => {
+        button.disabled = true;
+      });
       setTimeout(() => {
-        button.disabled = false;
+        buttons.forEach(button => {
+          button.disabled = false;
+        });
       }, timeout);
     }
 
@@ -157,7 +161,6 @@
 
       const mealContainer = document.getElementById('meal-container');
       const categoryMeals = meals[category];
-      const buttonId = `${category}Button`;
 
       if (categoryMeals.length === 0) {
         mealContainer.innerHTML = `<p>No meals available for ${category}.</p>`;
@@ -178,8 +181,8 @@
         location.reload();
       }, 20 * 1000); // 20 seconds in milliseconds
 
-      // Disable the button for a certain duration
-      disableButton(buttonId, 20000); // 20 seconds in milliseconds
+      // Disable all buttons for a certain duration
+      disableButtons(20000); // 20 seconds in milliseconds
     }
   </script>
 
