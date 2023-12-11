@@ -40,6 +40,7 @@
       background-color: #5bc0de;
       color: #fff;
       transition: background-color 0.3s ease;
+      width: 150px; /* Set a fixed width for the buttons */
     }
 
     button:hover {
@@ -54,6 +55,17 @@
     .generate-button {
       margin-top: 20px;
     }
+
+    .button-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .button-row {
+      display: flex;
+      margin-top: 10px;
+    }
   </style>
   <title>Meal Generator</title>
 </head>
@@ -63,10 +75,15 @@
     <h1 style="color: #d9534f;">Meal Generator</h1>
   </header>
 
-  <div>
-    <button onclick="generateMeal('breakfast')">Generate Breakfast</button>
-    <button onclick="generateMeal('dinner')">Generate Dinner</button>
-    <button onclick="generateMeal('tea')">Generate Tea</button>
+  <div class="button-container">
+    <div class="button-row">
+      <button onclick="generateMeal('breakfast')">Breakfast</button>
+      <button onclick="generateMeal('dinner')">Dinner</button>
+    </div>
+    <div class="button-row">
+      <button onclick="generateMeal('tea')">Tea</button>
+      <button onclick="generateMeal('friday')">Friday</button>
+    </div>
   </div>
 
   <div id="meal-container">
@@ -88,7 +105,8 @@
     const meals = {
       breakfast: [],
       dinner: [],
-      tea: []
+      tea: [],
+      friday: [] // Added Friday meals
     };
 
     // Fetch breakfast meals from the file
@@ -104,6 +122,11 @@
     // Fetch tea meals from the file
     fetchMealsFromFile('tea.txt').then(data => {
       meals.tea = data;
+    });
+
+    // Fetch Friday meals from the file
+    fetchMealsFromFile('friday.txt').then(data => {
+      meals.friday = data;
     });
 
     async function generateMeal(category) {
