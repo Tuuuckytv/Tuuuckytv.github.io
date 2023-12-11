@@ -1,0 +1,6 @@
+Food
+cheese 
+cats
+ dogs
+monkeys 
+tigers
