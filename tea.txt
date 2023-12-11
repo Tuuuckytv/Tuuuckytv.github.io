@@ -1,8 +1,6 @@
-Food
-cheese 
-cats
- dogs
-monkeys 
-tigers
-Meercats
-fat people 
+Grilled Cheese and Soup
+Pasta with Chorizo and Mozzarella 
+Chicken and Rice
+Vegetable Stir-Fry with Rice
+Chicken Stir-Fry with Rice
+Egg Fried Rice
