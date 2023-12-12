@@ -51,7 +51,7 @@
       transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease,
         box-shadow 0.3s ease; /* Added box-shadow transition */
       width: 150px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), inset 0 0 3px rgba(255, 255, 255, 0.3); /* Inner bevel effect and inner border */
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), inset 0 0 5px rgba(255, 255, 255, 0.5); /* Inner bevel effect and brighter inner border */
     }
 
     button:disabled {
@@ -64,12 +64,13 @@
     button:hover:not(:disabled) {
       background-color: #c9302c;
       border-color: #c9302c;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), inset 0 0 2px rgba(255, 255, 255, 0.3); /* Slightly reduce shadow on hover */
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), inset 0 0 3px rgba(255, 255, 255, 0.5); /* Slightly reduce shadow on hover and brighter inner border */
     }
 
     p {
       font-size: 18px;
       margin: 10px 0;
+      color: #ffc107; /* Brighter text color for generated meal */
     }
 
     .generate-button {
