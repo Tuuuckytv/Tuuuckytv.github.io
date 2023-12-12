@@ -6,13 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" href="spiderman.png" type="image/png">
   <style>
-    @font-face {
-      font-family: 'PricedownBL';
-      src: url('pricedownbl.otf') format('opentype');
-      font-weight: normal;
-      font-style: normal;
-    }
-
     body {
       display: flex;
       flex-direction: column;
@@ -109,6 +102,9 @@
     <!-- Generated meal will be displayed here -->
   </div>
 
+  <!-- Add an invisible audio element for the button click sound -->
+  <audio id="buttonClickSound" src="path/to/gta-menu.wav"></audio>
+
   <script>
     async function fetchMealsFromFile(file) {
       try {
@@ -145,6 +141,10 @@
     });
 
     async function generateMeal(category) {
+      // Play the button click sound
+      const buttonClickSound = document.getElementById('buttonClickSound');
+      buttonClickSound.play();
+
       const mealContainer = document.getElementById('meal-container');
       const categoryMeals = meals[category];
 
