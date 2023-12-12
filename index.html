@@ -103,22 +103,6 @@
   </div>
 
   <script>
-    let disabledButtonId;
-
-    function disableButton(buttonId) {
-      const button = document.getElementById(buttonId);
-      button.disabled = true;
-      disabledButtonId = buttonId;
-    }
-
-    function enableDisabledButton() {
-      if (disabledButtonId) {
-        const button = document.getElementById(disabledButtonId);
-        button.disabled = false;
-        disabledButtonId = null;
-      }
-    }
-
     async function fetchMealsFromFile(file) {
       try {
         const response = await fetch(file);
@@ -166,13 +150,12 @@
       const generatedMeal = categoryMeals[randomIndex];
 
       mealContainer.innerHTML = `<p>${generatedMeal}</p>`;
-
       mealContainer.innerHTML += `<button class="generate-button" onclick="generateMeal('${category}')">Generate New ${category.charAt(0).toUpperCase() + category.slice(1)} Meal</button>`;
 
-      disableButton(`${category}Button`);
+      document.getElementById(`${category}Button`).disabled = true;
 
       setTimeout(() => {
-        enableDisabledButton();
+        document.getElementById(`${category}Button`).disabled = false;
       }, 20000);
     }
   </script>
