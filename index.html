@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" href="spiderman.png" type="image/png"> <!-- Add this line for the favicon -->
+  <link rel="icon" href="spiderman.png" type="image/png">
   <style>
     body {
       display: flex;
@@ -14,20 +14,20 @@
       min-height: 100vh;
       margin: 0;
       font-family: 'Arial', sans-serif;
-      background-color: #0c457d; /* Dark Blue Background */
-      color: #fff; /* White text */
+      background-color: #0c457d;
+      color: #fff;
     }
 
     header {
       text-align: center;
       margin-bottom: 20px;
-      color: #d9534f; /* Reddish color for header */
+      color: #d9534f;
     }
 
     #meal-container {
       text-align: center;
       padding: 20px;
-      background-color: #4caf50; /* Green Background */
+      background-color: #4caf50;
       border-radius: 8px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       margin-top: 20px;
@@ -38,12 +38,12 @@
       margin: 0 10px;
       font-size: 16px;
       cursor: pointer;
-      border: 2px solid #d9534f; /* Reddish border */
+      border: 2px solid #d9534f;
       border-radius: 4px;
-      background-color: #d9534f; /* Reddish background */
+      background-color: #d9534f;
       color: #fff;
       transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-      width: 150px; /* Set a fixed width for the buttons */
+      width: 150px;
     }
 
     button:disabled {
@@ -54,8 +54,8 @@
     }
 
     button:hover:not(:disabled) {
-      background-color: #c9302c; /* Darker Reddish background on hover */
-      border-color: #c9302c; /* Darker Reddish border on hover */
+      background-color: #c9302c;
+      border-color: #c9302c;
     }
 
     p {
@@ -105,18 +105,17 @@
   <script>
     let disabledButtonId;
 
-    // Disable the specified button and set a timeout to re-enable it
     function disableButton(buttonId) {
       const button = document.getElementById(buttonId);
       button.disabled = true;
       disabledButtonId = buttonId;
     }
 
-    // Re-enable the previously disabled button
     function enableDisabledButton() {
       if (disabledButtonId) {
         const button = document.getElementById(disabledButtonId);
         button.disabled = false;
+        disabledButtonId = null;
       }
     }
 
@@ -135,25 +134,21 @@
       breakfast: [],
       dinner: [],
       tea: [],
-      friday: [] // Added Friday meals
+      friday: []
     };
 
-    // Fetch breakfast meals from the file
     fetchMealsFromFile('breakfast.txt').then(data => {
       meals.breakfast = data;
     });
 
-    // Fetch dinner meals from the file
     fetchMealsFromFile('dinner.txt').then(data => {
       meals.dinner = data;
     });
 
-    // Fetch tea meals from the file
     fetchMealsFromFile('tea.txt').then(data => {
       meals.tea = data;
     });
 
-    // Fetch Friday meals from the file
     fetchMealsFromFile('friday.txt').then(data => {
       meals.friday = data;
     });
@@ -170,19 +165,15 @@
       const randomIndex = Math.floor(Math.random() * categoryMeals.length);
       const generatedMeal = categoryMeals[randomIndex];
 
-      // Display the generated meal
       mealContainer.innerHTML = `<p>${generatedMeal}</p>`;
 
-      // Add a button to generate a new meal in the same category
       mealContainer.innerHTML += `<button class="generate-button" onclick="generateMeal('${category}')">Generate New ${category.charAt(0).toUpperCase() + category.slice(1)} Meal</button>`;
 
-      // Disable the clicked button until another button is pressed
       disableButton(`${category}Button`);
 
-      // Re-enable the previously disabled button after a delay
       setTimeout(() => {
         enableDisabledButton();
-      }, 20000); // 20 seconds in milliseconds
+      }, 20000);
     }
   </script>
 
