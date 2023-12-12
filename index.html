@@ -171,7 +171,10 @@
       // Play the sound
       playSound('audioElement');
 
-      setTimeout(() => {
+      // Set the timeout only when a button is pressed
+      let timeoutId;
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
         document.getElementById(`${category}Button`).disabled = false;
       }, 20000);
     }
