@@ -45,11 +45,13 @@
       font-size: 16px;
       cursor: pointer;
       border: 2px solid #d9534f;
-      border-radius: 4px;
+      border-radius: 8px; /* Increased border-radius for a softer look */
       background-color: #d9534f;
       color: #fff;
-      transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+      transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease,
+        box-shadow 0.3s ease; /* Added box-shadow transition */
       width: 150px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), inset 0 0 3px rgba(255, 255, 255, 0.3); /* Inner bevel effect and inner border */
     }
 
     button:disabled {
@@ -62,6 +64,7 @@
     button:hover:not(:disabled) {
       background-color: #c9302c;
       border-color: #c9302c;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), inset 0 0 2px rgba(255, 255, 255, 0.3); /* Slightly reduce shadow on hover */
     }
 
     p {
@@ -101,7 +104,7 @@
     </div>
     <div class="button-row">
       <button id="teaButton" onclick="generateMeal('tea')">Tea</button>
-      <button id="fridayButton" onclick="generateMeal('friday')">Payday</button>
+      <button id="paydayButton" onclick="generateMeal('payday')">Payday</button>
     </div>
   </div>
 
@@ -125,7 +128,7 @@
       breakfast: [],
       dinner: [],
       tea: [],
-      friday: []
+      payday: []
     };
 
     fetchMealsFromFile('breakfast.txt').then(data => {
@@ -140,8 +143,8 @@
       meals.tea = data;
     });
 
-    fetchMealsFromFile('friday.txt').then(data => {
-      meals.friday = data;
+    fetchMealsFromFile('payday.txt').then(data => {
+      meals.payday = data;
     });
 
     async function generateMeal(category) {
@@ -163,7 +166,7 @@
       document.getElementById('breakfastButton').disabled = false;
       document.getElementById('dinnerButton').disabled = false;
       document.getElementById('teaButton').disabled = false;
-      document.getElementById('fridayButton').disabled = false;
+      document.getElementById('paydayButton').disabled = false;
 
       // Disable the clicked button
       document.getElementById(`${category}Button`).disabled = true;
