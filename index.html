@@ -219,7 +219,8 @@
       document.getElementById('paydayButton').disabled = false;
 
       // Disable the clicked button
-      document.getElementById(`${category}Button`).disabled = true;
+      const clickedButton = document.getElementById(`${category}Button`);
+      clickedButton.disabled = true;
 
       // Play the sound
       playSound('audioElement');
@@ -228,8 +229,11 @@
       let timeoutId;
       clearTimeout(timeoutId);
       timeoutId = setTimeout(() => {
-        document.getElementById(`${category}Button`).disabled = false;
-      }, 20000);
+        // Clear the generated meal and button after the timeout
+        mealContainer.innerHTML = '';
+        // Enable the clicked button after the timeout
+        clickedButton.disabled = false;
+      }, 20000); // 20 seconds in milliseconds
     }
 
     function playSound(elementId) {
