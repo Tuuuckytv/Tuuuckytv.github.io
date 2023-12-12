@@ -16,7 +16,7 @@ Fajitas
 Pasta Bake
 Spaghetti Bolognese
 Chicken Kebab
-Steak Sandwhich
+Steak Sandwich
 Pesto Pasta
 Ramen
 Naan Pizza
@@ -24,11 +24,15 @@ Lasagne
 Burger and Fries
 Dirty chips
 Beef mince nachos
-Bacon letuce Tomato sandwhich
-Bacon and Egg sandwhich
+Bacon lettuce Tomato sandwich
+Bacon and Egg sandwich
 Egg and Cheese Wraps
 Omelette
 Butternut squash soup
-Chicked skewers
+Chicken skewers
 Slow Cooker - Pork
 Slow Cooker - Beef
+Chicken and Sweetcorn soup
+Chicken and Chips 
+Chicken Nuggets and Chips
+Corn Beef Hash
