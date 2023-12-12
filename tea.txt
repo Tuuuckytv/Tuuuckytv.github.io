@@ -1,10 +1,4 @@
-- Grilled Cheese and Tomato Soup
-- Bread
-- Butter
-- cheese
-- Tomato
-- Herbs & Spices
-
+Grilled Cheese and Tomato Soup
 Pasta with Chorizo and Mozzarella 
 Chicken and Rice
 Vegetable Stir-Fry with Rice
@@ -21,3 +15,20 @@ Tacos
 Fajitas
 Pasta Bake
 Spaghetti Bolognese
+Chicken Kebab
+Steak Sandwhich
+Pesto Pasta
+Ramen
+Naan Pizza
+Lasagne
+Burger and Fries
+Dirty chips
+Beef mince nachos
+Bacon letuce Tomato sandwhich
+Bacon and Egg sandwhich
+Egg and Cheese Wraps
+Omelette
+Butternut squash soup
+Chicked skewers
+Slow Cooker - Pork
+Slow Cooker - Beef
