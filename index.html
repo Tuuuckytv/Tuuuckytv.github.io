@@ -236,6 +236,22 @@
       const audioElement = document.getElementById(elementId);
       audioElement.play();
     }
+
+    // Auto-refresh script
+    let timeoutId;
+
+    function resetTimeout() {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        location.reload();
+      }, 30000); // 30 seconds in milliseconds
+    }
+
+    document.addEventListener('click', resetTimeout);
+    document.addEventListener('keydown', resetTimeout);
+
+    // Initialize the timeout on page load
+    resetTimeout();
   </script>
 </body>
 
