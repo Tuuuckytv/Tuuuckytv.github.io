@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" href="spiderman.png" type="image/png">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
     @font-face {
       font-family: 'Digital-7';
@@ -202,7 +203,7 @@
 
     function resetTimeout() {
       clearTimeout(timeoutId);
-      
+
       // Set the timeout for both refreshing the page and clearing the generated meal
       timeoutId = setTimeout(() => {
         location.reload();
@@ -224,7 +225,10 @@
       const randomIndex = Math.floor(Math.random() * categoryMeals.length);
       const generatedMeal = categoryMeals[randomIndex];
 
-      mealContainer.innerHTML = `<p>${generatedMeal}</p>`;
+      // Parse Markdown and convert it to HTML
+      const generatedMealHTML = marked(generatedMeal);
+
+      mealContainer.innerHTML = generatedMealHTML;
       mealContainer.innerHTML += `<button class="generate-button" onclick="generateMeal('${category}')">Generate New ${category.charAt(0).toUpperCase() + category.slice(1)} Meal</button>`;
 
       // Enable all buttons
