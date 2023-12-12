@@ -152,6 +152,13 @@
       mealContainer.innerHTML = `<p>${generatedMeal}</p>`;
       mealContainer.innerHTML += `<button class="generate-button" onclick="generateMeal('${category}')">Generate New ${category.charAt(0).toUpperCase() + category.slice(1)} Meal</button>`;
 
+      // Enable all buttons
+      document.getElementById('breakfastButton').disabled = false;
+      document.getElementById('dinnerButton').disabled = false;
+      document.getElementById('teaButton').disabled = false;
+      document.getElementById('fridayButton').disabled = false;
+
+      // Disable the clicked button
       document.getElementById(`${category}Button`).disabled = true;
 
       setTimeout(() => {
