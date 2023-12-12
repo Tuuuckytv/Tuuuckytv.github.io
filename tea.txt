@@ -1,4 +1,7 @@
-Grilled Cheese and Soup
+- Grilled Cheese and Tomato Soup
+- Bread
+- Butter
+- cheese
 Pasta with Chorizo and Mozzarella 
 Chicken and Rice
 Vegetable Stir-Fry with Rice
@@ -10,7 +13,7 @@ Kotletes
 Roast dinner
 Curry
 Sausage and mash with beans
-full English breakfast
+Full English breakfast
 Tacos
 Fajitas
 Pasta Bake
