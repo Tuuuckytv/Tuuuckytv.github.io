@@ -6,6 +6,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" href="spiderman.png" type="image/png">
   <style>
+    @font-face {
+      font-family: 'PricedownBL';
+      src: url('pricedownbl.otf') format('opentype');
+      font-weight: normal;
+      font-style: normal;
+    }
+
     body {
       display: flex;
       flex-direction: column;
@@ -13,7 +20,7 @@
       justify-content: center;
       min-height: 100vh;
       margin: 0;
-      font-family: 'Arial', sans-serif;
+      font-family: 'PricedownBL', sans-serif; /* Use PricedownBL font */
       background-color: #0c457d;
       color: #fff;
     }
@@ -151,19 +158,6 @@
 
       mealContainer.innerHTML = `<p>${generatedMeal}</p>`;
       mealContainer.innerHTML += `<button class="generate-button" onclick="generateMeal('${category}')">Generate New ${category.charAt(0).toUpperCase() + category.slice(1)} Meal</button>`;
-
-      // Enable all buttons
-      document.getElementById('breakfastButton').disabled = false;
-      document.getElementById('dinnerButton').disabled = false;
-      document.getElementById('teaButton').disabled = false;
-      document.getElementById('fridayButton').disabled = false;
-
-      // Disable the clicked button
-      document.getElementById(`${category}Button`).disabled = true;
-
-      setTimeout(() => {
-        document.getElementById(`${category}Button`).disabled = false;
-      }, 20000);
     }
   </script>
 
