@@ -83,6 +83,8 @@
 
 <body>
 
+  <audio id="audioElement" src="gta-menu.wav"></audio>
+
   <header>
     <h1 style="color: #d9534f;">What we gonna eat?</h1>
   </header>
@@ -161,9 +163,17 @@
       // Disable the clicked button
       document.getElementById(`${category}Button`).disabled = true;
 
+      // Play the sound
+      playSound('audioElement');
+
       setTimeout(() => {
         document.getElementById(`${category}Button`).disabled = false;
       }, 20000);
+    }
+
+    function playSound(elementId) {
+      const audioElement = document.getElementById(elementId);
+      audioElement.play();
     }
   </script>
 
