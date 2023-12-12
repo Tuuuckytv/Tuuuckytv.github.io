@@ -197,6 +197,21 @@
 
     setInterval(updateCountdown, 1000);
 
+    // Shared variable to store the timeout ID
+    let timeoutId;
+
+    function resetTimeout() {
+      clearTimeout(timeoutId);
+      
+      // Set the timeout for both refreshing the page and clearing the generated meal
+      timeoutId = setTimeout(() => {
+        location.reload();
+      }, 30000); // 30 seconds in milliseconds
+    }
+
+    document.addEventListener('click', resetTimeout);
+    document.addEventListener('keydown', resetTimeout);
+
     async function generateMeal(category) {
       const mealContainer = document.getElementById('meal-container');
       const categoryMeals = meals[category];
@@ -226,7 +241,6 @@
       playSound('audioElement');
 
       // Set the timeout only when a button is pressed
-      let timeoutId;
       clearTimeout(timeoutId);
       timeoutId = setTimeout(() => {
         // Clear the generated meal and button after the timeout
@@ -240,22 +254,6 @@
       const audioElement = document.getElementById(elementId);
       audioElement.play();
     }
-
-    // Auto-refresh script
-    let timeoutId;
-
-    function resetTimeout() {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => {
-        location.reload();
-      }, 30000); // 30 seconds in milliseconds
-    }
-
-    document.addEventListener('click', resetTimeout);
-    document.addEventListener('keydown', resetTimeout);
-
-    // Initialize the timeout on page load
-    resetTimeout();
   </script>
 </body>
 
