@@ -103,23 +103,21 @@
   </div>
 
   <script>
-    let timeoutId;
+    let disabledButtonId;
 
-    // Disable all buttons except the specified one and set a timeout to re-enable them
-    function disableButtons(exceptButtonId, timeout) {
-      const buttons = document.querySelectorAll('button');
-      buttons.forEach(button => {
-        button.disabled = true;
-      });
+    // Disable the specified button and set a timeout to re-enable it
+    function disableButton(buttonId) {
+      const button = document.getElementById(buttonId);
+      button.disabled = true;
+      disabledButtonId = buttonId;
+    }
 
-      const exceptButton = document.getElementById(exceptButtonId);
-      exceptButton.disabled = false;
-
-      setTimeout(() => {
-        buttons.forEach(button => {
-          button.disabled = false;
-        });
-      }, timeout);
+    // Re-enable the previously disabled button
+    function enableDisabledButton() {
+      if (disabledButtonId) {
+        const button = document.getElementById(disabledButtonId);
+        button.disabled = false;
+      }
     }
 
     async function fetchMealsFromFile(file) {
@@ -161,11 +159,8 @@
     });
 
     async function generateMeal(category) {
-      clearTimeout(timeoutId); // Clear existing timeout
-
       const mealContainer = document.getElementById('meal-container');
       const categoryMeals = meals[category];
-      const buttonId = `${category}Button`;
 
       if (categoryMeals.length === 0) {
         mealContainer.innerHTML = `<p>No meals available for ${category}.</p>`;
@@ -181,13 +176,13 @@
       // Add a button to generate a new meal in the same category
       mealContainer.innerHTML += `<button class="generate-button" onclick="generateMeal('${category}')">Generate New ${category.charAt(0).toUpperCase() + category.slice(1)} Meal</button>`;
 
-      // Disable all buttons for a certain duration
-      disableButtons(buttonId, 20000); // 20 seconds in milliseconds
+      // Disable the clicked button until another button is pressed
+      disableButton(`${category}Button`);
 
-      // Set a new timeout to refresh the page after 20 seconds
-      timeoutId = setTimeout(() => {
-        location.reload();
-      }, 20 * 1000); // 20 seconds in milliseconds
+      // Re-enable the previously disabled button after a delay
+      setTimeout(() => {
+        enableDisabledButton();
+      }, 20000); // 20 seconds in milliseconds
     }
   </script>
 
