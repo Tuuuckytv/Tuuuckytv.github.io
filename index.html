@@ -109,13 +109,6 @@
       display: flex;
       margin-top: 10px;
     }
-
-    img {
-      max-width: 100%;
-      height: auto;
-      border-radius: 8px; /* Apply border-radius to images */
-      margin-top: 10px;
-    }
   </style>
   <title>Oh, Fuck</title>
 </head>
@@ -142,7 +135,7 @@
   </div>
 
   <div id="meal-container">
-    <!-- Generated meal and image will be displayed here -->
+    <!-- Generated meal will be displayed here -->
   </div>
 
   <script>
@@ -215,10 +208,8 @@
 
       const randomIndex = Math.floor(Math.random() * categoryMeals.length);
       const generatedMeal = categoryMeals[randomIndex];
-      const imageName = generatedMeal.toLowerCase().replace(/\s/g, '') + '.png'; // Assuming images have the same name as meals
 
       mealContainer.innerHTML = `<p>${generatedMeal}</p>`;
-      mealContainer.innerHTML += `<img src="${imageName}" alt="${category} meal">`;
       mealContainer.innerHTML += `<button class="generate-button" onclick="generateMeal('${category}')">Generate New ${category.charAt(0).toUpperCase() + category.slice(1)} Meal</button>`;
 
       // Enable all buttons
