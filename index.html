@@ -7,7 +7,12 @@
   <link rel="icon" href="spiderman.png" type="image/png">
   <style>
     @font-face {
-      font-family: 'Pricedown';
+      font-family: 'Digital-7';
+      src: url('digital-7.ttf') format('truetype');
+    }
+
+    @font-face {
+      font-family: 'PricedownBL';
       src: url('pricedownbl.otf') format('opentype');
     }
 
@@ -27,7 +32,24 @@
       text-align: center;
       margin-bottom: 20px;
       color: #d9534f;
-      font-family: 'Pricedown', sans-serif; /* Apply the custom font */
+      font-family: 'PricedownBL', sans-serif;
+    }
+
+    #countdown-title {
+      font-family: 'Digital-7', sans-serif;
+      font-size: 18px;
+      color: #ffc107; /* Brighter text color for generated meal */
+      margin-bottom: 10px;
+      background-color: #495057; /* Darker background color */
+      padding: 5px 10px; /* Padding for better visibility */
+      border-radius: 8px; /* Rounded corners */
+    }
+
+    #countdown-timer {
+      font-family: 'Digital-7', sans-serif;
+      font-size: 24px;
+      color: #d9534f; /* Red color */
+      margin-bottom: 20px;
     }
 
     #meal-container {
@@ -87,12 +109,22 @@
       display: flex;
       margin-top: 10px;
     }
+
+    img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px; /* Apply border-radius to images */
+      margin-top: 10px;
+    }
   </style>
   <title>Oh, Fuck</title>
 </head>
 
 <body>
   <audio id="audioElement" src="gta-menu.wav"></audio>
+
+  <div id="countdown-title">Days Until GTA VI</div>
+  <div id="countdown-timer">00 : 00 : 00 : 00</div>
 
   <header>
     <h1 style="color: #d9534f;">What we gonna eat?</h1>
@@ -110,7 +142,7 @@
   </div>
 
   <div id="meal-container">
-    <!-- Generated meal will be displayed here -->
+    <!-- Generated meal and image will be displayed here -->
   </div>
 
   <script>
@@ -144,9 +176,33 @@
       meals.tea = data;
     });
 
-    fetchMealsFromFile('payday.txt').then(data => {
+    fetchMealsFromFile('friday.txt').then(data => {
       meals.payday = data;
     });
+
+    function updateCountdown() {
+      const countdownElement = document.getElementById('countdown-timer');
+      const now = new Date();
+      const targetDate = new Date('2025-01-01T00:00:00');
+      const timeDifference = targetDate - now;
+
+      if (timeDifference > 0) {
+        const days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((timeDifference % (1000 * 60)) / 1000);
+
+        countdownElement.textContent = `${formatTime(days)} : ${formatTime(hours)} : ${formatTime(minutes)} : ${formatTime(seconds)}`;
+      } else {
+        countdownElement.textContent = '00 : 00 : 00 : 00';
+      }
+    }
+
+    function formatTime(time) {
+      return time < 10 ? `0${time}` : time;
+    }
+
+    setInterval(updateCountdown, 1000);
 
     async function generateMeal(category) {
       const mealContainer = document.getElementById('meal-container');
@@ -159,8 +215,10 @@
 
       const randomIndex = Math.floor(Math.random() * categoryMeals.length);
       const generatedMeal = categoryMeals[randomIndex];
+      const imageName = generatedMeal.toLowerCase().replace(/\s/g, '') + '.png'; // Assuming images have the same name as meals
 
       mealContainer.innerHTML = `<p>${generatedMeal}</p>`;
+      mealContainer.innerHTML += `<img src="${imageName}" alt="${category} meal">`;
       mealContainer.innerHTML += `<button class="generate-button" onclick="generateMeal('${category}')">Generate New ${category.charAt(0).toUpperCase() + category.slice(1)} Meal</button>`;
 
       // Enable all buttons
