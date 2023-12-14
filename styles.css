@@ -26,11 +26,12 @@ header {
   color: #d9534f;
   font-family: 'PricedownBL', sans-serif;
   letter-spacing: 2px;
+  font-size: 24px; /* Editable font size */
 }
 
 #countdown-title {
   font-family: 'PricedownBL', sans-serif;
-  font-size: 18px;
+  font-size: 40px; /* Editable font size */
   color: #ffc107;
   margin-bottom: 10px;
   background-color: #495057;
@@ -41,7 +42,7 @@ header {
 
 #countdown-timer {
   font-family: 'Digital-7', sans-serif;
-  font-size: 24px;
+  font-size: 24px; /* Editable font size */
   color: #d9534f;
   margin-bottom: 20px;
 }
@@ -58,7 +59,7 @@ header {
 button {
   padding: 10px 20px;
   margin: 0 10px;
-  font-size: 16px;
+  font-size: 16px; /* Editable font size */
   cursor: pointer;
   border: 2px solid #d9534f;
   border-radius: 8px;
@@ -84,7 +85,7 @@ button:hover:not(:disabled) {
 }
 
 p {
-  font-size: 18px;
+  font-size: 18px; /* Editable font size */
   margin: 10px 0;
   color: #ffc107;
 }
