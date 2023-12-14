@@ -28,7 +28,7 @@ header {
 }
 
 #countdown-title {
-  font-family: 'Digital-7', sans-serif;
+  font-family: 'PricedownBL', sans-serif;
   font-size: 18px;
   color: #ffc107;
   margin-bottom: 10px;
@@ -38,7 +38,7 @@ header {
 }
 
 #countdown-timer {
-  font-family: 'PricedownBL', sans-serif;
+  font-family: 'Digital-7', sans-serif;
   font-size: 24px;
   color: #d9534f;
   margin-bottom: 20px;
