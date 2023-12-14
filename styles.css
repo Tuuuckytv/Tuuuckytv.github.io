@@ -28,13 +28,14 @@ header {
 }
 
 #countdown-title {
-  font-family: 'Digital-7', sans-serif;
+  font-family: 'PricedownBL', sans-serif;
   font-size: 18px;
   color: #ffc107;
   margin-bottom: 10px;
   background-color: #495057;
   padding: 5px 10px;
   border-radius: 8px;
+  letter-spacing: 2px;
 }
 
 #countdown-timer {
