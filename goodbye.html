@@ -24,7 +24,7 @@
   #glow {
     position: absolute;
     top: 50%;
-    left: calc(50% - -20px); /* Move the glow to the left by 5 pixels */
+    left: calc(50% - 5px - 10px); /* Move the glow to the left by 10 pixels */
     transform: translate(-50%, -50%);
     width: 276px; /* Increase the size of the glow by 15% */
     height: 276px; /* Increase the size of the glow by 15% */
@@ -40,6 +40,14 @@
     position: relative; /* Ensure the image can be positioned in front of the glow */
     z-index: 2; /* Ensure image is in front of the glow */
     opacity: 1; /* Set opacity to full */
+  }
+
+  #boomAnimation {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 3; /* Set the z-index of the animation to be in front of the image */
   }
 
   #buttonContainer {
@@ -77,6 +85,7 @@
   <div id="imageContainer">
     <div id="glow"></div>
     <img src="onenote.png" alt="OneNote" id="image">
+    <img src="boom.gif" alt="Boom" id="boomAnimation" style="display: none;">
   </div>
 
   <div id="buttonContainer">
@@ -86,18 +95,11 @@
 
   <script>
     function playAnimation() {
-      var imageContainer = document.getElementById('imageContainer');
-      var animationImage = document.createElement('img');
-      animationImage.src = 'boom.gif';
-      animationImage.id = 'boomAnimation'; // Add an ID to the animation
-      animationImage.style.position = 'absolute';
-      animationImage.style.top = '50%';
-      animationImage.style.left = '50%';
-      animationImage.style.transform = 'translate(-50%, -50%)';
-      imageContainer.appendChild(animationImage);
+      var animationImage = document.getElementById('boomAnimation');
+      animationImage.style.display = 'block';
 
       setTimeout(function() {
-        animationImage.remove();
+        animationImage.style.display = 'none';
         var fadeLink = document.getElementById('fadeLink');
         fadeLink.style.opacity = '1'; // Fade in the link
       }, 2000); // Adjust the delay as needed (in milliseconds)
