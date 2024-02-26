@@ -99,6 +99,9 @@
 
   <script>
     function playAnimation() {
+      var clickButton = document.getElementById('clickButton');
+      clickButton.disabled = true; // Disable the button while animation is playing
+      
       var animationImage = document.getElementById('boomAnimation');
       animationImage.style.display = 'block';
 
@@ -106,6 +109,7 @@
         animationImage.style.display = 'none';
         var downloadButtonContainer = document.getElementById('downloadButtonContainer');
         downloadButtonContainer.style.display = 'block'; // Show the download button
+        clickButton.disabled = false; // Re-enable the button after animation finishes
       }, 2000); // Adjust the delay as needed (in milliseconds)
     }
   </script>
