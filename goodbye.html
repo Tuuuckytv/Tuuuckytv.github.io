@@ -27,11 +27,52 @@
     width: 200px; /* Adjust the width of the image as needed */
     height: auto; /* Maintain aspect ratio */
   }
+
+  #buttonContainer {
+    margin-top: 20px;
+  }
+
+  #fadeLink {
+    display: none; /* Initially hide the link */
+    animation: fadeIn 1s ease-in-out forwards; /* Animation to fade in the link */
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
 </style>
 </head>
 <body>
   <div id="imageContainer">
     <img src="onenote.png" alt="OneNote" id="image">
   </div>
+  <div id="buttonContainer">
+    <button onclick="playAnimation()">Play Animation</button>
+    <a id="fadeLink" href="https://innoxtrading-my.sharepoint.com/:o:/g/personal/kyle_t_innox_co_uk/Ekxeq1YqCmlBo-tVbaMjbp4BsX1AjtzrmmnjN25ElTdvXA?e=wlUX67">Download Link</a>
+  </div>
+
+  <script>
+    function playAnimation() {
+      var imageContainer = document.getElementById('imageContainer');
+      var animationImage = document.createElement('img');
+      animationImage.src = 'boom.gif';
+      animationImage.style.position = 'absolute';
+      animationImage.style.top = '50%';
+      animationImage.style.left = '50%';
+      animationImage.style.transform = 'translate(-50%, -50%)';
+      imageContainer.appendChild(animationImage);
+
+      setTimeout(function() {
+        animationImage.remove();
+        var fadeLink = document.getElementById('fadeLink');
+        fadeLink.style.display = 'inline'; // Display the link
+      }, 2000); // Adjust the delay as needed (in milliseconds)
+    }
+  </script>
 </body>
 </html>
