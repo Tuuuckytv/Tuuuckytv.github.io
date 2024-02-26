@@ -98,19 +98,6 @@
   </div>
 
   <script>
-    var clickButton = document.getElementById('clickButton');
-    var clickInProgress = false;
-
-    clickButton.addEventListener('click', function() {
-      if (!clickInProgress) {
-        clickInProgress = true;
-        playAnimation();
-        setTimeout(function() {
-          clickInProgress = false;
-        }, 1000); // Reduced delay to 1 second (1000 milliseconds)
-      }
-    });
-
     function playAnimation() {
       var animationImage = document.getElementById('boomAnimation');
       animationImage.style.display = 'block';
