@@ -97,11 +97,7 @@
 
   <div id="buttonContainer">
     <button onclick="playAnimation()">Click Me</button>
-    <div>
-      <a id="fadeLink" href="https://innoxtrading-my.sharepoint.com/:o:/g/personal/kyle_t_innox_co_uk/Ekxeq1YqCmlBo-tVbaMjbp4BsX1AjtzrmmnjN25ElTdvXA?e=wlUX67" target="_blank">
-        <button>Download Now</button>
-      </a>
-    </div>
+    <button onclick="downloadFile()">Download Now</button>
   </div>
 
   <script>
@@ -114,6 +110,10 @@
         var fadeLink = document.getElementById('fadeLink');
         fadeLink.style.opacity = '1'; // Fade in the link
       }, 2000); // Adjust the delay as needed (in milliseconds)
+    }
+
+    function downloadFile() {
+      window.open('https://innoxtrading-my.sharepoint.com/:o:/g/personal/kyle_t_innox_co_uk/Ekxeq1YqCmlBo-tVbaMjbp4BsX1AjtzrmmnjN25ElTdvXA?e=wlUX67', '_blank');
     }
   </script>
 </body>
