@@ -40,6 +40,8 @@
     position: relative; /* Ensure the image can be positioned in front of the glow */
     z-index: 2; /* Ensure image is in front of the glow */
     opacity: 1; /* Set opacity to full */
+    left: 40%; /* Initial left position */
+    transition: left 0.3s ease; /* Smooth transition when moving left or right */
   }
 
   #boomAnimation {
@@ -104,6 +106,9 @@
         fadeLink.style.opacity = '1'; // Fade in the link
       }, 2000); // Adjust the delay as needed (in milliseconds)
     }
+
+    // Adjust the left position of the OneNote image directly in the code
+    document.getElementById('image').style.left = '60%'; // Change the percentage value as desired
   </script>
 </body>
 </html>
