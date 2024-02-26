@@ -40,6 +40,8 @@
     position: relative; /* Ensure the image can be positioned in front of the glow */
     z-index: 2; /* Ensure image is in front of the glow */
     opacity: 1; /* Set opacity to full */
+    left: 50%; /* Initial horizontal position */
+    transform: translateX(-50%); /* Center the image horizontally */
     transition: left 0.3s ease; /* Smooth transition when moving left or right */
   }
 
@@ -51,6 +53,24 @@
     z-index: 3; /* Set the z-index of the animation to be in front of the image */
   }
 
+  #buttonContainer {
+    margin-top: 15px; /* Adjust margin as needed */
+  }
+
+  button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #466799;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  button:hover {
+    background-color: #3c5573;
+  }
 </style>
 </head>
 <body>
@@ -60,17 +80,20 @@
     <img src="boom.gif" alt="Boom" id="boomAnimation" style="display: none;">
   </div>
 
-  <script>
-    function moveLeft() {
-      var oneNoteImage = document.getElementById('image');
-      var currentLeft = parseFloat(getComputedStyle(oneNoteImage).left);
-      oneNoteImage.style.left = (currentLeft - 10) + 'px'; // Adjust the value (10 pixels) as needed for finer control
-    }
+  <div id="buttonContainer">
+    <button onclick="playAnimation()">Click Me</button>
+  </div>
 
-    function moveRight() {
-      var oneNoteImage = document.getElementById('image');
-      var currentLeft = parseFloat(getComputedStyle(oneNoteImage).left);
-      oneNoteImage.style.left = (currentLeft + 50) + 'px'; // Adjust the value (10 pixels) as needed for finer control
+  <script>
+    function playAnimation() {
+      var animationImage = document.getElementById('boomAnimation');
+      animationImage.style.display = 'block';
+
+      setTimeout(function() {
+        animationImage.style.display = 'none';
+        var fadeLink = document.getElementById('fadeLink');
+        fadeLink.style.opacity = '1'; // Fade in the link
+      }, 2000); // Adjust the delay as needed (in milliseconds)
     }
   </script>
 </body>
