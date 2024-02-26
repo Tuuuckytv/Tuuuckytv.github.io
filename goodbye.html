@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Oh, Fuck</title>
+<link rel="icon" href="spiderman.png" type="image/png">
+<style>
+  body {
+    background-color: #373b41;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100vh;
+  }
+
+  #imageContainer {
+    position: relative;
+  }
+
+  #glow {
+    position: absolute;
+    top: 50%;
+    left: calc(50% - 5px - 10px); /* Move the glow to the left by 10 pixels */
+    transform: translate(-50%, -50%);
+    width: 360px; /* Increased glow radius */
+    height: 360px; /* Increased glow radius */
+    border-radius: 50%;
+    background: radial-gradient(rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 80%); /* Enhance the glow effect with smoother transition */
+    filter: blur(20px); /* Increase the blur radius for a softer glow */
+    z-index: 1; /* Ensure glow is behind the image */
+  }
+
+  #image {
+    width: 200px; /* Adjust the width of the image as needed */
+    height: auto; /* Maintain aspect ratio */
+    position: relative; /* Ensure the image can be positioned in front of the glow */
+    z-index: 2; /* Ensure image is in front of the glow */
+    opacity: 1; /* Set opacity to full */
+    left: 50%; /* Initial horizontal position */
+    transform: translateX(-65%); /* Center the image horizontally */
+    transition: left 0.3s ease; /* Smooth transition when moving left or right */
+  }
+
+  #boomAnimation {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 3; /* Set the z-index of the animation to be in front of the image */
+  }
+
+  #buttonContainer {
+    margin-top: 30px; /* Adjust margin as needed */
+    padding-top: 20px; /* Added vertical padding */
+    padding-bottom: 20px; /* Added vertical padding */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #466799;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-bottom: 10px; /* Add some spacing between buttons */
+  }
+
+  button:hover {
+    background-color: #3c5573;
+  }
+
+  #fadeLink {
+    text-decoration: none;
+    color: #ffffff;
+    font-size: 16px;
+    opacity: 0; /* Initially set opacity to 0 for fade-in effect */
+    transition: opacity 1s ease; /* Fade-in transition */
+    margin-top: 10px; /* Adjust margin as needed */
+  }
+</style>
+</head>
+<body>
+  <div id="imageContainer">
+    <div id="glow"></div>
+    <img src="onenote.png" alt="OneNote" id="image">
+    <img src="boom.gif" alt="Boom" id="boomAnimation" style="display: none;">
+  </div>
+
+  <div id="buttonContainer">
+    <button onclick="playAnimation()">Click Me</button>
+    <div id="downloadButtonContainer" style="display: none;">
+      <button onclick="downloadFile()">Download Now</button>
+    </div>
+  </div>
+
+  <a id="fadeLink" href="https://innoxtrading-my.sharepoint.com/:o:/g/personal/kyle_t_innox_co_uk/Ekxeq1YqCmlBo-tVbaMjbp4BsX1AjtzrmmnjN25ElTdvXA?e=wlUX67" target="_blank">Click here now</a>
+
+  <script>
+    function playAnimation() {
+      var animationImage = document.getElementById('boomAnimation');
+      animationImage.style.display = 'block';
+
+      setTimeout(function() {
+        animationImage.style.display = 'none';
+        var fadeLink = document.getElementById('fadeLink');
+        fadeLink.style.opacity = '1'; // Fade in the link
+        var downloadButtonContainer = document.getElementById('downloadButtonContainer');
+        downloadButtonContainer.style.display = 'block'; // Show the download button
+      }, 2000); // Adjust the delay as needed (in milliseconds)
+    }
+
+    function downloadFile() {
+      window.open('https://innoxtrading-my.sharepoint.com/:o:/g/personal/kyle_t_innox_co_uk/Ekxeq1YqCmlBo-tVbaMjbp4BsX1AjtzrmmnjN25ElTdvXA?e=wlUX67', '_blank');
+    }
+  </script>
+</body>
+</html>
