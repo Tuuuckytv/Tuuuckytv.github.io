@@ -79,12 +79,7 @@
   }
 
   #fadeLink {
-    text-decoration: none;
-    color: #ffffff;
-    font-size: 16px;
-    opacity: 0; /* Initially set opacity to 0 for fade-in effect */
-    transition: opacity 1s ease; /* Fade-in transition */
-    margin-top: 10px; /* Adjust margin as needed */
+    display: none; /* Hide the "Click here now" link */
   }
 </style>
 </head>
@@ -96,23 +91,32 @@
   </div>
 
   <div id="buttonContainer">
-    <button onclick="playAnimation()">Click Me</button>
+    <button onclick="playAnimation()" id="clickButton">Click Me</button>
     <div id="downloadButtonContainer" style="display: none;">
       <a href="https://innoxtrading-my.sharepoint.com/:o:/g/personal/kyle_t_innox_co_uk/Ekxeq1YqCmlBo-tVbaMjbp4BsX1AjtzrmmnjN25ElTdvXA?e=wlUX67" target="_blank"><button>Download Now</button></a>
     </div>
   </div>
 
-  <a id="fadeLink" href="https://innoxtrading-my.sharepoint.com/:o:/g/personal/kyle_t_innox_co_uk/Ekxeq1YqCmlBo-tVbaMjbp4BsX1AjtzrmmnjN25ElTdvXA?e=wlUX67" target="_blank">Click here now</a>
-
   <script>
+    var clickButton = document.getElementById('clickButton');
+    var clickInProgress = false;
+
+    clickButton.addEventListener('click', function() {
+      if (!clickInProgress) {
+        clickInProgress = true;
+        playAnimation();
+        setTimeout(function() {
+          clickInProgress = false;
+        }, 2000); // Delay in milliseconds
+      }
+    });
+
     function playAnimation() {
       var animationImage = document.getElementById('boomAnimation');
       animationImage.style.display = 'block';
 
       setTimeout(function() {
         animationImage.style.display = 'none';
-        var fadeLink = document.getElementById('fadeLink');
-        fadeLink.style.opacity = '1'; // Fade in the link
         var downloadButtonContainer = document.getElementById('downloadButtonContainer');
         downloadButtonContainer.style.display = 'block'; // Show the download button
       }, 2000); // Adjust the delay as needed (in milliseconds)
