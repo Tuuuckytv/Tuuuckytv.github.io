@@ -4,15 +4,39 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Oh, fuck</title>
-<link rel="icon" href="spiderman.png" type="image/png">
+<link rel="icon" href="spider-man.png" type="image/png">
 <style>
   body {
     background-color: #373b41;
     margin: 0;
     padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+
+  .glowing-border {
+    border: 3px solid #ffffff;
+    border-radius: 50%;
+    padding: 20px;
+    box-shadow: 0 0 20px #ffffff, 0 0 40px #ffffff, 0 0 60px #ffffff, 0 0 80px #ffffff, 0 0 100px #ffffff, 0 0 120px #ffffff, 0 0 140px #ffffff;
+    animation: glowing 1.5s infinite alternate;
+  }
+
+  @keyframes glowing {
+    0% {
+      border-color: #ffffff;
+    }
+    100% {
+      border-color: #ffd700;
+    }
   }
 </style>
 </head>
 <body>
+  <div class="glowing-border" id="imageContainer">
+    <img src="onenote.png" alt="OneNote" id="image" style="width: 200px;">
+  </div>
 </body>
 </html>
