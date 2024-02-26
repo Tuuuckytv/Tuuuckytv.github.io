@@ -57,6 +57,9 @@
     margin-top: 30px; /* Adjust margin as needed */
     padding-top: 20px; /* Added vertical padding */
     padding-bottom: 20px; /* Added vertical padding */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 
   button {
@@ -68,6 +71,7 @@
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s;
+    margin-bottom: 10px; /* Add some spacing between buttons */
   }
 
   button:hover {
@@ -93,9 +97,12 @@
 
   <div id="buttonContainer">
     <button onclick="playAnimation()">Click Me</button>
+    <div>
+      <a id="fadeLink" href="https://innoxtrading-my.sharepoint.com/:o:/g/personal/kyle_t_innox_co_uk/Ekxeq1YqCmlBo-tVbaMjbp4BsX1AjtzrmmnjN25ElTdvXA?e=wlUX67" target="_blank">
+        <button>Download Now</button>
+      </a>
+    </div>
   </div>
-
-  <a id="fadeLink" href="https://innoxtrading-my.sharepoint.com/:o:/g/personal/kyle_t_innox_co_uk/Ekxeq1YqCmlBo-tVbaMjbp4BsX1AjtzrmmnjN25ElTdvXA?e=wlUX67" target="_blank">Click here now</a>
 
   <script>
     function playAnimation() {
