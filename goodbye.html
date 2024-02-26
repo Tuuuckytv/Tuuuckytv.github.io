@@ -1,4 +1,4 @@
-8<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -40,6 +40,7 @@
     position: relative; /* Ensure the image can be positioned in front of the glow */
     z-index: 2; /* Ensure image is in front of the glow */
     opacity: 1; /* Set opacity to full */
+    transition: left 0.3s ease; /* Smooth transition when moving left or right */
   }
 
   #boomAnimation {
@@ -50,35 +51,6 @@
     z-index: 3; /* Set the z-index of the animation to be in front of the image */
   }
 
-  #buttonContainer {
-    margin-top: 15vh; /* Move the button down by 15% of viewport height */
-    display: flex; /* Set button container to flex */
-    flex-direction: column; /* Align items vertically */
-    align-items: center; /* Center items horizontally */
-  }
-
-  button {
-    padding: 10px 20px;
-    font-size: 16px;
-    background-color: #466799; /* Changed button color */
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-
-  button:hover {
-    background-color: #3c5573; /* Darken button color on hover */
-  }
-
-  #fadeLink {
-    text-decoration: none;
-    color: #ffffff;
-    font-size: 16px;
-    opacity: 0; /* Initially set opacity to 0 for fade-in effect */
-    transition: opacity 1s ease; /* Fade-in transition */
-  }
 </style>
 </head>
 <body>
@@ -88,25 +60,18 @@
     <img src="boom.gif" alt="Boom" id="boomAnimation" style="display: none;">
   </div>
 
-  <div id="buttonContainer">
-    <button onclick="playAnimation()">Click Me</button>
-    <a id="fadeLink" href="https://innoxtrading-my.sharepoint.com/:o:/g/personal/kyle_t_innox_co_uk/Ekxeq1YqCmlBo-tVbaMjbp4BsX1AjtzrmmnjN25ElTdvXA?e=wlUX67" target="_blank">Download Link</a>
-  </div>
-
   <script>
-    function playAnimation() {
-      var animationImage = document.getElementById('boomAnimation');
-      animationImage.style.display = 'block';
-
-      setTimeout(function() {
-        animationImage.style.display = 'none';
-        var fadeLink = document.getElementById('fadeLink');
-        fadeLink.style.opacity = '1'; // Fade in the link
-      }, 2000); // Adjust the delay as needed (in milliseconds)
+    function moveLeft() {
+      var oneNoteImage = document.getElementById('image');
+      var currentLeft = parseFloat(getComputedStyle(oneNoteImage).left);
+      oneNoteImage.style.left = (currentLeft - 10) + 'px'; // Adjust the value (10 pixels) as needed for finer control
     }
 
-    // Adjust the left position of the OneNote image directly in the code
-    document.getElementById('image').style.left = '20%'; // Change the percentage value as desired
+    function moveRight() {
+      var oneNoteImage = document.getElementById('image');
+      var currentLeft = parseFloat(getComputedStyle(oneNoteImage).left);
+      oneNoteImage.style.left = (currentLeft + 10) + 'px'; // Adjust the value (10 pixels) as needed for finer control
+    }
   </script>
 </body>
 </html>
