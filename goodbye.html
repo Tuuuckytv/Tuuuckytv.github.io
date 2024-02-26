@@ -18,15 +18,37 @@
   }
 
   #imageContainer {
-    border: 3px solid #ffffff;
-    border-radius: 10px; /* Adjust border radius as needed */
-    padding: 20px;
-    box-shadow: 0 0 20px #ffffff, 0 0 40px #ffffff, 0 0 60px #ffffff, 0 0 80px #ffffff, 0 0 100px #ffffff, 0 0 120px #ffffff, 0 0 140px #ffffff;
+    position: relative;
+  }
+
+  #glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 220px; /* Adjust the size of the glow */
+    height: 220px; /* Adjust the size of the glow */
+    border-radius: 50%;
+    background: radial-gradient(#ffffff, transparent); /* Adjust the glow color */
+    animation: glowAnimation 2s ease-in-out infinite; /* Adjust the glow animation */
+  }
+
+  @keyframes glowAnimation {
+    0% {
+      box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+    }
+    50% {
+      box-shadow: 0 0 20px 20px rgba(255, 255, 255, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+    }
   }
 
   #image {
     width: 200px; /* Adjust the width of the image as needed */
     height: auto; /* Maintain aspect ratio */
+    z-index: 1; /* Ensure image is on top of the glow */
   }
 
   #buttonContainer {
@@ -72,6 +94,7 @@
 </head>
 <body>
   <div id="imageContainer">
+    <div id="glow"></div>
     <img src="onenote.png" alt="OneNote" id="image">
   </div>
 
