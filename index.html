@@ -35,6 +35,12 @@
   </div>
 
   <script src="script.js"></script>
+  <script>
+    // JavaScript redirect to remove ".html" extension from URL
+    if (location.pathname === '/goodbye.html') {
+      window.location.href = '/goodbye';
+    }
+  </script>
 </body>
 
 </html>
