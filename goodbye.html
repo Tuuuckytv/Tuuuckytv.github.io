@@ -26,18 +26,19 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 220px; /* Adjust the size of the glow */
-    height: 220px; /* Adjust the size of the glow */
+    width: 240px; /* Increase the size of the glow */
+    height: 240px; /* Increase the size of the glow */
     border-radius: 50%;
-    background: radial-gradient(#ffffff, transparent); /* Adjust the glow color */
-    z-index: 0; /* Ensure glow is behind the image */
+    background: radial-gradient(#ffffff, #ffffff33); /* Enhance the glow effect */
+    z-index: 1; /* Ensure glow is behind the image */
   }
 
   #image {
     width: 200px; /* Adjust the width of the image as needed */
     height: auto; /* Maintain aspect ratio */
-    z-index: 1; /* Ensure image is on top of the glow */
-    opacity: 1; /* Adjust the opacity of the image */
+    position: relative; /* Ensure the image can be positioned in front of the glow */
+    z-index: 2; /* Ensure image is in front of the glow */
+    opacity: 1; /* Set opacity to full */
   }
 
   #buttonContainer {
