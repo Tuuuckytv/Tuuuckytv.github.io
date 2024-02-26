@@ -97,7 +97,9 @@
 
   <div id="buttonContainer">
     <button onclick="playAnimation()">Click Me</button>
-    <button onclick="downloadFile()">Download Now</button>
+    <div id="downloadButtonContainer" style="display: none;">
+      <button onclick="downloadFile()">Download Now</button>
+    </div>
   </div>
 
   <a id="fadeLink" href="https://innoxtrading-my.sharepoint.com/:o:/g/personal/kyle_t_innox_co_uk/Ekxeq1YqCmlBo-tVbaMjbp4BsX1AjtzrmmnjN25ElTdvXA?e=wlUX67" target="_blank">Click here now</a>
@@ -111,6 +113,8 @@
         animationImage.style.display = 'none';
         var fadeLink = document.getElementById('fadeLink');
         fadeLink.style.opacity = '1'; // Fade in the link
+        var downloadButtonContainer = document.getElementById('downloadButtonContainer');
+        downloadButtonContainer.style.display = 'block'; // Show the download button
       }, 2000); // Adjust the delay as needed (in milliseconds)
     }
 
