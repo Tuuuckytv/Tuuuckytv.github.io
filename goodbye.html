@@ -17,15 +17,28 @@
   }
 
   #imageContainer {
-    border: 3px solid #ffffff;
-    border-radius: 10px; /* Adjust border radius as needed */
-    padding: 20px;
-    box-shadow: 0 0 20px #ffffff, 0 0 40px #ffffff, 0 0 60px #ffffff, 0 0 80px #ffffff, 0 0 100px #ffffff, 0 0 120px #ffffff, 0 0 140px #ffffff;
+    position: relative;
+    width: 200px; /* Adjust the width of the image as needed */
+    height: auto; /* Maintain aspect ratio */
   }
 
   #image {
-    width: 200px; /* Adjust the width of the image as needed */
-    height: auto; /* Maintain aspect ratio */
+    width: 100%;
+    height: auto;
+    border-radius: 10px; /* Adjust border radius as needed */
+    box-shadow: 0 0 20px #fff, 0 0 40px #fff, 0 0 60px #fff, 0 0 80px #fff, 0 0 100px #fff, 0 0 120px #fff, 0 0 140px #fff;
+  }
+
+  #glow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 10px; /* Adjust border radius as needed */
+    background: radial-gradient(circle, #fff 0%, transparent 50%);
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
   }
 
   #buttonContainer {
@@ -33,45 +46,44 @@
   }
 
   #fadeLink {
-    display: none; /* Initially hide the link */
-    animation: fadeIn 1s ease-in-out forwards; /* Animation to fade in the link */
-  }
-
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
+    display: none;
+    color: #fff;
+    font-size: 20px;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
   }
 </style>
 </head>
 <body>
   <div id="imageContainer">
     <img src="onenote.png" alt="OneNote" id="image">
+    <div id="glow"></div>
   </div>
+  
   <div id="buttonContainer">
-    <button onclick="playAnimation()">Play Animation</button>
-    <a id="fadeLink" href="https://innoxtrading-my.sharepoint.com/:o:/g/personal/kyle_t_innox_co_uk/Ekxeq1YqCmlBo-tVbaMjbp4BsX1AjtzrmmnjN25ElTdvXA?e=wlUX67">Download Link</a>
+    <button onclick="playGif()">Play GIF</button>
+    <a href="https://innoxtrading-my.sharepoint.com/:o:/g/personal/kyle_t_innox_co_uk/Ekxeq1YqCmlBo-tVbaMjbp4BsX1AjtzrmmnjN25ElTdvXA?e=wlUX67" id="fadeLink" target="_blank">Click Here</a>
   </div>
 
   <script>
-    function playAnimation() {
+    function playGif() {
       var imageContainer = document.getElementById('imageContainer');
-      var animationImage = document.createElement('img');
-      animationImage.src = 'boom.gif';
-      animationImage.style.position = 'absolute';
-      animationImage.style.top = '50%';
-      animationImage.style.left = '50%';
-      animationImage.style.transform = 'translate(-50%, -50%)';
-      imageContainer.appendChild(animationImage);
+      var glow = document.getElementById('glow');
+      var fadeLink = document.getElementById('fadeLink');
 
+      // Display the glow
+      glow.style.opacity = 1;
+
+      // Play the GIF
+      var gif = new Image();
+      gif.src = 'boom.gif';
+      imageContainer.appendChild(gif);
+
+      // Show the fade-in link
+      fadeLink.style.display = 'block';
       setTimeout(function() {
-        animationImage.remove();
-        var fadeLink = document.getElementById('fadeLink');
-        fadeLink.style.display = 'inline'; // Display the link
-      }, 2000); // Adjust the delay as needed (in milliseconds)
+        fadeLink.style.opacity = 1;
+      }, 1000); // Adjust the delay as needed
     }
   </script>
 </body>
