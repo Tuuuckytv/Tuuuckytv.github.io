@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Oh, Fuck</title>
+<title>Oh, fuck</title>
 <link rel="icon" href="spider-man.png" type="image/png">
 <style>
   body {
@@ -16,27 +16,21 @@
     height: 100vh;
   }
 
-  .glowing-border {
+  #imageContainer {
     border: 3px solid #ffffff;
-    border-radius: 50%;
+    border-radius: 10px; /* Adjust border radius as needed */
     padding: 20px;
-    box-shadow: 0 0 20px #ffffff, 0 0 40px #ffffff, 0 0 60px #ffffff, 0 0 80px #ffffff, 0 0 100px #ffffff, 0 0 120px #ffffff, 0 0 140px #ffffff;
-    animation: glowing 1.5s infinite alternate;
   }
 
-  @keyframes glowing {
-    0% {
-      border-color: #ffffff;
-    }
-    100% {
-      border-color: #ffd700;
-    }
+  #image {
+    width: 200px; /* Adjust the width of the image as needed */
+    height: auto; /* Maintain aspect ratio */
   }
 </style>
 </head>
 <body>
-  <div class="glowing-border" id="imageContainer">
-    <img src="onenote.png" alt="OneNote" id="image" style="width: 200px;">
+  <div id="imageContainer">
+    <img src="onenote.png" alt="OneNote" id="image">
   </div>
 </body>
 </html>
