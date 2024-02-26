@@ -24,7 +24,7 @@
   #glow {
     position: absolute;
     top: 50%;
-    left: 50%;
+    left: calc(50% - 5px); /* Move the glow to the left by 5 pixels */
     transform: translate(-50%, -50%);
     width: 276px; /* Increase the size of the glow by 15% */
     height: 276px; /* Increase the size of the glow by 15% */
@@ -42,16 +42,8 @@
     opacity: 1; /* Set opacity to full */
   }
 
-  #boomAnimation {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 3; /* Set the z-index of the animation to be in front of the image */
-  }
-
   #buttonContainer {
-    margin-top: 20px;
+    margin-top: 15vh; /* Move the button down by 15% of viewport height */
     display: flex; /* Set button container to flex */
     flex-direction: column; /* Align items vertically */
     align-items: center; /* Center items horizontally */
