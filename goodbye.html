@@ -71,6 +71,15 @@
   button:hover {
     background-color: #3c5573;
   }
+
+  #fadeLink {
+    text-decoration: none;
+    color: #ffffff;
+    font-size: 16px;
+    opacity: 0; /* Initially set opacity to 0 for fade-in effect */
+    transition: opacity 1s ease; /* Fade-in transition */
+    margin-top: 10px; /* Adjust margin as needed */
+  }
 </style>
 </head>
 <body>
@@ -83,6 +92,8 @@
   <div id="buttonContainer">
     <button onclick="playAnimation()">Click Me</button>
   </div>
+
+  <a id="fadeLink" href="https://innoxtrading-my.sharepoint.com/:o:/g/personal/kyle_t_innox_co_uk/Ekxeq1YqCmlBo-tVbaMjbp4BsX1AjtzrmmnjN25ElTdvXA?e=wlUX67" target="_blank">Download Link</a>
 
   <script>
     function playAnimation() {
