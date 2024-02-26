@@ -36,7 +36,7 @@
   button {
     padding: 10px 20px;
     font-size: 16px;
-    background-color: #4CAF50;
+    background-color: #466799; /* Changed button color */
     color: white;
     border: none;
     border-radius: 5px;
@@ -45,26 +45,19 @@
   }
 
   button:hover {
-    background-color: #45a049;
+    background-color: #3c5573; /* Darken button color on hover */
   }
 
   #fadeLink {
     display: none; /* Initially hide the link */
-    animation: fadeIn 1s ease-in-out forwards; /* Animation to fade in the link */
     margin-top: 10px;
     text-decoration: none;
     color: #ffffff;
     font-size: 16px;
+    opacity: 0; /* Initially set opacity to 0 for fade-in effect */
+    transition: opacity 1s ease; /* Fade-in transition */
   }
 
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
 </style>
 </head>
 <body>
@@ -92,6 +85,7 @@
         animationImage.remove();
         var fadeLink = document.getElementById('fadeLink');
         fadeLink.style.display = 'inline'; // Display the link
+        fadeLink.style.opacity = '1'; // Fade in the link
       }, 2000); // Adjust the delay as needed (in milliseconds)
     }
   </script>
