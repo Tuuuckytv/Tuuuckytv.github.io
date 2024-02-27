@@ -41,8 +41,8 @@
     height: 100%;
     background-color: #566478;
     padding-top: 50px;
-    transition: left 0.3s ease;
     box-sizing: border-box;
+    transition: left 0.3s ease;
   }
 
   .menu ul {
@@ -66,7 +66,7 @@
     color: white;
   }
 
-  #burger:checked + .menu {
+  .menu.active {
     left: 0;
   }
 
@@ -83,7 +83,7 @@
     <label for="burger" class="burger-icon">&#9776;</label>
   </div>
 
-  <nav class="menu">
+  <nav class="menu" id="menu">
     <ul>
       <li><a href="eat.html">What we gonna eat</a></li>
       <li><a href="goodbye.html">Goodbye</a></li>
@@ -93,5 +93,17 @@
   <div class="content">
     <h2>Welcome to Spiderman's World</h2>
   </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const burgerIcon = document.querySelector('.burger-icon');
+    const menu = document.getElementById('menu');
+
+    burgerIcon.addEventListener('click', function() {
+      menu.classList.toggle('active');
+    });
+  });
+</script>
+
 </body>
 </html>
