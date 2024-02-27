@@ -8,8 +8,95 @@
 
 <!-- CSS styles -->
 <style>
-    /* Paste the entire CSS code here */
-    /* CSS for sliding menu */
+    /* CSS styles */
+    body {
+        font-family: 'PricedownBL', sans-serif; /* Change font to PricedownBL */
+        background-color: #373b41;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        height: 100vh;
+        color: #e5cd0b;
+    }
+
+    h1 {
+        font-size: 60px;
+        margin-bottom: 20px;
+    }
+
+    #imageContainer {
+        position: relative;
+        margin-top: 120px;
+    }
+
+    #glow {
+        position: absolute;
+        top: 50%;
+        left: calc(50% - 5px - 10px); /* Move the glow to the left by 10 pixels */
+        transform: translate(-50%, -50%);
+        width: 360px; /* Increased glow radius */
+        height: 360px; /* Increased glow radius */
+        border-radius: 50%;
+        background: radial-gradient(rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 80%); /* Enhance the glow effect with smoother transition */
+        filter: blur(20px); /* Increase the blur radius for a softer glow */
+        z-index: 1; /* Ensure glow is behind the image */
+    }
+
+    #image {
+        width: 150px; /* Adjust the width of the image as needed */
+        height: auto; /* Maintain aspect ratio */
+        position: relative; /* Ensure the image can be positioned in front of the glow */
+        z-index: 2; /* Ensure image is in front of the glow */
+        opacity: 1; /* Set opacity to full */
+        left: 50%; /* Initial horizontal position */
+        transform: translateX(-65%); /* Center the image horizontally */
+        transition: left 0.3s ease; /* Smooth transition when moving left or right */
+    }
+
+    #boomAnimation {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 3; /* Set the z-index of the animation to be in front of the image */
+        width: 100px;
+        height: auto;
+    }
+
+    #buttonContainer {
+        margin-top: 50px; /* Adjust margin as needed */
+        padding-top: 20px; /* Added vertical padding */
+        padding-bottom: 20px; /* Added vertical padding */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        height: 100px; /* Set a fixed height for the button container */
+    }
+
+    button {
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #466799;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        margin-bottom: 10px; /* Add some spacing between buttons */
+        z-index: 2;
+    }
+
+    button:hover {
+        background-color: #3c5573;
+    }
+
+    #fadeLink {
+        display: none; /* Hide the "Click here now" link */
+    }
+
     nav {
         position: fixed;
         top: 0;
@@ -56,7 +143,7 @@
         justify-content: space-between;
         width: 30px;
         height: 24px;
-        background-color: transparent;
+        background-color: transparent; /* Remove background color */
         border: none;
         padding: 0;
         transition: left 0.3s ease; /* Add transition for smooth animation */
@@ -81,278 +168,71 @@
     .burger.active div:nth-child(3) {
         transform: translateY(-10px) rotate(-45deg);
     }
-
-    /* Existing CSS code from the first file */
-    body {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        min-height: 100vh;
-        margin: 0;
-        font-family: 'Arial', sans-serif;
-        background-color: #212529;
-        color: #adb5bd;
-    }
-
-    header {
-        text-align: center;
-        margin-bottom: 20px;
-        color: #d9534f;
-        font-family: 'PricedownBL', sans-serif;
-        letter-spacing: 2px;
-        font-size: 24px; /* Editable font size */
-    }
-
-    #countdown-title {
-        font-family: 'PricedownBL', sans-serif;
-        font-size: 25px; /* Editable font size */
-        color: #ffc107;
-        margin-bottom: 10px;
-        background-color: #495057;
-        padding: 5px 10px;
-        border-radius: 8px;
-        letter-spacing: 2px;
-    }
-
-    #countdown-timer {
-        font-family: 'Digital-7', sans-serif;
-        font-size: 24px; /* Editable font size */
-        color: #d9534f;
-        margin-bottom: 20px;
-    }
-
-    #meal-container {
-        text-align: center;
-        padding: 20px;
-        background-color: #495057;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        margin-top: 20px;
-    }
-
-    button {
-        padding: 10px 20px;
-        margin: 0 10px;
-        font-size: 16px; /* Editable font size */
-        cursor: pointer;
-        border: 2px solid #d9534f;
-        border-radius: 8px;
-        background-color: #d9534f;
-        color: #fff;
-        transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease,
-        box-shadow 0.3s ease;
-        width: 150px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), inset 0 0 5px rgba(255, 255, 255, 0.5);
-    }
-
-    button:disabled {
-        background-color: #6c757d;
-        border-color: #6c757d;
-        color: #b0b0b0;
-        cursor: not-allowed;
-    }
-
-    button:hover:not(:disabled) {
-        background-color: #c9302c;
-        border-color: #c9302c;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), inset 0 0 3px rgba(255, 255, 255, 0.5);
-    }
-
-    p {
-        font-size: 18px; /* Editable font size */
-        margin: 10px 0;
-        color: #ffc107;
-    }
-
-    .generate-button {
-        margin-top: 20px;
-    }
-
-    .button-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .button-row {
-        display: flex;
-        margin-top: 10px;
-    }
 </style>
 </head>
 <body>
-<!-- Sliding menu -->
-<button class="burger" onclick="toggleMenu()">
-    <div></div>
-    <div></div>
-    <div></div>
-</button>
-<nav id="menu">
-    <a href="index.html">Home</a>
-    <a href="eat.html">Food</a>
-    <a href="goodbye.html">Goodbye</a>
-</nav>
-
-<!-- Main content -->
-<header>
-    <h1 style="color: #ffc107;">What we gonna eat?</h1>
-</header>
-
-<div class="button-container">
-    <div class="button-row">
-        <button id="breakfastButton" onclick="generateMeal('breakfast')">Breakfast</button>
-        <button id="dinnerButton" onclick="generateMeal('dinner')">Snacks</button>
+    <!-- Burger menu button -->
+    <button class="burger" onclick="toggleMenu()">
+        <div></div>
+        <div></div>
+        <div></div>
+    </button>
+    
+    <!-- Sliding menu -->
+    <nav id="menu">
+        <a href="index.html">Home</a>
+        <a href="eat.html">Food</a>
+        <a href="goodbye.html">Goodbye</a>
+    </nav>
+    
+    <!-- Image container with glow effect -->
+    <div id="imageContainer">
+        <div id="glow"></div>
+        <img src="onenote.png" alt="OneNote" id="image">
+        <img src="boom.gif" alt="Boom" id="boomAnimation" style="display: none;">
     </div>
-    <div class="button-row">
-        <button id="teaButton" onclick="generateMeal('tea')">Tea</button>
-        <button id="paydayButton" onclick="generateMeal('payday')">Payday</button>
+
+    <!-- Button container -->
+    <div id="buttonContainer">
+        <button onclick="playAnimation()" id="clickButton">Click Me</button>
+        <div id="downloadButtonContainer" style="display: none;">
+            <a href="https://innoxtrading-my.sharepoint.com/:o:/g/personal/kyle_t_innox_co_uk/Ekxeq1YqCmlBo-tVbaMjbp4BsX1AjtzrmmnjN25ElTdvXA?e=wlUX67" target="_blank"><button>lift the hammer</button></a>
+        </div>
     </div>
-</div>
 
-<div id="meal-container">
-    <!-- Generated meal will be displayed here -->
-</div>
+    <!-- JavaScript -->
+    <script>
+        window.onload = function() {
+            // Reset the button state when the page is loaded
+            document.getElementById('clickButton').disabled = false;
+            document.getElementById('downloadButtonContainer').style.display = 'none';
+        };
 
-<audio id="audioElement" src="gta-menu.wav"></audio>
+        function playAnimation() {
+            var clickButton = document.getElementById('clickButton');
+            clickButton.disabled = true; // Disable the button while animation is playing
+            
+            var animationImage = document.getElementById('boomAnimation');
+            animationImage.style.display = 'block';
 
-<script>
-    // Paste the entire JavaScript code here
-    async function fetchMealsFromFile(file) {
-        try {
-            const response = await fetch(file);
-            const text = await response.text();
-            return text.split('\n').map(line => line.trim()).filter(Boolean);
-        } catch (error) {
-            console.error('Error fetching meals:', error);
-            return [];
-        }
-    }
-
-    const meals = {
-        breakfast: [],
-        dinner: [],
-        tea: [],
-        payday: []
-    };
-
-    fetchMealsFromFile('breakfast.txt').then(data => {
-        meals.breakfast = data;
-    });
-
-    fetchMealsFromFile('dinner.txt').then(data => {
-        meals.dinner = data;
-    });
-
-    fetchMealsFromFile('tea.txt').then(data => {
-        meals.tea = data;
-    });
-
-    fetchMealsFromFile('payday.txt').then(data => {
-        meals.payday = data;
-    });
-
-    function updateCountdown() {
-        const countdownElement = document.getElementById('countdown-timer');
-        const now = new Date();
-        const targetDate = new Date('2025-01-01T00:00:00');
-        const timeDifference = targetDate - now;
-
-        if (timeDifference > 0) {
-            const days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((timeDifference % (1000 * 60)) / 1000);
-
-            countdownElement.textContent = `${formatTime(days)} : ${formatTime(hours)} : ${formatTime(minutes)} : ${formatTime(seconds)}`;
-        } else {
-            countdownElement.textContent = '00 : 00 : 00 : 00';
-        }
-    }
-
-    function formatTime(time) {
-        return time < 10 ? `0${time}` : time;
-    }
-
-    setInterval(updateCountdown, 1000);
-
-    let timeoutId;
-
-    let lastInteractionTime = Date.now();
-
-    function resetTimeout() {
-        clearTimeout(timeoutId);
-
-        timeoutId = setTimeout(() => {
-            const currentTime = Date.now();
-            const timeSinceLastInteraction = currentTime - lastInteractionTime;
-
-            if (timeSinceLastInteraction >= 30000) {
-                location.reload();
-            } else {
-                resetTimeout();
-            }
-        }, 30000);
-    }
-
-    document.addEventListener('click', () => {
-        lastInteractionTime = Date.now();
-        resetTimeout();
-    });
-
-    document.addEventListener('keydown', () => {
-        lastInteractionTime = Date.now();
-        resetTimeout();
-    });
-
-    async function generateMeal(category) {
-        const mealContainer = document.getElementById('meal-container');
-        const categoryMeals = meals[category];
-
-        if (categoryMeals.length === 0) {
-            mealContainer.innerHTML = `<p>No meals available for ${category}.</p>`;
-            return;
+            setTimeout(function() {
+                animationImage.style.display = 'none';
+                var downloadButtonContainer = document.getElementById('downloadButtonContainer');
+                downloadButtonContainer.style.display = 'block'; // Show the download button
+                clickButton.disabled = false; // Re-enable the button after animation finishes
+            }, 5000); // Adjust the delay as needed (in milliseconds)
         }
 
-        const randomIndex = Math.floor(Math.random() * categoryMeals.length);
-        const generatedMeal = categoryMeals[randomIndex];
-
-        mealContainer.innerHTML = `<p>${generatedMeal}</p>`;
-        mealContainer.innerHTML += `<button class="generate-button" onclick="generateMeal('${category}')">Generate New ${category.charAt(0).toUpperCase() + category.slice(1)} Meal</button>`;
-
-        document.getElementById('breakfastButton').disabled = false;
-        document.getElementById('dinnerButton').disabled = false;
-        document.getElementById('teaButton').disabled = false;
-        document.getElementById('paydayButton').disabled = false;
-
-        const clickedButton = document.getElementById(`${category}Button`);
-        clickedButton.disabled = true;
-
-        playSound('audioElement');
-
-        clearTimeout(timeoutId);
-        timeoutId = setTimeout(() => {
-            mealContainer.innerHTML = '';
-            clickedButton.disabled = false;
-        }, 20000);
-    }
-
-    function playSound(elementId) {
-        const audioElement = document.getElementById(elementId);
-        audioElement.play();
-    }
-
-    // Integrate Menu Feature
-    function toggleMenu() {
-        var menu = document.getElementById('menu');
-        menu.classList.toggle('show');
-        var burger = document.querySelector('.burger');
-        burger.classList.toggle('active');
-        
-        // Adjust burger menu position based on menu visibility
-        var offset = menu.classList.contains('show') ? 220 : 0;
-        burger.style.left = `${20 + offset}px`; // Adjust burger position dynamically
-    }
-</script>
+        function toggleMenu() {
+            var menu = document.getElementById('menu');
+            menu.classList.toggle('show');
+            var burger = document.querySelector('.burger');
+            burger.classList.toggle('active');
+            
+            // Adjust burger menu position based on menu visibility
+            var offset = menu.classList.contains('show') ? 220 : 0;
+            burger.style.left = `${20 + offset}px`; // Adjust burger position dynamically
+        }
+    </script>
 </body>
 </html>
