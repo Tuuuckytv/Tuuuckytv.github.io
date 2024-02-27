@@ -104,3 +104,76 @@ p {
   display: flex;
   margin-top: 10px;
 }
+
+/* Menu styles */
+nav {
+  position: fixed;
+  top: 0;
+  left: -220px; /* Initially hide the menu off-screen */
+  width: 220px; /* Increased width for better appearance */
+  height: 100vh;
+  background-color: #1f1f1f; /* Dark background color */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* Align items at the top */
+  align-items: center;
+  padding-top: 50px; /* Add padding to align menu items vertically */
+  transition: left 0.3s ease; /* Add transition for smooth animation */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Add box shadow for depth */
+  z-index: 4; /* Ensure the menu is on top of other elements */
+}
+
+nav.show {
+  left: 0; /* Show the menu by bringing it to the screen */
+}
+
+nav a {
+  color: #e5cd0b;
+  text-decoration: none;
+  margin: 10px 0;
+  padding: 10px 20px;
+  font-size: 24px;
+  border-radius: 8px; /* Rounded corners for buttons */
+  transition: background-color 0.3s; /* Smooth transition for hover effect */
+}
+
+nav a:hover {
+  background-color: #333; /* Darken background on hover */
+}
+
+.burger {
+  position: fixed;
+  top: 20px;
+  left: 20px; /* Adjusted position on the same side as the menu */
+  z-index: 9999;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 30px;
+  height: 24px;
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  transition: left 0.3s ease; /* Add transition for smooth animation */
+}
+
+.burger div {
+  width: 30px;
+  height: 4px;
+  background-color: #e5cd0b;
+  transition: all 0.3s ease; /* Add transition for smooth animation */
+  border-radius: 2px; /* Rounded corners for burger lines */
+}
+
+.burger.active div:nth-child(1) {
+  transform: translateY(10px) rotate(45deg);
+}
+
+.burger.active div:nth-child(2) {
+  opacity: 0;
+}
+
+.burger.active div:nth-child(3) {
+  transform: translateY(-10px) rotate(-45deg);
+}
