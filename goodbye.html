@@ -199,6 +199,9 @@
         var href = link.getAttribute('href');
         link.setAttribute('href', href.replace('.html', ''));
       });
+
+      // Change URL to "/home" when the page loads
+      window.history.pushState({}, '', '/home');
     };
 
     function playAnimation() {
