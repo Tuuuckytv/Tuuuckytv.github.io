@@ -93,7 +93,7 @@
     <div></div>
   </button>
   <nav id="menu">
-    <a href="index">Homepage</a>
+    <a href="#" onclick="changeUrl('index')">Homepage</a>
     <a href="eat">Food</a>
     <a href="goodbye">Goodbye</a>
   </nav>
@@ -109,6 +109,10 @@
     // Adjust burger menu position based on menu visibility
     var offset = menu.classList.contains('show') ? 220 : 0;
     burger.style.left = `${20 + offset}px`; // Adjust burger position dynamically
+  }
+
+  function changeUrl(page) {
+    window.history.pushState({}, '', '/home');
   }
 </script>
 </body>
