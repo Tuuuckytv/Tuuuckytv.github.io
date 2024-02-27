@@ -16,7 +16,7 @@ body {
   min-height: 100vh;
   margin: 0;
   font-family: 'Arial', sans-serif;
-  background-color: #212529;
+  background-color: #373B41; /* Set background color of the page to #373B41 */
   color: #adb5bd;
 }
 
