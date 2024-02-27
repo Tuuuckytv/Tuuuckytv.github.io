@@ -1,3 +1,10 @@
+// JavaScript redirect to remove ".html" extension from URL
+if (location.pathname.endsWith('/eat.html')) {
+  const newUrl = location.pathname.replace('/eat.html', '/eat');
+  window.location.href = newUrl;
+}
+
+// Rest of your JavaScript code goes here
 async function fetchMealsFromFile(file) {
   try {
     const response = await fetch(file);
