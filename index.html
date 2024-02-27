@@ -10,100 +10,25 @@
     background-color: #373b41;
     margin: 0;
     padding: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     font-family: 'Pricedown', Arial, sans-serif;
     color: #e5cd0b;
   }
-  
-  .header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    background-color: #566478;
-    padding: 10px 20px;
-    box-sizing: border-box;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  h1 {
+    font-size: 60px;
+    margin-bottom: 20px;
   }
-
-  .burger-icon {
-    color: #e5cd0b;
-    font-size: 24px;
-    cursor: pointer;
-  }
-
-  .menu {
-    position: fixed;
-    top: 0;
-    left: -250px;
-    width: 250px;
-    height: 100%;
-    background-color: #566478;
-    padding-top: 50px;
-    box-sizing: border-box;
-    transition: left 0.3s ease;
-  }
-
-  .menu ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-
-  .menu ul li {
-    padding: 10px 0;
-    text-align: center;
-  }
-
-  .menu ul li a {
-    text-decoration: none;
-    color: #e5cd0b;
-    font-size: 20px;
-  }
-
-  .menu ul li a:hover {
-    color: white;
-  }
-
-  .menu.active {
-    left: 0;
-  }
-
-  .content {
-    margin-top: 70px;
-    text-align: center;
+  @font-face {
+    font-family: 'Pricedown';
+    src: url('PricedownBl.otf') format('opentype');
   }
 </style>
 </head>
 <body>
-  <div class="header">
-    <h1>I knew you'd look</h1>
-    <input type="checkbox" id="burger">
-    <label for="burger" class="burger-icon">&#9776;</label>
-  </div>
-
-  <nav class="menu" id="menu">
-    <ul>
-      <li><a href="eat.html">What we gonna eat</a></li>
-      <li><a href="goodbye.html">Goodbye</a></li>
-    </ul>
-  </nav>
-  
-  <div class="content">
-    <h2>Welcome to Spiderman's World</h2>
-  </div>
-
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const burgerIcon = document.querySelector('.burger-icon');
-    const menu = document.getElementById('menu');
-
-    burgerIcon.addEventListener('click', function() {
-      menu.classList.toggle('active');
-    });
-  });
-</script>
-
+  <h1>I knew you'd look</h1>
 </body>
 </html>
