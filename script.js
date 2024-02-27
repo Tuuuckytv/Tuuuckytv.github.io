@@ -132,11 +132,4 @@ function playSound(elementId) {
 function toggleMenu() {
   const menu = document.getElementById('menu');
   menu.classList.toggle('show');
-  
-  const burger = document.querySelector('.burger');
-  burger.classList.toggle('active');
-  
-  // Adjust burger menu position based on menu visibility
-  const offset = menu.classList.contains('show') ? 220 : 0;
-  burger.style.left = `${20 + offset}px`; // Adjust burger position dynamically
 }
