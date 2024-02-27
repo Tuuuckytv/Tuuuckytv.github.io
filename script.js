@@ -132,4 +132,7 @@ function playSound(elementId) {
 function toggleMenu() {
   const menu = document.getElementById('menu');
   menu.classList.toggle('show');
+
+  const burger = document.querySelector('.burger');
+  burger.classList.toggle('active');
 }
