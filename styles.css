@@ -175,7 +175,7 @@ p {
   left: 0; /* Show the menu by bringing it to the screen */
 }
 
-nav a {
+.nav a {
   color: #e5cd0b;
   text-decoration: none;
   margin: 10px 0;
@@ -185,6 +185,6 @@ nav a {
   transition: background-color 0.3s; /* Smooth transition for hover effect */
 }
 
-nav a:hover {
+.nav a:hover {
   background-color: #333; /* Darken background on hover */
 }
