@@ -1,238 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Oh, Fuck</title>
-<link rel="icon" href="spiderman.png" type="image/png">
-
-<!-- CSS styles -->
-<style>
-    /* CSS styles */
-    body {
-        font-family: 'PricedownBL', sans-serif; /* Change font to PricedownBL */
-        background-color: #373b41;
-        margin: 0;
-        padding: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-direction: column;
-        height: 100vh;
-        color: #e5cd0b;
-    }
-
-    h1 {
-        font-size: 60px;
-        margin-bottom: 20px;
-    }
-
-    #imageContainer {
-        position: relative;
-        margin-top: 120px;
-    }
-
-    #glow {
-        position: absolute;
-        top: 50%;
-        left: calc(50% - 5px - 10px); /* Move the glow to the left by 10 pixels */
-        transform: translate(-50%, -50%);
-        width: 360px; /* Increased glow radius */
-        height: 360px; /* Increased glow radius */
-        border-radius: 50%;
-        background: radial-gradient(rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 80%); /* Enhance the glow effect with smoother transition */
-        filter: blur(20px); /* Increase the blur radius for a softer glow */
-        z-index: 1; /* Ensure glow is behind the image */
-    }
-
-    #image {
-        width: 150px; /* Adjust the width of the image as needed */
-        height: auto; /* Maintain aspect ratio */
-        position: relative; /* Ensure the image can be positioned in front of the glow */
-        z-index: 2; /* Ensure image is in front of the glow */
-        opacity: 1; /* Set opacity to full */
-        left: 50%; /* Initial horizontal position */
-        transform: translateX(-65%); /* Center the image horizontally */
-        transition: left 0.3s ease; /* Smooth transition when moving left or right */
-    }
-
-    #boomAnimation {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        z-index: 3; /* Set the z-index of the animation to be in front of the image */
-        width: 100px;
-        height: auto;
-    }
-
-    #buttonContainer {
-        margin-top: 50px; /* Adjust margin as needed */
-        padding-top: 20px; /* Added vertical padding */
-        padding-bottom: 20px; /* Added vertical padding */
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        height: 100px; /* Set a fixed height for the button container */
-    }
-
-    button {
-        padding: 10px 20px;
-        font-size: 16px;
-        background-color: #466799;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-        margin-bottom: 10px; /* Add some spacing between buttons */
-        z-index: 2;
-    }
-
-    button:hover {
-        background-color: #3c5573;
-    }
-
-    #fadeLink {
-        display: none; /* Hide the "Click here now" link */
-    }
-
-    nav {
-        position: fixed;
-        top: 0;
-        left: -220px; /* Initially hide the menu off-screen */
-        width: 220px; /* Increased width for better appearance */
-        height: 100vh;
-        background-color: #1f1f1f; /* Dark background color */
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start; /* Align items at the top */
-        align-items: center;
-        padding-top: 50px; /* Add padding to align menu items vertically */
-        transition: left 0.3s ease; /* Add transition for smooth animation */
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Add box shadow for depth */
-        z-index: 4; /* Ensure the menu is on top of other elements */
-    }
-
-    nav.show {
-        left: 0; /* Show the menu by bringing it to the screen */
-    }
-
-    nav a {
-        color: #e5cd0b;
-        text-decoration: none;
-        margin: 10px 0;
-        padding: 10px 20px;
-        font-size: 24px;
-        border-radius: 8px; /* Rounded corners for buttons */
-        transition: background-color 0.3s; /* Smooth transition for hover effect */
-    }
-
-    nav a:hover {
-        background-color: #333; /* Darken background on hover */
-    }
-
-    .burger {
-        position: fixed;
-        top: 20px;
-        left: 20px; /* Adjusted position on the same side as the menu */
-        z-index: 9999;
-        cursor: pointer;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        width: 30px;
-        height: 24px;
-        background-color: transparent; /* Remove background color */
-        border: none;
-        padding: 0;
-        transition: left 0.3s ease; /* Add transition for smooth animation */
-    }
-
-    .burger div {
-        width: 30px;
-        height: 4px;
-        background-color: #e5cd0b;
-        transition: all 0.3s ease; /* Add transition for smooth animation */
-        border-radius: 2px; /* Rounded corners for burger lines */
-    }
-
-    .burger.active div:nth-child(1) {
-        transform: translateY(10px) rotate(45deg);
-    }
-
-    .burger.active div:nth-child(2) {
-        opacity: 0;
-    }
-
-    .burger.active div:nth-child(3) {
-        transform: translateY(-10px) rotate(-45deg);
-    }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="spiderman.png" type="image/png">
+  <link rel="stylesheet" href="styles.css">
+  <title>Oh, Fuck</title>
 </head>
+
 <body>
-    <!-- Burger menu button -->
-    <button class="burger" onclick="toggleMenu()">
-        <div></div>
-        <div></div>
-        <div></div>
-    </button>
-    
-    <!-- Sliding menu -->
-    <nav id="menu">
-        <a href="index.html">Home</a>
-        <a href="eat.html">Food</a>
-        <a href="goodbye.html">Goodbye</a>
-    </nav>
-    
-    <!-- Image container with glow effect -->
-    <div id="imageContainer">
-        <div id="glow"></div>
-        <img src="onenote.png" alt="OneNote" id="image">
-        <img src="boom.gif" alt="Boom" id="boomAnimation" style="display: none;">
+  <audio id="audioElement" src="gta-menu.wav"></audio>
+
+  <div id="countdown-title">Days Until GTA VI</div>
+  <div id="countdown-timer">00 : 00 : 00 : 00</div>
+
+  <header>
+    <h1 style="color: #373b41;">What we gonna eat?</h1>
+  </header>
+
+  <div class="button-container">
+    <div class="button-row">
+      <button id="breakfastButton" onclick="generateMeal('breakfast')">Breakfast</button>
+      <button id="dinnerButton" onclick="generateMeal('dinner')">Snacks</button>
     </div>
-
-    <!-- Button container -->
-    <div id="buttonContainer">
-        <button onclick="playAnimation()" id="clickButton">Click Me</button>
-        <div id="downloadButtonContainer" style="display: none;">
-            <a href="https://innoxtrading-my.sharepoint.com/:o:/g/personal/kyle_t_innox_co_uk/Ekxeq1YqCmlBo-tVbaMjbp4BsX1AjtzrmmnjN25ElTdvXA?e=wlUX67" target="_blank"><button>lift the hammer</button></a>
-        </div>
+    <div class="button-row">
+      <button id="teaButton" onclick="generateMeal('tea')">Tea</button>
+      <button id="paydayButton" onclick="generateMeal('payday')">Payday</button>
     </div>
+  </div>
 
-    <!-- JavaScript -->
-    <script>
-        window.onload = function() {
-            // Reset the button state when the page is loaded
-            document.getElementById('clickButton').disabled = false;
-            document.getElementById('downloadButtonContainer').style.display = 'none';
-        };
+  <div id="meal-container">
+    <!-- Generated meal will be displayed here -->
+  </div>
 
-        function playAnimation() {
-            var clickButton = document.getElementById('clickButton');
-            clickButton.disabled = true; // Disable the button while animation is playing
-            
-            var animationImage = document.getElementById('boomAnimation');
-            animationImage.style.display = 'block';
-
-            setTimeout(function() {
-                animationImage.style.display = 'none';
-                var downloadButtonContainer = document.getElementById('downloadButtonContainer');
-                downloadButtonContainer.style.display = 'block'; // Show the download button
-                clickButton.disabled = false; // Re-enable the button after animation finishes
-            }, 5000); // Adjust the delay as needed (in milliseconds)
-        }
-
-        function toggleMenu() {
-            var menu = document.getElementById('menu');
-            menu.classList.toggle('show');
-            var burger = document.querySelector('.burger');
-            burger.classList.toggle('active');
-            
-            // Adjust burger menu position based on menu visibility
-            var offset = menu.classList.contains('show') ? 220 : 0;
-            burger.style.left = `${20 + offset}px`; // Adjust burger position dynamically
-        }
-    </script>
+  <script src="script.js"></script>
+  <script>
+    // JavaScript redirect to remove ".html" extension from URL
+    if (location.pathname === '/goodbye.html') {
+      window.location.href = '/goodbye';
+    }
+  </script>
 </body>
+
 </html>
