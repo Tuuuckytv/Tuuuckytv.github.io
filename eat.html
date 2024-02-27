@@ -2,50 +2,52 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" href="spiderman.png" type="image/png">
-  <link rel="stylesheet" href="styles.css">
-  <title>Oh, Fuck</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oh, Fuck</title>
+    <link rel="icon" href="spiderman.png" type="image/png">
+    <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
-  <audio id="audioElement" src="gta-menu.wav"></audio>
+    <!-- Sliding menu HTML code -->
+    <button class="burger" onclick="toggleMenu()">
+        <div></div>
+        <div></div>
+        <div></div>
+    </button>
+    <nav id="menu">
+        <a href="index.html">Home</a>
+        <a href="eat.html">Food</a>
+        <a href="goodbye.html">Goodbye</a>
+    </nav>
 
-  <div id="countdown-title">Days Until GTA VI</div>
-  <div id="countdown-timer">00 : 00 : 00 : 00</div>
+    <!-- Existing HTML content from the first code -->
+    <audio id="audioElement" src="gta-menu.wav"></audio>
 
-  <header>
-    <h1 style="color: #ffc107;">What we gonna eat?</h1>
-  </header>
+    <div id="countdown-title">Days Until GTA VI</div>
+    <div id="countdown-timer">00 : 00 : 00 : 00</div>
 
-  <button class="burger" onclick="toggleMenu()">
-    <div></div>
-    <div></div>
-    <div></div>
-  </button>
-  <nav id="menu">
-    <a href="index.html">Home</a>
-    <a href="eat.html">Food</a>
-    <a href="goodbye.html">Goodbye</a>
-  </nav>
+    <header>
+        <h1 style="color: #ffc107;">What we gonna eat?</h1>
+    </header>
 
-  <div class="button-container">
-    <div class="button-row">
-      <button id="breakfastButton" onclick="generateMeal('breakfast')">Breakfast</button>
-      <button id="dinnerButton" onclick="generateMeal('dinner')">Snacks</button>
+    <div class="button-container">
+        <div class="button-row">
+            <button id="breakfastButton" onclick="generateMeal('breakfast')">Breakfast</button>
+            <button id="dinnerButton" onclick="generateMeal('dinner')">Snacks</button>
+        </div>
+        <div class="button-row">
+            <button id="teaButton" onclick="generateMeal('tea')">Tea</button>
+            <button id="paydayButton" onclick="generateMeal('payday')">Payday</button>
+        </div>
     </div>
-    <div class="button-row">
-      <button id="teaButton" onclick="generateMeal('tea')">Tea</button>
-      <button id="paydayButton" onclick="generateMeal('payday')">Payday</button>
+
+    <div id="meal-container">
+        <!-- Generated meal will be displayed here -->
     </div>
-  </div>
 
-  <div id="meal-container">
-    <!-- Generated meal will be displayed here -->
-  </div>
-
-  <script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 
 </html>
