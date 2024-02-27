@@ -4,6 +4,12 @@ if (location.pathname.endsWith('/eat.html')) {
   window.location.href = newUrl;
 }
 
+// Function to toggle the menu
+function toggleMenu() {
+  var menu = document.getElementById('menu');
+  menu.classList.toggle('show');
+}
+
 // Rest of your JavaScript code goes here
 async function fetchMealsFromFile(file) {
   try {
