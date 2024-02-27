@@ -1,3 +1,16 @@
+// JavaScript for sliding menu
+function toggleMenu() {
+    var menu = document.getElementById('menu');
+    menu.classList.toggle('show');
+    var burger = document.querySelector('.burger');
+    burger.classList.toggle('active');
+
+    // Adjust burger menu position based on menu visibility
+    var offset = menu.classList.contains('show') ? 220 : 0;
+    burger.style.left = `${20 + offset}px`; // Adjust burger position dynamically
+}
+
+// Existing JavaScript code from the first file
 async function fetchMealsFromFile(file) {
   try {
     const response = await fetch(file);
@@ -120,16 +133,4 @@ async function generateMeal(category) {
 function playSound(elementId) {
   const audioElement = document.getElementById(elementId);
   audioElement.play();
-}
-
-// Integrate Menu Feature
-function toggleMenu() {
-  var menu = document.getElementById('menu');
-  menu.classList.toggle('show');
-  var burger = document.querySelector('.burger');
-  burger.classList.toggle('active');
-  
-  // Adjust burger menu position based on menu visibility
-  var offset = menu.classList.contains('show') ? 220 : 0;
-  burger.style.left = `${20 + offset}px`; // Adjust burger position dynamically
 }
