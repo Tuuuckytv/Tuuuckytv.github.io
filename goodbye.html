@@ -98,6 +98,12 @@
   </div>
 
   <script>
+    window.onload = function() {
+      // Reset the button state when the page is loaded
+      document.getElementById('clickButton').disabled = false;
+      document.getElementById('downloadButtonContainer').style.display = 'none';
+    };
+
     function playAnimation() {
       var clickButton = document.getElementById('clickButton');
       clickButton.disabled = true; // Disable the button while animation is playing
