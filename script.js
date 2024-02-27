@@ -1,10 +1,3 @@
-// JavaScript redirect to remove ".html" extension from URL
-if (location.pathname.endsWith('/eat.html')) {
-  const newUrl = location.pathname.replace('/eat.html', '/eat');
-  window.location.href = newUrl;
-}
-
-// Rest of your JavaScript code goes here
 async function fetchMealsFromFile(file) {
   try {
     const response = await fetch(file);
@@ -94,4 +87,37 @@ document.addEventListener('keydown', () => {
 
 async function generateMeal(category) {
   const mealContainer = document.getElementById('meal-container');
- 
+  const categoryMeals = meals[category];
+
+  if (categoryMeals.length === 0) {
+    mealContainer.innerHTML = `<p>No meals available for ${category}.</p>`;
+    return;
+  }
+
+  const randomIndex = Math.floor(Math.random() * categoryMeals.length);
+  const generatedMeal = categoryMeals[randomIndex];
+
+  mealContainer.innerHTML = `<p>${generatedMeal}</p>`;
+  mealContainer.innerHTML += `<button class="generate-button" onclick="generateMeal('${category}')">Generate New ${category.charAt(0).toUpperCase() + category.slice(1)} Meal</button>`;
+
+  document.getElementById('breakfastButton').disabled = false;
+  document.getElementById('dinnerButton').disabled = false;
+  document.getElementById('teaButton').disabled = false;
+  document.getElementById('paydayButton').disabled = false;
+
+  const clickedButton = document.getElementById(`${category}Button`);
+  clickedButton.disabled = true;
+
+  playSound('audioElement');
+
+  clearTimeout(timeoutId);
+  timeoutId = setTimeout(() => {
+    mealContainer.innerHTML = '';
+    clickedButton.disabled = false;
+  }, 20000);
+}
+
+function playSound(elementId) {
+  const audioElement = document.getElementById(elementId);
+  audioElement.play();
+}
