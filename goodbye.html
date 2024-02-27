@@ -170,11 +170,62 @@
     <div></div>
   </button>
   <nav id="menu">
-    <a href="https://kyletuck.com">Home</a> <!-- Updated link to kyletuck.com -->
+    <a href="home">Home</a> <!-- Change link to "home" -->
     <a href="eat">Food</a>
     <a href="goodbye">Goodbye</a>
   </nav>
   <div id="imageContainer">
     <div id="glow"></div>
     <img src="onenote.png" alt="OneNote" id="image">
-    <img src="boom.gif" alt="Boom" id="boomAnimation"
+    <img src="boom.gif" alt="Boom" id="boomAnimation" style="display: none;">
+  </div>
+
+  <div id="buttonContainer">
+    <button onclick="playAnimation()" id="clickButton">Click Me</button>
+    <div id="downloadButtonContainer" style="display: none;">
+      <a href="https://innoxtrading-my.sharepoint.com/:o:/g/personal/kyle_t_innox_co_uk/Ekxeq1YqCmlBo-tVbaMjbp4BsX1AjtzrmmnjN25ElTdvXA?e=wlUX67" target="_blank"><button>lift the hammer</button></a>
+    </div>
+  </div>
+
+  <script>
+    window.onload = function() {
+      // Reset the button state when the page is loaded
+      document.getElementById('clickButton').disabled = false;
+      document.getElementById('downloadButtonContainer').style.display = 'none';
+      
+      // Remove ".html" extension from menu links
+      var menuLinks = document.querySelectorAll('#menu a');
+      menuLinks.forEach(function(link) {
+        var href = link.getAttribute('href');
+        link.setAttribute('href', href.replace('.html', ''));
+      });
+    };
+
+    function playAnimation() {
+      var clickButton = document.getElementById('clickButton');
+      clickButton.disabled = true; // Disable the button while animation is playing
+      
+      var animationImage = document.getElementById('boomAnimation');
+      animationImage.style.display = 'block';
+
+      setTimeout(function() {
+        animationImage.style.display = 'none';
+        var downloadButtonContainer = document.getElementById('downloadButtonContainer');
+        downloadButtonContainer.style.display = 'block'; // Show the download button
+        clickButton.disabled = false; // Re-enable the button after animation finishes
+      }, 5000); // Adjust the delay as needed (in milliseconds)
+    }
+
+    function toggleMenu() {
+      var menu = document.getElementById('menu');
+      menu.classList.toggle('show');
+      var burger = document.querySelector('.burger');
+      burger.classList.toggle('active');
+      
+      // Adjust burger menu position based on menu visibility
+      var offset = menu.classList.contains('show') ? 220 : 0;
+      burger.style.left = `${20 + offset}px`; // Adjust burger position dynamically
+    }
+  </script>
+</body>
+</html>
