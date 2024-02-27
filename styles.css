@@ -16,25 +16,25 @@ body {
   min-height: 100vh;
   margin: 0;
   font-family: 'Arial', sans-serif;
-  background-color: #adb5bd;
-  color: #373b41;
+  background-color: #212529;
+  color: #adb5bd;
 }
 
 header {
   text-align: center;
   margin-bottom: 20px;
-  color: #28664B;
-  font-family: 'PricedownBL', sans-serif; /* Apply 'PricedownBL' font to header */
+  color: #e5cd0b; /* Change header color to #e5cd0b for "What we gonna eat?" */
+  font-family: 'PricedownBL', sans-serif;
   letter-spacing: 2px;
   font-size: 24px; /* Editable font size */
 }
 
 #countdown-title {
-  font-family: 'PricedownBL', sans-serif; /* Apply 'PricedownBL' font to countdown title */
+  font-family: 'PricedownBL', sans-serif;
   font-size: 25px; /* Editable font size */
-  color: #ffc107;
+  color: #28664B; /* Change color for "Days Until GTA VI" */
   margin-bottom: 10px;
-  background-color: #373b41;
+  background-color: #373b41; /* Change background color for countdown title to #373b41 */
   padding: 5px 10px;
   border-radius: 8px;
   letter-spacing: 2px;
