@@ -1,106 +1,72 @@
-@font-face {
-  font-family: 'Digital-7';
-  src: url('digital-7.ttf') format('truetype');
+/* CSS for sliding menu */
+nav {
+    position: fixed;
+    top: 0;
+    left: -220px; /* Initially hide the menu off-screen */
+    width: 220px; /* Increased width for better appearance */
+    height: 100vh;
+    background-color: #1f1f1f; /* Dark background color */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* Align items at the top */
+    align-items: center;
+    padding-top: 50px; /* Add padding to align menu items vertically */
+    transition: left 0.3s ease; /* Add transition for smooth animation */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Add box shadow for depth */
+    z-index: 4; /* Ensure the menu is on top of other elements */
 }
 
-@font-face {
-  font-family: 'PricedownBL';
-  src: url('pricedownbl.otf') format('opentype');
+nav.show {
+    left: 0; /* Show the menu by bringing it to the screen */
 }
 
-body {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  margin: 0;
-  font-family: 'Arial', sans-serif;
-  background-color: #212529;
-  color: #adb5bd;
+nav a {
+    color: #e5cd0b;
+    text-decoration: none;
+    margin: 10px 0;
+    padding: 10px 20px;
+    font-size: 24px;
+    border-radius: 8px; /* Rounded corners for buttons */
+    transition: background-color 0.3s; /* Smooth transition for hover effect */
 }
 
-header {
-  text-align: center;
-  margin-bottom: 20px;
-  color: #d9534f;
-  font-family: 'PricedownBL', sans-serif;
-  letter-spacing: 2px;
-  font-size: 24px; /* Editable font size */
+nav a:hover {
+    background-color: #333; /* Darken background on hover */
 }
 
-#countdown-title {
-  font-family: 'PricedownBL', sans-serif;
-  font-size: 25px; /* Editable font size */
-  color: #ffc107;
-  margin-bottom: 10px;
-  background-color: #495057;
-  padding: 5px 10px;
-  border-radius: 8px;
-  letter-spacing: 2px;
+.burger {
+    position: fixed;
+    top: 20px;
+    left: 20px; /* Adjusted position on the same side as the menu */
+    z-index: 9999;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 30px;
+    height: 24px;
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    transition: left 0.3s ease; /* Add transition for smooth animation */
 }
 
-#countdown-timer {
-  font-family: 'Digital-7', sans-serif;
-  font-size: 24px; /* Editable font size */
-  color: #d9534f;
-  margin-bottom: 20px;
+.burger div {
+    width: 30px;
+    height: 4px;
+    background-color: #e5cd0b;
+    transition: all 0.3s ease; /* Add transition for smooth animation */
+    border-radius: 2px; /* Rounded corners for burger lines */
 }
 
-#meal-container {
-  text-align: center;
-  padding: 20px;
-  background-color: #495057;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  margin-top: 20px;
+.burger.active div:nth-child(1) {
+    transform: translateY(10px) rotate(45deg);
 }
 
-button {
-  padding: 10px 20px;
-  margin: 0 10px;
-  font-size: 16px; /* Editable font size */
-  cursor: pointer;
-  border: 2px solid #d9534f;
-  border-radius: 8px;
-  background-color: #d9534f;
-  color: #fff;
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease,
-    box-shadow 0.3s ease;
-  width: 150px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), inset 0 0 5px rgba(255, 255, 255, 0.5);
+.burger.active div:nth-child(2) {
+    opacity: 0;
 }
 
-button:disabled {
-  background-color: #6c757d;
-  border-color: #6c757d;
-  color: #b0b0b0;
-  cursor: not-allowed;
-}
-
-button:hover:not(:disabled) {
-  background-color: #c9302c;
-  border-color: #c9302c;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), inset 0 0 3px rgba(255, 255, 255, 0.5);
-}
-
-p {
-  font-size: 18px; /* Editable font size */
-  margin: 10px 0;
-  color: #ffc107;
-}
-
-.generate-button {
-  margin-top: 20px;
-}
-
-.button-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.button-row {
-  display: flex;
-  margin-top: 10px;
+.burger.active div:nth-child(3) {
+    transform: translateY(-10px) rotate(-45deg);
 }
