@@ -112,7 +112,7 @@ nav {
   left: -220px; /* Initially hide the menu off-screen */
   width: 220px; /* Increased width for better appearance */
   height: 100vh;
-  background-color: #1f1f1f; /* Dark background color */
+  background-color: transparent; /* Dark background color */
   display: flex;
   flex-direction: column;
   justify-content: flex-start; /* Align items at the top */
