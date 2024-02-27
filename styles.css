@@ -23,7 +23,7 @@ body {
 header {
   text-align: center;
   margin-bottom: 20px;
-  color: #e3cb0e; /* Change header color to #e5cd0b for "What we gonna eat?" */
+  color: #e5cd0b; /* Change header color to #e5cd0b for "What we gonna eat?" */
   font-family: 'PricedownBL', sans-serif;
   letter-spacing: 2px;
   font-size: 24px; /* Editable font size */
