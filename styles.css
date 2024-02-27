@@ -1,3 +1,4 @@
+/* Font Definitions */
 @font-face {
   font-family: 'Digital-7';
   src: url('digital-7.ttf') format('truetype');
@@ -8,6 +9,7 @@
   src: url('pricedownbl.otf') format('opentype');
 }
 
+/* Body Styles */
 body {
   display: flex;
   flex-direction: column;
@@ -17,9 +19,10 @@ body {
   margin: 0;
   font-family: 'Arial', sans-serif;
   background-color: #373B41; /* Set background color of the page to #373B41 */
-  color: #373B41;
+  color: #fff; /* Set text color to white */
 }
 
+/* Header Styles */
 header {
   text-align: center;
   margin-bottom: 20px;
@@ -29,6 +32,7 @@ header {
   font-size: 24px; /* Editable font size */
 }
 
+/* Countdown Timer Styles */
 #countdown-title {
   font-family: 'PricedownBL', sans-serif;
   font-size: 25px; /* Editable font size */
@@ -47,6 +51,7 @@ header {
   margin-bottom: 20px;
 }
 
+/* Meal Container Styles */
 #meal-container {
   text-align: center;
   padding: 20px;
@@ -56,15 +61,16 @@ header {
   margin-top: 20px;
 }
 
+/* Button Styles */
 button {
   padding: 10px 20px;
   margin: 0 10px;
   font-size: 16px; /* Editable font size */
   cursor: pointer;
-  border: 2px solid transparent; /* Remove border */
+  border: 2px solid #d9534f; /* Set border color */
   border-radius: 8px;
-  background-color: transparent; /* Remove background color */
-  color: #fff;
+  background-color: #d9534f; /* Set background color */
+  color: #fff; /* Set text color to white */
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease,
     box-shadow 0.3s ease;
   width: 150px;
@@ -72,34 +78,38 @@ button {
 }
 
 button:disabled {
-  background-color: transparent; /* Remove background color */
-  border-color: transparent; /* Remove border color */
-  color: #b0b0b0;
+  background-color: #6c757d; /* Set disabled background color */
+  border-color: #6c757d; /* Set disabled border color */
+  color: #b0b0b0; /* Set disabled text color */
   cursor: not-allowed;
 }
 
 button:hover:not(:disabled) {
-  background-color: rgba(217, 83, 79, 0.8); /* Add a transparent red hover color */
-  border-color: transparent; /* Remove border color */
+  background-color: #c9302c; /* Set hover background color */
+  border-color: #c9302c; /* Set hover border color */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), inset 0 0 3px rgba(255, 255, 255, 0.5);
 }
 
+/* Paragraph Styles */
 p {
   font-size: 18px; /* Editable font size */
   margin: 10px 0;
   color: #ffc107;
 }
 
+/* Generate Button Styles */
 .generate-button {
   margin-top: 20px;
 }
 
+/* Button Container Styles */
 .button-container {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
+/* Button Row Styles */
 .button-row {
   display: flex;
   margin-top: 10px;
@@ -126,7 +136,7 @@ p {
 .burger div {
   width: 30px;
   height: 4px;
-  background-color: #e5cd0b;
+  background-color: #fff; /* Set burger line color to white */
   transition: all 0.3s ease; /* Add transition for smooth animation */
   border-radius: 2px; /* Rounded corners for burger lines */
 }
@@ -143,11 +153,8 @@ p {
   transform: translateY(-10px) rotate(-45deg);
 }
 
-.nav.show {
-  left: 0; /* Show the menu by bringing it to the screen */
-}
-
-nav {
+/* Navigation Styles */
+.nav {
   position: fixed;
   top: 0;
   left: -220px; /* Initially hide the menu off-screen */
@@ -162,6 +169,10 @@ nav {
   transition: left 0.3s ease; /* Add transition for smooth animation */
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Add box shadow for depth */
   z-index: 4; /* Ensure the menu is on top of other elements */
+}
+
+.nav.show {
+  left: 0; /* Show the menu by bringing it to the screen */
 }
 
 nav a {
