@@ -1,4 +1,92 @@
-/* CSS for sliding menu */
+/* CSS styles */
+body {
+    font-family: 'PricedownBL', sans-serif; /* Change font to PricedownBL */
+    background-color: #373b41;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100vh;
+    color: #e5cd0b;
+}
+
+h1 {
+    font-size: 60px;
+    margin-bottom: 20px;
+}
+
+#imageContainer {
+    position: relative;
+    margin-top: 120px;
+}
+
+#glow {
+    position: absolute;
+    top: 50%;
+    left: calc(50% - 5px - 10px); /* Move the glow to the left by 10 pixels */
+    transform: translate(-50%, -50%);
+    width: 360px; /* Increased glow radius */
+    height: 360px; /* Increased glow radius */
+    border-radius: 50%;
+    background: radial-gradient(rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 80%); /* Enhance the glow effect with smoother transition */
+    filter: blur(20px); /* Increase the blur radius for a softer glow */
+    z-index: 1; /* Ensure glow is behind the image */
+}
+
+#image {
+    width: 150px; /* Adjust the width of the image as needed */
+    height: auto; /* Maintain aspect ratio */
+    position: relative; /* Ensure the image can be positioned in front of the glow */
+    z-index: 2; /* Ensure image is in front of the glow */
+    opacity: 1; /* Set opacity to full */
+    left: 50%; /* Initial horizontal position */
+    transform: translateX(-65%); /* Center the image horizontally */
+    transition: left 0.3s ease; /* Smooth transition when moving left or right */
+}
+
+#boomAnimation {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 3; /* Set the z-index of the animation to be in front of the image */
+    width: 100px;
+    height: auto;
+}
+
+#buttonContainer {
+    margin-top: 50px; /* Adjust margin as needed */
+    padding-top: 20px; /* Added vertical padding */
+    padding-bottom: 20px; /* Added vertical padding */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100px; /* Set a fixed height for the button container */
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #466799;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-bottom: 10px; /* Add some spacing between buttons */
+    z-index: 2;
+}
+
+button:hover {
+    background-color: #3c5573;
+}
+
+#fadeLink {
+    display: none; /* Hide the "Click here now" link */
+}
+
 nav {
     position: fixed;
     top: 0;
@@ -45,7 +133,7 @@ nav a:hover {
     justify-content: space-between;
     width: 30px;
     height: 24px;
-    background-color: transparent;
+    background-color: transparent; /* Remove background color */
     border: none;
     padding: 0;
     transition: left 0.3s ease; /* Add transition for smooth animation */
@@ -69,102 +157,4 @@ nav a:hover {
 
 .burger.active div:nth-child(3) {
     transform: translateY(-10px) rotate(-45deg);
-}
-
-/* Existing CSS code from the first file */
-body {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    margin: 0;
-    font-family: 'Arial', sans-serif;
-    background-color: #212529;
-    color: #adb5bd;
-}
-
-header {
-    text-align: center;
-    margin-bottom: 20px;
-    color: #d9534f;
-    font-family: 'PricedownBL', sans-serif;
-    letter-spacing: 2px;
-    font-size: 24px; /* Editable font size */
-}
-
-#countdown-title {
-    font-family: 'PricedownBL', sans-serif;
-    font-size: 25px; /* Editable font size */
-    color: #ffc107;
-    margin-bottom: 10px;
-    background-color: #495057;
-    padding: 5px 10px;
-    border-radius: 8px;
-    letter-spacing: 2px;
-}
-
-#countdown-timer {
-    font-family: 'Digital-7', sans-serif;
-    font-size: 24px; /* Editable font size */
-    color: #d9534f;
-    margin-bottom: 20px;
-}
-
-#meal-container {
-    text-align: center;
-    padding: 20px;
-    background-color: #495057;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin-top: 20px;
-}
-
-button {
-    padding: 10px 20px;
-    margin: 0 10px;
-    font-size: 16px; /* Editable font size */
-    cursor: pointer;
-    border: 2px solid #d9534f;
-    border-radius: 8px;
-    background-color: #d9534f;
-    color: #fff;
-    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease,
-    box-shadow 0.3s ease;
-    width: 150px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), inset 0 0 5px rgba(255, 255, 255, 0.5);
-}
-
-button:disabled {
-    background-color: #6c757d;
-    border-color: #6c757d;
-    color: #b0b0b0;
-    cursor: not-allowed;
-}
-
-button:hover:not(:disabled) {
-    background-color: #c9302c;
-    border-color: #c9302c;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), inset 0 0 3px rgba(255, 255, 255, 0.5);
-}
-
-p {
-    font-size: 18px; /* Editable font size */
-    margin: 10px 0;
-    color: #ffc107;
-}
-
-.generate-button {
-    margin-top: 20px;
-}
-
-.button-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.button-row {
-    display: flex;
-    margin-top: 10px;
 }
