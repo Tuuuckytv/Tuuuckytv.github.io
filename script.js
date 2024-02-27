@@ -1,16 +1,10 @@
-// JavaScript for sliding menu
-function toggleMenu() {
-    var menu = document.getElementById('menu');
-    menu.classList.toggle('show');
-    var burger = document.querySelector('.burger');
-    burger.classList.toggle('active');
-
-    // Adjust burger menu position based on menu visibility
-    var offset = menu.classList.contains('show') ? 220 : 0;
-    burger.style.left = `${20 + offset}px`; // Adjust burger position dynamically
+// JavaScript redirect to remove ".html" extension from URL
+if (location.pathname.endsWith('/eat.html')) {
+  const newUrl = location.pathname.replace('/eat.html', '/eat');
+  window.location.href = newUrl;
 }
 
-// Existing JavaScript code from the first file
+// Rest of your JavaScript code goes here
 async function fetchMealsFromFile(file) {
   try {
     const response = await fetch(file);
