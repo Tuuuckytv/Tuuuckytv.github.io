@@ -26,6 +26,7 @@
 
   #imageContainer {
     position: relative;
+margin-top: 120px;
   }
 
   #glow {
@@ -58,16 +59,19 @@
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 3; /* Set the z-index of the animation to be in front of the image */
+width: 100px; 
+    height: auto;
   }
 
   #buttonContainer {
-    margin-top: 30px; /* Adjust margin as needed */
-    padding-top: 20px; /* Added vertical padding */
-    padding-bottom: 20px; /* Added vertical padding */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
+  margin-top: 50px; /* Adjust margin as needed */
+  padding-top: 20px; /* Added vertical padding */
+  padding-bottom: 20px; /* Added vertical padding */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100px; /* Set a fixed height for the button container */
+}
 
   button {
     padding: 10px 20px;
@@ -79,6 +83,7 @@
     cursor: pointer;
     transition: background-color 0.3s;
     margin-bottom: 10px; /* Add some spacing between buttons */
+    z-index: 4;
   }
 
   button:hover {
