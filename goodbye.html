@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Oh, Fuck</title>
+<title>Goodbye</title>
 <link rel="icon" href="spiderman.png" type="image/png">
 <style>
   body {
@@ -170,7 +170,7 @@
     <div></div>
   </button>
   <nav id="menu">
-    <a href="index">Home</a>
+    <a href="home">Home</a> <!-- Change link to "home" -->
     <a href="eat">Food</a>
     <a href="goodbye">Goodbye</a>
   </nav>
@@ -199,9 +199,6 @@
         var href = link.getAttribute('href');
         link.setAttribute('href', href.replace('.html', ''));
       });
-
-      // Change URL to "/home" when the page loads
-      window.history.pushState({}, '', '/home');
     };
 
     function playAnimation() {
