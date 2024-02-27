@@ -128,3 +128,9 @@ function playSound(elementId) {
   const audioElement = document.getElementById(elementId);
   audioElement.play();
 }
+
+function toggleMenu() {
+  const menu = document.getElementById('menu');
+  menu.classList.toggle('show');
+}
+
