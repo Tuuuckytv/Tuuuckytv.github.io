@@ -19,6 +19,17 @@
     <h1 style="color: #ffc107;">What we gonna eat?</h1>
   </header>
 
+  <button class="burger" onclick="toggleMenu()">
+    <div></div>
+    <div></div>
+    <div></div>
+  </button>
+  <nav id="menu">
+    <a href="index.html">Home</a>
+    <a href="eat.html">Food</a>
+    <a href="goodbye.html">Goodbye</a>
+  </nav>
+
   <div class="button-container">
     <div class="button-row">
       <button id="breakfastButton" onclick="generateMeal('breakfast')">Breakfast</button>
@@ -35,12 +46,6 @@
   </div>
 
   <script src="script.js"></script>
-  <script>
-    // JavaScript redirect to remove ".html" extension from URL
-    if (location.pathname === '/goodbye.html') {
-      window.location.href = '/goodbye';
-    }
-  </script>
 </body>
 
 </html>
