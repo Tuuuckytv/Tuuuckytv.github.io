@@ -93,7 +93,7 @@
     <div></div>
   </button>
   <nav id="menu">
-    <a href="home" onclick="changeUrl('home')">Homepage</a> <!-- Updated href to "home" -->
+    <a href="index.html" onclick="changeUrl('home')">Homepage</a> <!-- Updated href to "index.html" -->
     <a href="eat">Food</a>
     <a href="goodbye">Goodbye</a>
   </nav>
@@ -112,7 +112,7 @@
   }
 
   function changeUrl(page) {
-    window.history.pushState({}, '', '/home');
+    window.history.replaceState({}, '', '/home');
   }
 </script>
 </body>
