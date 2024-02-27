@@ -1,53 +1,358 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oh, Fuck</title>
-    <link rel="icon" href="spiderman.png" type="image/png">
-    <link rel="stylesheet" href="styles.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Oh, Fuck</title>
+<link rel="icon" href="spiderman.png" type="image/png">
+
+<!-- CSS styles -->
+<style>
+    /* Paste the entire CSS code here */
+    /* CSS for sliding menu */
+    nav {
+        position: fixed;
+        top: 0;
+        left: -220px; /* Initially hide the menu off-screen */
+        width: 220px; /* Increased width for better appearance */
+        height: 100vh;
+        background-color: #1f1f1f; /* Dark background color */
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start; /* Align items at the top */
+        align-items: center;
+        padding-top: 50px; /* Add padding to align menu items vertically */
+        transition: left 0.3s ease; /* Add transition for smooth animation */
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Add box shadow for depth */
+        z-index: 4; /* Ensure the menu is on top of other elements */
+    }
+
+    nav.show {
+        left: 0; /* Show the menu by bringing it to the screen */
+    }
+
+    nav a {
+        color: #e5cd0b;
+        text-decoration: none;
+        margin: 10px 0;
+        padding: 10px 20px;
+        font-size: 24px;
+        border-radius: 8px; /* Rounded corners for buttons */
+        transition: background-color 0.3s; /* Smooth transition for hover effect */
+    }
+
+    nav a:hover {
+        background-color: #333; /* Darken background on hover */
+    }
+
+    .burger {
+        position: fixed;
+        top: 20px;
+        left: 20px; /* Adjusted position on the same side as the menu */
+        z-index: 9999;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 30px;
+        height: 24px;
+        background-color: transparent;
+        border: none;
+        padding: 0;
+        transition: left 0.3s ease; /* Add transition for smooth animation */
+    }
+
+    .burger div {
+        width: 30px;
+        height: 4px;
+        background-color: #e5cd0b;
+        transition: all 0.3s ease; /* Add transition for smooth animation */
+        border-radius: 2px; /* Rounded corners for burger lines */
+    }
+
+    .burger.active div:nth-child(1) {
+        transform: translateY(10px) rotate(45deg);
+    }
+
+    .burger.active div:nth-child(2) {
+        opacity: 0;
+    }
+
+    .burger.active div:nth-child(3) {
+        transform: translateY(-10px) rotate(-45deg);
+    }
+
+    /* Existing CSS code from the first file */
+    body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        margin: 0;
+        font-family: 'Arial', sans-serif;
+        background-color: #212529;
+        color: #adb5bd;
+    }
+
+    header {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #d9534f;
+        font-family: 'PricedownBL', sans-serif;
+        letter-spacing: 2px;
+        font-size: 24px; /* Editable font size */
+    }
+
+    #countdown-title {
+        font-family: 'PricedownBL', sans-serif;
+        font-size: 25px; /* Editable font size */
+        color: #ffc107;
+        margin-bottom: 10px;
+        background-color: #495057;
+        padding: 5px 10px;
+        border-radius: 8px;
+        letter-spacing: 2px;
+    }
+
+    #countdown-timer {
+        font-family: 'Digital-7', sans-serif;
+        font-size: 24px; /* Editable font size */
+        color: #d9534f;
+        margin-bottom: 20px;
+    }
+
+    #meal-container {
+        text-align: center;
+        padding: 20px;
+        background-color: #495057;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin-top: 20px;
+    }
+
+    button {
+        padding: 10px 20px;
+        margin: 0 10px;
+        font-size: 16px; /* Editable font size */
+        cursor: pointer;
+        border: 2px solid #d9534f;
+        border-radius: 8px;
+        background-color: #d9534f;
+        color: #fff;
+        transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease,
+        box-shadow 0.3s ease;
+        width: 150px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), inset 0 0 5px rgba(255, 255, 255, 0.5);
+    }
+
+    button:disabled {
+        background-color: #6c757d;
+        border-color: #6c757d;
+        color: #b0b0b0;
+        cursor: not-allowed;
+    }
+
+    button:hover:not(:disabled) {
+        background-color: #c9302c;
+        border-color: #c9302c;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), inset 0 0 3px rgba(255, 255, 255, 0.5);
+    }
+
+    p {
+        font-size: 18px; /* Editable font size */
+        margin: 10px 0;
+        color: #ffc107;
+    }
+
+    .generate-button {
+        margin-top: 20px;
+    }
+
+    .button-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .button-row {
+        display: flex;
+        margin-top: 10px;
+    }
+</style>
 </head>
-
 <body>
-    <!-- Sliding menu HTML code -->
-    <button class="burger" onclick="toggleMenu()">
-        <div></div>
-        <div></div>
-        <div></div>
-    </button>
-    <nav id="menu">
-        <a href="index.html">Home</a>
-        <a href="eat.html">Food</a>
-        <a href="goodbye.html">Goodbye</a>
-    </nav>
+<!-- Sliding menu -->
+<button class="burger" onclick="toggleMenu()">
+    <div></div>
+    <div></div>
+    <div></div>
+</button>
+<nav id="menu">
+    <a href="index.html">Home</a>
+    <a href="eat.html">Food</a>
+    <a href="goodbye.html">Goodbye</a>
+</nav>
 
-    <!-- Existing HTML content from the first code -->
-    <audio id="audioElement" src="gta-menu.wav"></audio>
+<!-- Main content -->
+<header>
+    <h1 style="color: #ffc107;">What we gonna eat?</h1>
+</header>
 
-    <div id="countdown-title">Days Until GTA VI</div>
-    <div id="countdown-timer">00 : 00 : 00 : 00</div>
-
-    <header>
-        <h1 style="color: #ffc107;">What we gonna eat?</h1>
-    </header>
-
-    <div class="button-container">
-        <div class="button-row">
-            <button id="breakfastButton" onclick="generateMeal('breakfast')">Breakfast</button>
-            <button id="dinnerButton" onclick="generateMeal('dinner')">Snacks</button>
-        </div>
-        <div class="button-row">
-            <button id="teaButton" onclick="generateMeal('tea')">Tea</button>
-            <button id="paydayButton" onclick="generateMeal('payday')">Payday</button>
-        </div>
+<div class="button-container">
+    <div class="button-row">
+        <button id="breakfastButton" onclick="generateMeal('breakfast')">Breakfast</button>
+        <button id="dinnerButton" onclick="generateMeal('dinner')">Snacks</button>
     </div>
-
-    <div id="meal-container">
-        <!-- Generated meal will be displayed here -->
+    <div class="button-row">
+        <button id="teaButton" onclick="generateMeal('tea')">Tea</button>
+        <button id="paydayButton" onclick="generateMeal('payday')">Payday</button>
     </div>
+</div>
 
-    <script src="script.js"></script>
+<div id="meal-container">
+    <!-- Generated meal will be displayed here -->
+</div>
+
+<audio id="audioElement" src="gta-menu.wav"></audio>
+
+<script>
+    // Paste the entire JavaScript code here
+    async function fetchMealsFromFile(file) {
+        try {
+            const response = await fetch(file);
+            const text = await response.text();
+            return text.split('\n').map(line => line.trim()).filter(Boolean);
+        } catch (error) {
+            console.error('Error fetching meals:', error);
+            return [];
+        }
+    }
+
+    const meals = {
+        breakfast: [],
+        dinner: [],
+        tea: [],
+        payday: []
+    };
+
+    fetchMealsFromFile('breakfast.txt').then(data => {
+        meals.breakfast = data;
+    });
+
+    fetchMealsFromFile('dinner.txt').then(data => {
+        meals.dinner = data;
+    });
+
+    fetchMealsFromFile('tea.txt').then(data => {
+        meals.tea = data;
+    });
+
+    fetchMealsFromFile('payday.txt').then(data => {
+        meals.payday = data;
+    });
+
+    function updateCountdown() {
+        const countdownElement = document.getElementById('countdown-timer');
+        const now = new Date();
+        const targetDate = new Date('2025-01-01T00:00:00');
+        const timeDifference = targetDate - now;
+
+        if (timeDifference > 0) {
+            const days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeDifference % (1000 * 60)) / 1000);
+
+            countdownElement.textContent = `${formatTime(days)} : ${formatTime(hours)} : ${formatTime(minutes)} : ${formatTime(seconds)}`;
+        } else {
+            countdownElement.textContent = '00 : 00 : 00 : 00';
+        }
+    }
+
+    function formatTime(time) {
+        return time < 10 ? `0${time}` : time;
+    }
+
+    setInterval(updateCountdown, 1000);
+
+    let timeoutId;
+
+    let lastInteractionTime = Date.now();
+
+    function resetTimeout() {
+        clearTimeout(timeoutId);
+
+        timeoutId = setTimeout(() => {
+            const currentTime = Date.now();
+            const timeSinceLastInteraction = currentTime - lastInteractionTime;
+
+            if (timeSinceLastInteraction >= 30000) {
+                location.reload();
+            } else {
+                resetTimeout();
+            }
+        }, 30000);
+    }
+
+    document.addEventListener('click', () => {
+        lastInteractionTime = Date.now();
+        resetTimeout();
+    });
+
+    document.addEventListener('keydown', () => {
+        lastInteractionTime = Date.now();
+        resetTimeout();
+    });
+
+    async function generateMeal(category) {
+        const mealContainer = document.getElementById('meal-container');
+        const categoryMeals = meals[category];
+
+        if (categoryMeals.length === 0) {
+            mealContainer.innerHTML = `<p>No meals available for ${category}.</p>`;
+            return;
+        }
+
+        const randomIndex = Math.floor(Math.random() * categoryMeals.length);
+        const generatedMeal = categoryMeals[randomIndex];
+
+        mealContainer.innerHTML = `<p>${generatedMeal}</p>`;
+        mealContainer.innerHTML += `<button class="generate-button" onclick="generateMeal('${category}')">Generate New ${category.charAt(0).toUpperCase() + category.slice(1)} Meal</button>`;
+
+        document.getElementById('breakfastButton').disabled = false;
+        document.getElementById('dinnerButton').disabled = false;
+        document.getElementById('teaButton').disabled = false;
+        document.getElementById('paydayButton').disabled = false;
+
+        const clickedButton = document.getElementById(`${category}Button`);
+        clickedButton.disabled = true;
+
+        playSound('audioElement');
+
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => {
+            mealContainer.innerHTML = '';
+            clickedButton.disabled = false;
+        }, 20000);
+    }
+
+    function playSound(elementId) {
+        const audioElement = document.getElementById(elementId);
+        audioElement.play();
+    }
+
+    // Integrate Menu Feature
+    function toggleMenu() {
+        var menu = document.getElementById('menu');
+        menu.classList.toggle('show');
+        var burger = document.querySelector('.burger');
+        burger.classList.toggle('active');
+        
+        // Adjust burger menu position based on menu visibility
+        var offset = menu.classList.contains('show') ? 220 : 0;
+        burger.style.left = `${20 + offset}px`; // Adjust burger position dynamically
+    }
+</script>
 </body>
-
 </html>
