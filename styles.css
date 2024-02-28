@@ -18,7 +18,7 @@ body {
   min-height: 100vh;
   margin: 0;
   font-family: 'Arial', sans-serif;
-  background-color: #373B41; /* Set background color of the page to #373B41 */
+  background-color: #373b41; /* Set background color of the page to #373B41 */
   color: #fff; /* Set text color to white */
 }
 
@@ -153,19 +153,11 @@ p {
   transform: translateY(-10px) rotate(-45deg);
 }
 
-.burger:hover {
-  background-color: #373b41; /* Set hover background color to match the original background */
-}
-
-.burger.active {
-  left: calc(220px + 20px); /* Adjust the left position based on the menu width and padding */
-}
-
 /* Navigation Styles */
 #menu {
   position: fixed;
   top: 0;
-  left: -220px; /* Hide the menu off-screen */
+  left: -220px;
   width: 220px;
   height: 100vh;
   background-color: #1f1f1f;
@@ -180,7 +172,7 @@ p {
 }
 
 #menu.show {
-  left: 0; /* Show the menu */
+  left: 0;
 }
 
 #menu a {
@@ -196,3 +188,4 @@ p {
 #menu a:hover {
   background-color: #333;
 }
+</style>
