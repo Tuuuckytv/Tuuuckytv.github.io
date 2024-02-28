@@ -139,7 +139,6 @@ p {
   border: none;
   background-color: #e5cd0b;
   transition: all 0.3s ease;
-  border-radius: 2px;
 }
 
 .burger.active div:nth-child(1) {
