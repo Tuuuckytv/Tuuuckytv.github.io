@@ -130,9 +130,9 @@ p {
   width: 30px;
   height: 24px;
   background-color: transparent !important; /* Ensure transparency with !important */
-  border: #373B41;
-  outline: none;
-  box-shadow: none;
+  border: transparent;
+  outline: transparent;
+  box-shadow: transparent;
   padding: 0;
   transition: left 0.3s ease;
 }
