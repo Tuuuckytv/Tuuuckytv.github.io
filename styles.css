@@ -153,6 +153,10 @@ p {
   transform: translateY(-10px) rotate(-45deg);
 }
 
+.burger.active {
+  left: calc(220px + 20px); /* Adjust the left position based on the menu width and padding */
+}
+
 /* Navigation Styles */
 #menu {
   position: fixed;
