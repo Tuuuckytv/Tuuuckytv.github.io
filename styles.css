@@ -1,159 +1,190 @@
+/* Font Definitions */
+@font-face {
+  font-family: 'Digital-7';
+  src: url('digital-7.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'PricedownBL';
+  src: url('pricedownbl.otf') format('opentype');
+}
+
+/* Body Styles */
 body {
-    background-color: #373b41;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    height: 100vh;
-    font-family: Consolas, Arial, sans-serif; /* Change font to Consolas */
-    color: #e5cd0b;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  margin: 0;
+  font-family: 'Arial', sans-serif;
+  background-color: #373B41; /* Set background color of the page to #373B41 */
+  color: #fff; /* Set text color to white */
 }
 
-h1 {
-    font-size: 60px;
-    margin-bottom: 20px;
+/* Header Styles */
+header {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #e5cd0b; /* Change header color to #e5cd0b for "What we gonna eat?" */
+  font-family: 'PricedownBL', sans-serif;
+  letter-spacing: 2px;
+  font-size: 24px; /* Editable font size */
 }
 
-#imageContainer {
-    position: relative;
-    margin-top: 120px;
+/* Countdown Timer Styles */
+#countdown-title {
+  font-family: 'PricedownBL', sans-serif;
+  font-size: 25px; /* Editable font size */
+  color: #e3cb0e; /* Change color for "Days Until GTA VI" */
+  margin-bottom: 10px;
+  background-color: #373b41; /* Change background color for countdown title to #373b41 */
+  padding: 5px 10px;
+  border-radius: 8px;
+  letter-spacing: 2px;
 }
 
-#glow {
-    position: absolute;
-    top: 50%;
-    left: calc(50% - 5px - 10px); /* Move the glow to the left by 10 pixels */
-    transform: translate(-50%, -50%);
-    width: 360px; /* Increased glow radius */
-    height: 360px; /* Increased glow radius */
-    border-radius: 50%;
-    background: radial-gradient(rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 80%); /* Enhance the glow effect with smoother transition */
-    filter: blur(20px); /* Increase the blur radius for a softer glow */
-    z-index: 1; /* Ensure glow is behind the image */
+#countdown-timer {
+  font-family: 'Digital-7', sans-serif;
+  font-size: 24px; /* Editable font size */
+  color: #d9534f;
+  margin-bottom: 20px;
 }
 
-#image {
-    width: 150px; /* Adjust the width of the image as needed */
-    height: auto; /* Maintain aspect ratio */
-    position: relative; /* Ensure the image can be positioned in front of the glow */
-    z-index: 2; /* Ensure image is in front of the glow */
-    opacity: 1; /* Set opacity to full */
-    left: 50%; /* Initial horizontal position */
-    transform: translateX(-65%); /* Center the image horizontally */
-    transition: left 0.3s ease; /* Smooth transition when moving left or right */
+/* Meal Container Styles */
+#meal-container {
+  text-align: center;
+  padding: 20px;
+  background-color: #495057;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
 }
 
-#boomAnimation {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 3; /* Set the z-index of the animation to be in front of the image */
-    width: 100px; 
-    height: auto;
-}
-
-#buttonContainer {
-    margin-top: 50px; /* Adjust margin as needed */
-    padding-top: 20px; /* Added vertical padding */
-    padding-bottom: 20px; /* Added vertical padding */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    height: 100px; /* Set a fixed height for the button container */
-}
-
+/* Button Styles */
 button {
-    padding: 10px 20px;
-    font-size: 16px;
-    background-color: #466799;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    margin-bottom: 10px; /* Add some spacing between buttons */
-    z-index: 2;
+  padding: 10px 20px;
+  margin: 0 10px;
+  font-size: 16px; /* Editable font size */
+  cursor: pointer;
+  border: 2px solid #d9534f; /* Set border color */
+  border-radius: 8px;
+  background-color: #d9534f; /* Set background color */
+  color: #fff; /* Set text color to white */
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease,
+    box-shadow 0.3s ease;
+  width: 150px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), inset 0 0 5px rgba(255, 255, 255, 0.5);
 }
 
-button:hover {
-    background-color: #3c5573;
+button:disabled {
+  background-color: #6c757d; /* Set disabled background color */
+  border-color: #6c757d; /* Set disabled border color */
+  color: #b0b0b0; /* Set disabled text color */
+  cursor: not-allowed;
 }
 
-nav {
-    position: fixed;
-    top: 0;
-    left: -220px; /* Initially hide the menu off-screen */
-    width: 220px; /* Increased width for better appearance */
-    height: 100vh;
-    background-color: #1f1f1f; /* Dark background color */
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start; /* Align items at the top */
-    align-items: center;
-    padding-top: 50px; /* Add padding to align menu items vertically */
-    transition: left 0.3s ease; /* Add transition for smooth animation */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Add box shadow for depth */
-    z-index: 4; /* Ensure the menu is on top of other elements */
+button:hover:not(:disabled) {
+  background-color: #c9302c; /* Set hover background color */
+  border-color: #c9302c; /* Set hover border color */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), inset 0 0 3px rgba(255, 255, 255, 0.5);
 }
 
-nav.show {
-    left: 0; /* Show the menu by bringing it to the screen */
+/* Paragraph Styles */
+p {
+  font-size: 18px; /* Editable font size */
+  margin: 10px 0;
+  color: #ffc107;
 }
 
-nav a {
-    color: #e5cd0b;
-    text-decoration: none;
-    margin: 10px 0;
-    padding: 10px 20px;
-    font-size: 24px;
-    border-radius: 8px; /* Rounded corners for buttons */
-    transition: background-color 0.3s; /* Smooth transition for hover effect */
+/* Generate Button Styles */
+.generate-button {
+  margin-top: 20px;
 }
 
-nav a:hover {
-    background-color: #333; /* Darken background on hover */
+/* Button Container Styles */
+.button-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
+/* Button Row Styles */
+.button-row {
+  display: flex;
+  margin-top: 10px;
+}
+
+/* Burger Menu Styles */
 .burger {
-    position: fixed;
-    top: 20px;
-    left: 20px; /* Adjusted position on the same side as the menu */
-    z-index: 9999;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    width: 30px;
-    height: 24px;
-    background-color: transparent;
-    border: none;
-    padding: 0;
-    transition: left 0.3s ease; /* Add transition for smooth animation */
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 9999;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 30px;
+  height: 24px;
+  background-color: transparent; /* Set background color to transparent */
+  border: none;
+  padding: 0;
+  transition: left 0.3s ease;
 }
 
 .burger div {
-    width: 30px;
-    height: 4px;
-    background-color: #e5cd0b;
-    transition: all 0.3s ease; /* Add transition for smooth animation */
-    border-radius: 2px; /* Rounded corners for burger lines */
+  width: 30px;
+  height: 4px;
+  background-color: #fff;
+  transition: all 0.3s ease;
+  border-radius: 2px;
 }
 
 .burger.active div:nth-child(1) {
-    transform: translateY(10px) rotate(45deg);
-}
-  
-.burger:hover {
-    background-color: #373b41; /* Set hover background color to match the original background */
+  transform: translateY(10px) rotate(45deg);
 }
 
 .burger.active div:nth-child(2) {
-    opacity: 0;
+  opacity: 0;
 }
 
 .burger.active div:nth-child(3) {
-    transform: translateY(-10px) rotate(-45deg);
+  transform: translateY(-10px) rotate(-45deg);
+}
+
+/* Navigation Styles */
+#menu {
+  position: fixed;
+  top: 0;
+  left: -220px; /* Hide the menu off-screen */
+  width: 220px;
+  height: 100vh;
+  background-color: #1f1f1f;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding-top: 50px;
+  transition: left 0.3s ease;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  z-index: 4;
+}
+
+#menu.show {
+  left: 0; /* Show the menu */
+}
+
+#menu a {
+  color: #e5cd0b;
+  text-decoration: none;
+  margin: 10px 0;
+  padding: 10px 20px;
+  font-size: 24px;
+  border-radius: 8px;
+  transition: background-color 0.3s;
+}
+
+#menu a:hover {
+  background-color: #333;
 }
