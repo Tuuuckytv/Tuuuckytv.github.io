@@ -127,14 +127,10 @@ p {
   justify-content: space-between;
   width: 30px;
   height: 24px;
-  background-color: transparent; /* Set background color to transparent */
+  background-color: transparent !important; /* Ensure transparency with !important */
   border: none;
   padding: 0;
   transition: left 0.3s ease;
-}
-
-.burger:hover {
-  background-color: transparent; /* Ensure burger button remains transparent on hover */
 }
 
 .burger div {
