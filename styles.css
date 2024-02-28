@@ -65,6 +65,7 @@ header {
 button {
   padding: 10px 20px;
   margin: 0 10px;
+  font-family: Consolas, Arial, sans-serif; /* Change font to Consolas, Arial, sans-serif */
   font-size: 16px; /* Editable font size */
   cursor: pointer;
   border: 2px solid #d9534f; /* Set border color */
@@ -183,8 +184,4 @@ p {
   font-size: 24px;
   border-radius: 8px;
   transition: background-color 0.3s;
-}
-
-#menu a:hover {
-  background-color: #333;
 }
