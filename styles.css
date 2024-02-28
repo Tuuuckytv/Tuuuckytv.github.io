@@ -53,6 +53,7 @@ header {
 
 /* Meal Container Styles */
 #meal-container {
+  font-family: Consolas, Arial, sans-serif;
   text-align: center;
   padding: 20px;
   background-color: #495057;
