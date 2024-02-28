@@ -25,7 +25,7 @@
   </header>
 
   <nav id="menu">
-    <a href="https://kyletuck.com/">Home</a>
+    <a href="https://kyletuck.com">Home</a>
     <a href="eat">Food</a>
     <a href="goodbye">Goodbye</a>
   </nav>
@@ -50,21 +50,6 @@
     // JavaScript redirect to remove ".html" extension from URL
     if (location.pathname === '/goodbye.html') {
       window.location.href = '/goodbye';
-    }
-
-    // Function to dynamically adjust burger menu position with menu slide
-    function toggleMenu() {
-      const menu = document.getElementById('menu');
-      const burger = document.querySelector('.burger');
-      const menuVisible = menu.classList.contains('show');
-      
-      // Toggle menu visibility
-      menu.classList.toggle('show');
-      burger.classList.toggle('active');
-
-      // Adjust burger menu position based on menu visibility
-      const offset = menuVisible ? 0 : 220;
-      burger.style.left = `${20 + offset}px`; // Adjust burger position dynamically
     }
   </script>
 </body>
