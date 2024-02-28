@@ -131,6 +131,7 @@ p {
   height: 24px;
   background-color: transparent !important; /* Ensure transparency with !important */
   border: #373B41;
+  outline: none;
   padding: 0;
   transition: left 0.3s ease;
 }
