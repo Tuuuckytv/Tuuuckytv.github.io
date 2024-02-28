@@ -136,6 +136,7 @@ p {
 .burger div {
   width: 30px;
   height: 4px;
+  border: none;
   background-color: #e5cd0b;
   transition: all 0.3s ease;
   border-radius: 2px;
