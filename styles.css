@@ -141,6 +141,10 @@ p {
   border-radius: 2px;
 }
 
+.burger:hover div {
+  background-color: #e5cd0b; /* Change hover color to match the default color */
+}
+
 .burger.active div:nth-child(1) {
   transform: translateY(10px) rotate(45deg);
 }
