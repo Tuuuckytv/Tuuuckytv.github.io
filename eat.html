@@ -94,7 +94,7 @@
       cursor: not-allowed;
     }
 
-    button:hover:not(:disabled) {
+    button:hover:not(:disabled):not(.burger) {
       background-color: #c9302c; /* Set hover background color */
       border-color: #c9302c; /* Set hover border color */
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), inset 0 0 3px rgba(255, 255, 255, 0.5);
@@ -146,8 +146,8 @@
     }
 
     .burger {
-  box-shadow: none; /* Remove the box shadow specifically for the burger button */
-}
+      box-shadow: none; /* Remove the box shadow specifically for the burger button */
+    }
 
     .burger div {
       width: 30px;
@@ -200,6 +200,13 @@
       border-radius: 8px;
       transition: background-color 0.3s;
     }
+
+    /* Adjust hover effect for menu buttons */
+    .menu-button:hover:not(:disabled) {
+      background-color: #333; /* Set hover background color */
+      border-color: #333; /* Set hover border color */
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), inset 0 0 3px rgba(255, 255, 255, 0.5);
+    }
   </style>
   <title>Oh, Fuck</title>
 </head>
@@ -219,10 +226,10 @@
   </header>
 
   <nav id="menu">
-    <a href="https://kyletuck.com">Home</a>
-    <a href="eat">Food</a>
-    <a href="goodbye">Goodbye</a>
-    <a href="private">Private</a>
+    <a href="https://kyletuck.com" class="menu-button">Home</a>
+    <a href="eat" class="menu-button">Food</a>
+    <a href="goodbye" class="menu-button">Goodbye</a>
+    <a href="private" class="menu-button">Private</a>
   </nav>
 
   <div class="button-container">
