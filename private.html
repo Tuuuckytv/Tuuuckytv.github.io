@@ -140,6 +140,7 @@
 
   /* Lock Icon Styles */
   #lockIcon {
+    display: none; /* Initially hide the lock button */
     position: fixed;
     top: 20px;
     right: 20px;
@@ -209,9 +210,16 @@
       var password = passwordInput.value;
       if (password === '1234') {
         closeModal();
+        showLockButton(); // Call function to show the lock button
       } else {
         window.location.href = 'https://kyletuck.com';
       }
+    }
+
+    // Show lock button
+    function showLockButton() {
+      var lockIcon = document.getElementById('lockIcon');
+      lockIcon.style.display = 'block'; // Show the lock button
     }
 
     // Close modal
