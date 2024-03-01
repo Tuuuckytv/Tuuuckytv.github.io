@@ -167,6 +167,17 @@
   .burger.active div:nth-child(3) {
     transform: translateY(-10px) rotate(-45deg);
   }
+
+  footer {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    padding: 10px;
+    color: #e5cd0b;
+    font-family: Consolas, Arial, sans-serif;
+    font-size: 12px;
+  }
+  
 </style>
 </head>
 <body>
@@ -186,6 +197,10 @@
     <img src="onenote.png" alt="OneNote" id="image">
     <img src="boom.gif" alt="Boom" id="boomAnimation" style="display: none;">
   </div>
+
+  <footer>
+  <p>&copy; 2024 kyletuck.com. All rights reserved.</p>
+</footer>
 
   <div id="buttonContainer">
     <button onclick="playAnimation()" id="clickButton">Click Me</button>
