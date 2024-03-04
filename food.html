@@ -127,7 +127,7 @@
     }
 
     /* Burger Menu Styles */
-    .burger {
+    button.burger {
       position: fixed;
       top: 20px;
       left: 20px;
@@ -141,16 +141,12 @@
       background-color: transparent !important; /* Ensure transparency with !important */
       border: #373B41;
       outline: #373B41;
-      box-shadow: #373B41;
       padding: 0;
       transition: left 0.3s ease;
-    }
-
-    .burger {
       box-shadow: none; /* Remove the box shadow specifically for the burger button */
     }
 
-    .burger div {
+    button.burger div {
       width: 30px;
       height: 4px;
       border: none;
@@ -211,20 +207,20 @@
     }
 
     footer {
-    position: fixed;
-    bottom: 0;
-    right: 0;
-    padding: 10px;
-    color: #e5cd0b;
-    font-family: Consolas, Arial, sans-serif;
-    font-size: 12px;
-  }    
+      position: fixed;
+      bottom: 0;
+      right: 0;
+      padding: 10px;
+      color: #e5cd0b;
+      font-family: Consolas, Arial, sans-serif;
+      font-size: 12px;
+      z-index: 9998; /* Set z-index to be behind burger button */
+    }
 
     footer p {
-  font-size: 12px;
-}
+      font-size: 12px;
+    }
   </style>
-  <title>Oh, Fuck</title>
 </head>
 <body>
   <audio id="audioElement" src="gta-menu.wav"></audio>
@@ -250,8 +246,8 @@
   </nav>
 
   <footer>
-  <p>&copy; 2024 kyletuck.com. All rights reserved.</p>
-</footer>
+    <p>&copy; 2024 kyletuck.com. All rights reserved.</p>
+  </footer>
 
   <div class="button-container">
     <div class="button-row">
@@ -405,10 +401,6 @@
 
       const burger = document.querySelector('.burger');
       burger.classList.toggle('active');
-
-      // Adjust burger menu position based on menu visibility
-      const offset = menu.classList.contains('show') ? 220 : 0;
-      burger.style.left = `${20 + offset}px`; // Adjust burger position dynamically
     }
   </script>
 </body>
