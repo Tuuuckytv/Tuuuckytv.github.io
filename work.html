@@ -138,9 +138,9 @@
         }
 
         .button {
-            position: absolute;
+            position: fixed;
             bottom: 20px;
-            right: 20px;
+            left: 20px; /* Updated position to bottom left */
             background-color: #01A0C0;
             color: white;
             padding: 10px 20px;
@@ -148,6 +148,16 @@
             border-radius: 5px;
             font-size: 18px;
             text-decoration: none;
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 0;
+            right: 0; /* Updated position to bottom right */
+            padding: 10px;
+            color: #36454F; /* Updated color */
+            font-family: Consolas, Arial, sans-serif;
+            font-size: 12px;
         }
 
         /* Media Query for Mobile Devices */
@@ -172,20 +182,20 @@
 
             .button {
                 bottom: 10px;
-                right: 10px;
+                left: 10px; /* Updated position to bottom left */
                 padding: 8px 15px;
                 font-size: 14px;
             }
             
-            footer {
-    position: fixed;
-    bottom: 0;
-    right: 0;
-    padding: 10px;
-    color: #e5cd0b;
-    font-family: Consolas, Arial, sans-serif;
-    font-size: 12px;
-  }
+            .footer {
+                position: fixed;
+                bottom: 0;
+                right: 0;
+                padding: 10px;
+                color: #36454F; /* Updated color */
+                font-family: Consolas, Arial, sans-serif;
+                font-size: 12px;
+            }
         }
     </style>
 </head>
@@ -203,9 +213,9 @@
         <a href="work">Work</a>
     </nav>
     
-    <footer>
-  <p>&copy; 2024 kyletuck.com. All rights reserved. #colours arent copywritten</p>
-</footer>
+    <footer class="footer">
+        <p>&copy; 2024 kyletuck.com. All rights reserved. #colours aren't copywritten</p>
+    </footer>
 
     <div class="header">
         <img src="spiderman.png" alt="Spider Image" style="height: 30px;"> Delivery cut-off
