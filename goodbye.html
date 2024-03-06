@@ -47,10 +47,10 @@
     height: auto; /* Maintain aspect ratio */
     position: relative; /* Ensure the image can be positioned in front of the glow */
     z-index: 2; /* Ensure image is in front of the glow */
-    opacity: 1; /* Set opacity to full */
+    opacity: 0; /* Set initial opacity to 0 */
     left: 50%; /* Initial horizontal position */
     transform: translateX(-65%); /* Center the image horizontally */
-    transition: left 0.3s ease; /* Smooth transition when moving left or right */
+    transition: opacity 1s ease; /* Smooth transition for opacity */
   }
 
   #boomAnimation {
@@ -244,6 +244,12 @@
       var burger = document.querySelector('.burger');
       burger.classList.toggle('active');
     }
+    
+    // Add fade-in animation to the image when the page loads
+    window.addEventListener('load', function() {
+      var image = document.getElementById('image');
+      image.style.opacity = '1';
+    });
   </script>
 </body>
 </html>
