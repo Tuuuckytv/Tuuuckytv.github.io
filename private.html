@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Oh, Fuck</title>
+<title>Oh, Advanced</title>
 <link rel="icon" href="spiderman.png" type="image/png">
 <style>
   body {
@@ -108,6 +108,12 @@
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     z-index: 3;
+    animation: fadeIn 1s ease forwards; /* Add fadeIn animation */
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+    to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
   }
 
   .modal-content {
