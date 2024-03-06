@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Oh, Fuck</title>
+<title>Oh, Advanced</title>
 <link rel="shortcut icon" type="image/png" href="spiderman.png">
 <style>
   body {
@@ -22,6 +22,12 @@
     font-size: 60px;
     margin-bottom: 20px;
     text-align: center; /* Center align the text */
+    opacity: 0; /* Initially hide the header */
+    animation: fadeIn 1s ease forwards; /* Add fadeIn animation */
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
   }
   nav {
     position: fixed;
