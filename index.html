@@ -13,21 +13,31 @@
     height: 100vh;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start; /* Adjusted alignment to top */
     align-items: center;
     font-family: Consolas, Arial, sans-serif; /* Change font to Consolas */
     color: #e5cd0b;
+  }
+  header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: #000000; /* Set header color to black */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0; /* Initially hide the header */
+    animation: fadeInHeader 1s ease forwards; /* Add fadeIn animation */
+    z-index: 1; /* Ensure header is behind menu */
+  }
+  @keyframes fadeInHeader {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
   }
   h1 {
     font-size: 60px;
     margin-bottom: 20px;
     text-align: center; /* Center align the text */
-    opacity: 0; /* Initially hide the header */
-    animation: fadeIn 1s ease forwards; /* Add fadeIn animation */
-  }
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
   }
   nav {
     position: fixed;
@@ -40,7 +50,7 @@
     flex-direction: column;
     justify-content: flex-start; /* Align items at the top */
     align-items: center;
-    z-index: 2;
+    z-index: 2; /* Ensure menu is on top */
     padding-top: 50px; /* Add padding to align menu items vertically */
     transition: left 0.3s ease; /* Add transition for smooth animation */
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Add box shadow for depth */
@@ -106,6 +116,9 @@
 </style>
 </head>
 <body>
+  <header>
+    <h1>Welcome</h1>
+  </header>
   <button class="burger" onclick="toggleMenu()">
     <div></div>
     <div></div>
@@ -117,14 +130,12 @@
     <a href="goodbye" class="menu-button">One Note</a>
     <a href="private">Private</a>
     <a href="work">Work</a>
-<a href="social">Social</a>
+    <a href="social">Social</a>
   </nav>
-  <h1>Welcome</h1>
-  
 
   <footer>
-  <p>&copy; 2024 kyletuck.com. All rights reserved.</p>
-</footer>
+    <p>&copy; 2024 kyletuck.com. All rights reserved.</p>
+  </footer>
 
 <script>
   function toggleMenu() {
