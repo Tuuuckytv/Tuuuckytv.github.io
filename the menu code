@@ -96,6 +96,19 @@
   .menu-show .burger {
     left: 240px; /* Adjusted position when menu is shown */
   }
+
+  .footer {
+    position: fixed; /* Set to fixed position */
+    bottom: 0;
+    right: 0; /* Change left to right */
+    padding: 10px;
+    text-align: center;
+    color: #e5cd0b;
+    font-family: Consolas, Arial, sans-serif;
+    font-size: 12px;
+    background-color: #373b41;
+    z-index: 3; /* Ensure footer is above the main content */
+}
 </style>
 </head>
 <body>
@@ -109,9 +122,13 @@
     <a href="food" class="menu-button">Food</a>
     <a href="goodbye" class="menu-button">One Note</a>
     <a href="private">Private</a> 
-   <a href="work">Work</a> 
-
+    <a href="work">Work</a> 
   </nav>
+
+  <!-- Footer from the first code snippet -->
+  <footer class="footer">
+    <p>&copy; 2024 kyletuck.com. All rights reserved.</p>
+  </footer>
 
   <script>
     function toggleMenu() {
