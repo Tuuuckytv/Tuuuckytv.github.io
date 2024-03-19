@@ -114,25 +114,25 @@
   #addItemForm {
     margin-top: 20px;
     display: flex;
-    flex-direction: row; /* Display form items in a row */
-    align-items: center;
+    flex-direction: row; /* Display items horizontally */
+    align-items: center; /* Align items vertically */
   }
 
   #addItemForm label {
-    margin-right: 10px;
+    margin-right: 10px; /* Add space between label and input field */
   }
 
   #addItemForm input[type="text"] {
     padding: 5px;
     border-radius: 5px;
     border: 1px solid #e5cd0b;
-    width: 250px; /* Reduce width to fit beside the button */
+    width: 280px; /* Adjusted width to accommodate text field and button with gap */
     color: #999; /* Faded color for placeholder text */
+    margin-right: 10px; /* Add 10px gap to the right */
   }
 
   #addItemForm button {
     padding: 8px 20px;
-    margin-left: 10px; /* Add space between the text field and the button */
     background-color: #e5cd0b;
     color: #373b41;
     border: none;
@@ -149,12 +149,29 @@
   #currentList {
     margin-top: 20px;
     max-width: 400px;
-    width: 300px;
     padding: 10px;
     border: 1px solid #e5cd0b;
     border-radius: 5px;
     overflow-y: auto;
     height: 200px;
+  }
+
+  /* Style for the delete button */
+  #deleteButton {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    padding: 8px 20px;
+    background-color: #e5cd0b;
+    color: #373b41;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  #deleteButton:hover {
+    background-color: #ffcc00;
   }
 </style>
 </head>
@@ -171,12 +188,12 @@
     <a href="private">Private</a> 
     <a href="work">Work</a>
     <a href="social">Social</a>
-    <a href="20000">20,000 Things</a>
+    <a href="2000">20,000 Things</a>
   </nav>
 
   <!-- Form for adding item to the list -->
   <form id="addItemForm">
-    <label for="itemName"></label>
+    <label for="itemName">Add Item:</label>
     <input type="text" id="itemName" name="itemName" placeholder="20,000 Things" required>
     <button type="submit">Add Item</button>
   </form>
@@ -194,6 +211,54 @@
     <p>&copy; 2024 kyletuck.com. All rights reserved.</p>
   </footer>
 
+  <button id="deleteButton" onclick="deleteLastItem()">Delete Last Item</button>
+
   <script>
     // Function to handle form submission
     document.getElementById('addItemForm').addEventListener('submit', function(event) {
+      event.preventDefault(); // Prevent form submission
+      var newItem = document.getElementById('itemName').value; // Get the value of the input field
+      addItemToList(newItem); // Add the item to the list
+      document.getElementById('itemName').value = ''; // Clear the input field
+    });
+
+    // Function to add item to the list
+    function addItemToList(item) {
+      var list = document.getElementById('listItems');
+      var listItem = document.createElement('li');
+      listItem.textContent = item;
+      list.appendChild(listItem);
+    }
+
+    // Function to delete the last item from the list
+    function deleteLastItem() {
+      var list = document.getElementById('listItems');
+      var lastItem = list.lastElementChild;
+      if (lastItem) {
+        list.removeChild(lastItem);
+      }
+    }
+
+    // Function to toggle menu visibility
+    function toggleMenu() {
+      var menu = document.getElementById('menu');
+      menu.classList.toggle('show');
+      var burger = document.querySelector('.burger');
+      burger.classList.toggle('active');
+
+      // Add or remove class to adjust burger position based on menu visibility
+      if (menu.classList.contains('show')) {
+        burger.classList.add('menu-show');
+      } else {
+        burger.classList.remove('menu-show');
+      }
+    }
+
+    // Pre-fill the list with items when the page loads
+    window.onload = function() {
+      var initialItems = "Item 1, Item 2, ... , Item 20000"; // This should be replaced with the actual list of 20,000 items
+      addItemToList(initialItems);
+    };
+  </script>
+</body>
+</html>
