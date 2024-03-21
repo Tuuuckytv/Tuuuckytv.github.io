@@ -164,6 +164,12 @@
     color: #e5cd0b;
     font-family: Consolas, Arial, sans-serif;
     font-size: 12px;
+    display: flex; /* Add display flex */
+    align-items: center; /* Align items vertically */
+  }
+
+  .footer-icon {
+    margin-left: 10px; /* Add space between icons */
   }
 </style>
 </head>
@@ -183,8 +189,13 @@
   </nav>
 
   <footer>
-  <p>&copy; 2024 kyletuck.com. All rights reserved.</p>
-</footer>
+    <p>&copy; 2024 kyletuck.com. All rights reserved.</p>
+    <div class="footer-icons">
+      <a href="https://www.instagram.com/kyle_tuck99/" target="_blank"><img src="instagram.png" alt="Instagram" class="footer-icon"></a>
+      <a href="https://www.linkedin.com/in/kyle-tuck-667416205" target="_blank"><img src="linkedin.png" alt="LinkedIn" class="footer-icon"></a>
+      <a href="https://www.youtube.com/@TuuuckTV" target="_blank"><img src="youtube.png" alt="YouTube" class="footer-icon"></a>
+    </div>
+  </footer>
 
   <!-- Modal -->
   <div id="passwordModal" class="modal">
