@@ -158,6 +158,19 @@
             color: #36454F; /* Updated color */
             font-family: Consolas, Arial, sans-serif;
             font-size: 12px;
+            display: flex; /* Add display flex */
+            align-items: center; /* Align items vertically */
+        }
+
+        /* Footer icon styles */
+        .footer-icons {
+            margin-left: auto; /* Push icons to the right */
+            display: flex; /* Display icons inline */
+            align-items: center; /* Align items vertically */
+        }
+
+        .footer-icon {
+            margin-left: 10px; /* Add space between icons */
         }
 
         /* Media Query for Mobile Devices */
@@ -195,6 +208,18 @@
                 color: #36454F; /* Updated color */
                 font-family: Consolas, Arial, sans-serif;
                 font-size: 12px;
+                display: flex; /* Add display flex */
+                align-items: center; /* Align items vertically */
+            }
+
+            .footer-icons {
+                margin-left: auto; /* Push icons to the right */
+                display: flex; /* Display icons inline */
+                align-items: center; /* Align items vertically */
+            }
+
+            .footer-icon {
+                margin-left: 10px; /* Add space between icons */
             }
         }
     </style>
@@ -216,7 +241,11 @@
     
     <footer class="footer">
         <p>&copy; 2024 kyletuck.com. All rights reserved.</p>
-            <p>#colours can't be copyrighted<p>
+        <div class="footer-icons">
+            <a href="https://www.instagram.com/kyle_tuck99/" target="_blank"><img src="instagram_black.png" alt="Instagram" class="footer-icon"></a>
+            <a href="https://www.linkedin.com/in/kyle-tuck-667416205" target="_blank"><img src="linkedin_black.png" alt="LinkedIn" class="footer-icon"></a>
+            <a href="https://www.youtube.com/@TuuuckTV" target="_blank"><img src="youtube_black.png" alt="YouTube" class="footer-icon"></a>
+        </div>
     </footer>
 
     <div class="header">
@@ -296,3 +325,4 @@
     </script>
 </body>
 </html>
+
