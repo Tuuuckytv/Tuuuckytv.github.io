@@ -183,7 +183,7 @@
       transition: left 0.3s ease;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
       z-index: 4;
-    }
+   }
 
     #menu.show {
       left: 0; /* Show the menu */
@@ -216,11 +216,22 @@
       color: #e5cd0b;
       font-family: Consolas, Arial, sans-serif;
       font-size: 12px;
-      z-index: 3; /* Set z-index to be behind burger button */
+      display: flex; /* Set display to flex */
+      align-items: center; /* Align items vertically */
     }
 
     footer p {
       font-size: 12px;
+    }
+
+    .footer-icons {
+      margin-left: auto; /* Move icons to the right */
+      display: flex; /* Ensure icons are displayed in a row */
+      align-items: center; /* Align icons vertically */
+    }
+
+    .footer-icon {
+      margin-left: 10px;
     }
   </style>
 </head>
@@ -241,16 +252,21 @@
 
   <nav id="menu">
     <a href="https://kyletuck.com">Home</a>
-        <a href="food" class="menu-button">Food</a>
-        <a href="jobs">Jobs</a>
-        <a href="fuckcustomerservice" class="menu-button">One Note</a>
-        <a href="private">Private</a>
-        <a href="social">Social</a>
-        <a href="work">Work</a>
+    <a href="food" class="menu-button">Food</a>
+    <a href="jobs">Jobs</a>
+    <a href="fuckcustomerservice" class="menu-button">One Note</a>
+    <a href="private">Private</a>
+    <a href="social">Social</a>
+    <a href="work">Work</a>
   </nav>
 
   <footer>
     <p>&copy; 2024 kyletuck.com. All rights reserved.</p>
+    <div class="footer-icons">
+      <a href="https://www.instagram.com/kyle_tuck99/" target="_blank"><img src="instagram.png" alt="Instagram" class="footer-icon"></a>
+      <a href="https://www.linkedin.com/in/kyle-tuck-667416205" target="_blank"><img src="linkedin.png" alt="LinkedIn" class="footer-icon"></a>
+      <a href="https://www.youtube.com/@TuuuckTV" target="_blank"><img src="youtube.png" alt="YouTube" class="footer-icon"></a>
+    </div>
   </footer>
 
   <div class="button-container">
@@ -363,7 +379,7 @@
     });
 
     async function generateMeal(category) {
-      const mealContainer = document.getElementById('meal-container');
+      const mealContainer =      document.getElementById('meal-container');
       const categoryMeals = meals[category];
 
       if (categoryMeals.length === 0) {
@@ -409,3 +425,5 @@
   </script>
 </body>
 </html>
+
+
