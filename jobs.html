@@ -261,7 +261,9 @@
       jobs = data; // Assign the fetched jobs to the 'jobs' array
     });
 
-    async function generateJob() {
+    let timeoutId;
+
+    function generateJob() {
       const jobContainer = document.getElementById('meal-container');
 
       if (jobs.length === 0) {
@@ -274,6 +276,11 @@
 
       jobContainer.innerHTML = `<p>${generatedJob}</p>`;
       jobContainer.innerHTML += `<button class="generate-button" onclick="generateJob()">Generate New Job</button>`;
+
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        jobContainer.innerHTML = '';
+      }, 20000);
     }
 
     function toggleMenu() {
@@ -286,3 +293,4 @@
   </script>
 </body>
 </html>
+
