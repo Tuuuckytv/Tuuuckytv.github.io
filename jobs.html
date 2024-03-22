@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Oh, Fuck</title>
+  <link rel="icon" href="spiderman.png" type="image/png">
+  <style>
+    /* CSS Styles */
+    /* Font Definitions */
+    @font-face {
+      font-family: 'Digital-7';
+      src: url('digital-7.ttf') format('truetype');
+    }
+
+    @font-face {
+      font-family: 'PricedownBL';
+      src: url('pricedownbl.otf') format('opentype');
+    }
+
+    /* Body Styles */
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      font-family: 'Arial', sans-serif;
+      background-color: #373B41; /* Set background color of the page to #373B41 */
+      color: #fff; /* Set text color to white */
+    }
+
+    /* Header Styles */
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #e5cd0b; /* Change header color to #e5cd0b for "House chores" */
+      font-family: 'PricedownBL', sans-serif;
+      letter-spacing: 2px;
+      font-size: 24px; /* Editable font size */
+    }
+
+    /* Meal Container Styles */
+    #meal-container {
+      font-family: Consolas, Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+      background-color: #495057;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      margin-top: 20px;
+    }
+
+    /* Button Styles */
+    button {
+      padding: 10px 20px;
+      margin: 0 10px;
+      font-family: Consolas, Arial, sans-serif; /* Change font to Consolas, Arial, sans-serif */
+      font-size: 16px; /* Editable font size */
+      cursor: pointer;
+      border: 2px solid #d9534f; /* Set border color */
+      border-radius: 8px;
+      background-color: #d9534f; /* Set background color */
+      color: #fff; /* Set text color to white */
+      transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease,
+        box-shadow 0.5s ease;
+      width: 150px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), inset 0 0 5px rgba(255, 255, 255, 0.5);
+    }
+
+    button:disabled {
+      background-color: #6c757d; /* Set disabled background color */
+      border-color: #6c757d; /* Set disabled border color */
+      color: #b0b0b0; /* Set disabled text color */
+      cursor: not-allowed;
+    }
+
+    button:hover:not(:disabled):not(.burger) {
+      background-color: #c9302c; /* Set hover background color */
+      border-color: #c9302c; /* Set hover border color */
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), inset 0 0 3px rgba(255, 255, 255, 0.5);
+    }
+
+    /* Paragraph Styles */
+    p {
+      font-size: 18px; /* Editable font size */
+      margin: 10px 0;
+      color: #ffc107;
+    }
+
+    /* Generate Button Styles */
+    .generate-button {
+      margin-top: 20px;
+    }
+
+    /* Button Container Styles */
+    .button-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Button Row Styles */
+    .button-row {
+      display: flex;
+      margin-top: 10px;
+    }
+
+    /* Burger Menu Styles */
+    button.burger {
+      position: fixed;
+      top: 20px;
+      left: 10px;
+      z-index: 9999;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      width: 30px;
+      height: 24px;
+      background-color: transparent !important; /* Ensure transparency with !important */
+      border: #373B41;
+      outline: #373B41;
+      padding: 0;
+      transition: left 0.3s ease;
+      box-shadow: none; /* Remove the box shadow specifically for the burger button */
+    }
+
+    button.burger div {
+      width: 30px;
+      height: 4px;
+      border: none;
+      background-color: #e5cd0b;
+      transition: all 0.3s ease;
+      border-radius: 2px;
+    }
+
+    .burger.active div:nth-child(1) {
+      transform: translateY(10px) rotate(45deg);
+    }
+
+    .burger.active div:nth-child(2) {
+      opacity: 0;
+    }
+
+    .burger.active div:nth-child(3) {
+      transform: translateY(-10px) rotate(-45deg);
+    }
+
+    /* Navigation Styles */
+    #menu {
+      position: fixed;
+      top: 0;
+      left: -220px; /* Hide the menu off-screen */
+      width: 220px;
+      height: 100vh;
+      background-color: #1f1f1f;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      padding-top: 50px;
+      transition: left 0.3s ease;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      z-index: 4;
+    }
+
+    #menu.show {
+      left: 0; /* Show the menu */
+    }
+
+    #menu a {
+      font-family: Consolas, Arial, sans-serif;
+      color: #e5cd0b;
+      text-decoration: none;
+      margin: 2.5px 0;
+      padding: 10px 20px;
+      font-size: 24px;
+      border-radius: 8px;
+      transition: background-color 0.3s;
+      box-shadow: none;
+    }
+
+    /* Adjust hover effect for menu buttons */
+    .menu-button:hover:not(:disabled) {
+      background-color: #333; /* Set hover background color */
+      border-color: #333; /* Set hover border color */
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), inset 0 0 3px rgba(255, 255, 255, 0.5);
+    }
+
+    footer {
+      position: fixed;
+      bottom: 0;
+      right: 0;
+      padding: 10px;
+      color: #e5cd0b;
+      font-family: Consolas, Arial, sans-serif;
+      font-size: 12px;
+      z-index: 3; /* Set z-index to be behind burger button */
+    }
+
+    footer p {
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <audio id="audioElement" src="gta-menu.wav"></audio>
+
+  <header>
+    <button class="burger" onclick="toggleMenu()">
+      <div></div>
+      <div></div>
+      <div></div>
+    </button>
+    <h1 style="color: #e5cd0b;">Jobs of the day</h1>
+  </header>
+
+  <nav id="menu">
+    <a href="https://kyletuck.com" class="menu-button">Home</a>
+    <a href="food" class="menu-button">Food</a>
+    <a href="fuckcustomerservice" class="menu-button">One Note</a>
+    <a href="private" class="menu-button">Private</a>
+    <a href="work">Work</a>
+    <a href="social">Social</a>
+    <a href="jobs">Jobs</a>
+  </nav>
+
+  <footer>
+    <p>&copy; 2024 kyletuck.com. All rights reserved.</p>
+  </footer>
+
+  <div class="button-container">
+    <!-- New central button container -->
+    <div class="button-container">
+      <button id="centralButton" onclick="generateJob()">Generate Job</button>
+    </div>
+  </div>
+
+  <div id="meal-container">
+    <!-- Generated job will be displayed here -->
+  </div>
+
+  <script>
+    // JavaScript code
+    async function fetchJobsFromFile(file) {
+      try {
+        const response = await fetch(file);
+        const text = await response.text();
+        return text.split('\n').map(line => line.trim()).filter(Boolean);
+      } catch (error) {
+        console.error('Error fetching jobs:', error);
+        return [];
+      }
+    }
+
+    let jobs = []; // Initialize an empty array to store the jobs
+
+    fetchJobsFromFile('Jobs.txt').then(data => {
+      jobs = data; // Assign the fetched jobs to the 'jobs' array
+    });
+
+    async function generateJob() {
+      const jobContainer = document.getElementById('meal-container');
+
+      if (jobs.length === 0) {
+        jobContainer.innerHTML = `<p>No jobs available.</p>`;
+        return;
+      }
+
+      const randomIndex = Math.floor(Math.random() * jobs.length);
+      const generatedJob = jobs[randomIndex];
+
+      jobContainer.innerHTML = `<p>${generatedJob}</p>`;
+      jobContainer.innerHTML += `<button class="generate-button" onclick="generateJob()">Generate New Job</button>`;
+    }
+
+    function toggleMenu() {
+      const menu = document.getElementById('menu');
+      menu.classList.toggle('show');
+
+      const burger = document.querySelector('.burger');
+      burger.classList.toggle('active');
+    }
+  </script>
+</body>
+</html>
