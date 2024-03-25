@@ -186,7 +186,7 @@
     .menu-button:hover:not(:disabled) {
       background-color: #333; /* Set hover background color */
       border-color: #333; /* Set hover border color */
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), inset 0 0 3px rgba(255, 255, 255, 0.5);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), inset0 0 3px rgba(255, 255, 255, 0.5);
     }
 
     footer {
@@ -198,10 +198,22 @@
       font-family: Consolas, Arial, sans-serif;
       font-size: 12px;
       z-index: 3; /* Set z-index to be behind burger button */
+      display: flex; /* make the footer a flex container */
+      align-items: center; /* align items vertically */
     }
 
     footer p {
       font-size: 12px;
+      margin-right: auto; /* push icons to the right */
+    }
+
+    .footer-icons {
+      margin-left: 10px; /* add some space between text and icons */
+      display: flex; /* make the icons a flex container */
+    }
+
+    .footer-icon {
+      margin-left: 10px; /* add space between icons */
     }
   </style>
 </head>
@@ -229,8 +241,13 @@
 
   <footer>
     <p>&copy; 2024 kyletuck.com. All rights reserved.</p>
+    <div class="footer-icons">
+      <a href="https://www.instagram.com/kyle_tuck99/" target="_blank"><img src="instagram.png" alt="Instagram" class="footer-icon"></a>
+      <a href="https://www.linkedin.com/in/kyle-tuck-667416205" target="_blank"><img src="linkedin.png" alt="LinkedIn" class="footer-icon"></a>
+      <a href="https://www.youtube.com/@TuuuckTV" target="_blank"><img src="youtube.png" alt="YouTube" class="footer-icon"></a>
+    </div>
   </footer>
-
+  
   <div class="button-container">
     <!-- New central button container -->
     <div class="button-container">
