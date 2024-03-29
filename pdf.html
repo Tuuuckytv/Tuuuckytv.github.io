@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>File to PDF Converter</title>
+<link rel="icon" href="spiderman.png" type="image/png">
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100vh;
+    font-family: Consolas, Arial, sans-serif; /* Change font to Consolas */
+    color: #e5cd0b;
+    background-color: #373b41;
+  }
+
+  nav {
+    position: fixed;
+    top: 0;
+    left: -220px; /* Initially hide the menu off-screen */
+    width: 220px; /* Increased width for better appearance */
+    height: 100vh;
+    background-color: #1f1f1f; /* Dark background color */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* Align items at the top */
+    align-items: center;
+    padding-top: 50px; /* Add padding to align menu items vertically */
+    transition: left 0.3s ease; /* Add transition for smooth animation */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Add box shadow for depth */
+    z-index: 4; /* Ensure the menu is on top of other elements */
+  }
+
+  nav.show {
+    left: 0; /* Show the menu by bringing it to the screen */
+  }
+
+  nav a {
+    color: #e5cd0b;
+    text-decoration: none;
+    margin: 2.5px 0;
+    padding: 10px 20px;
+    font-size: 24px;
+    border-radius: 8px; /* Rounded corners for buttons */
+    transition: background-color 0.3s; /* Smooth transition for hover effect */
+    font-family: Consolas, Arial, sans-serif; /* Change font to Consolas */
+  }
+
+  nav a:hover {
+    background-color: #333; /* Darken background on hover */
+  }
+
+  .burger {
+    position: fixed;
+    top: 20px;
+    left: 20px; /* Adjusted position on the same side as the menu */
+    z-index: 9999;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 30px;
+    height: 24px;
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    transition: left 0.3s ease; /* Add transition for smooth animation */
+  }
+
+  .burger div {
+    width: 30px;
+    height: 4px;
+    background-color: #e5cd0b;
+    transition: all 0.3s ease; /* Add transition for smooth animation */
+    border-radius: 2px; /* Rounded corners for burger lines */
+  }
+
+  .burger.active div:nth-child(1) {
+    transform: translateY(10px) rotate(45deg);
+  }
+
+  .burger.active div:nth-child(2) {
+    opacity: 0;
+  }
+
+  .burger.active div:nth-child(3) {
+    transform: translateY(-10px) rotate(-45deg);
+  }
+
+  /* Adjust burger menu position based on menu visibility */
+  .menu-show .burger {
+    left: 240px; /* Adjusted position when menu is shown */
+  }
+
+  .footer {
+    position: fixed; /* Set to fixed position */
+    bottom: 0;
+    right: 0; /* Change left to right */
+    padding: 10px;
+    text-align: center;
+    color: #e5cd0b;
+    font-family: Consolas, Arial, sans-serif;
+    font-size: 12px;
+    background-color: #373b41;
+    z-index: 3; /* Ensure footer is above the main content */
+  }
+
+  /* File upload and PDF conversion section styles */
+  .converter-container {
+    margin-top: 20px;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center; /* Center-align text */
+  }
+
+  #dropArea {
+    border: 2px dashed #e5cd0b;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    cursor: pointer;
+  }
+
+  #dropArea:hover {
+    background-color: rgba(229, 205, 11, 0.1);
+  }
+
+  input[type="file"] {
+    display: none;
+  }
+
+  button[type="button"] {
+    margin-top: 10px; /* Adjusted margin-top */
+    padding: 10px 20px;
+    background-color: #717579;
+    color: #e5cd0b;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+  }
+
+  button[type="button"]:hover {
+    background-color: #333;
+  }
+
+  #pdfDownloadLink {
+    margin-top: 10px;
+  }
+
+  #downloadLink {
+    color: #e5cd0b;
+    text-decoration: none;
+    font-size: 16px;
+  }
+
+</style>
+</head>
+<body>
+  <button class="burger" onclick="toggleMenu()">
+    <div></div>
+    <div></div>
+    <div></div>
+  </button>
+  <nav id="menu">
+    <a href="https://kyletuck.com">Home</a>
+    <a href="food" class="menu-button">Food</a>
+    <a href="goodbye" class="menu-button">One Note</a>
+    <a href="private">Private</a> 
+    <a href="work">Work</a>
+    <a href="pdf">PDF Converter</a>
+  </nav>
+
+  <!-- File upload and PDF conversion section -->
+  <div class="converter-container">
+    <h2>Convert File to PDF</h2>
+    <div id="dropArea" ondrop="dropHandler(event)" ondragover="dragOverHandler(event)">
+      <p>Drag and drop files here or click to select files</p>
+    </div>
+    <input type="file" id="fileInput" accept=".txt,.doc,.docx,.pdf,.jpg,.jpeg,.png" onchange="handleFileSelect(event)">
+    <button type="button" onclick="convertToPdf()">Convert to PDF</button>
+    
+    <div id="pdfDownloadLink" style="display: none;">
+      <a id="downloadLink" href="#" download="converted.pdf">Download PDF</a>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>&copy; 2024 kyletuck.com. All rights reserved.</p>
+  </footer>
+
+  <!-- JavaScript for burger menu toggle and PDF conversion -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.16.0/pdf-lib.js"></script>
+  <script>
+    function toggleMenu() {
+      var menu = document.getElementById('menu');
+      menu.classList.toggle('show');
+      var burger = document.querySelector('.burger');
+      burger.classList.toggle('active');
+
+      // Add or remove class to adjust burger position based on menu visibility
+      if (menu.classList.contains('show')) {
+        burger.classList.add('menu-show');
+      } else {
+        burger.classList.remove('menu-show');
+      }
+    }
+
+    async function convertToPdf() {
+      const fileInput = document.getElementById('fileInput');
+      const file = fileInput.files[0];
+      
+      if (!file) {
+        alert('Please select a file.');
+        return;
+      }
+      
+      const reader = new FileReader();
+      
+      reader.onload = async function(event) {
+        const fileData = event.target.result;
+        const pdfDoc = await PDFLib.PDFDocument.create();
+        const firstPage = pdfDoc.addPage();
+        const { width, height } = firstPage.getSize();
+        
+        if (file.type === 'application/pdf') {
+          const existingPdfBytes = await fetch(fileData).then(res => res.arrayBuffer());
+          const existingPdfDoc = await PDFLib.PDFDocument.load(existingPdfBytes);
+          const [existingPage] = await pdfDoc.copyPages(existingPdfDoc, [0]);
+          pdfDoc.addPage(existingPage);
+        } else if (file.type.includes('image')) {
+          const image = await pdfDoc.embedPng(fileData);
+          firstPage.drawImage(image, {
+            x: 0,
+            y: height - image.height * 0.75,
+            width: image.width * 0.75,
+            height: image.height * 0.75,
+          });
+        } else {
+          const font = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
+          const text = fileData;
+          
+          firstPage.drawText(text, {
+            x: 50,
+            y: height - 50, // Adjust text position if necessary
+            size: 12, // Adjust font size if necessary
+            font: font,
+            color: PDFLib.rgb(0, 0, 0),
+          });
+        }
+        
+        const pdfBytes = await pdfDoc.save();
+        const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+        const url = window.URL.createObjectURL(blob);
+        
+        const downloadLink = document.getElementById('downloadLink');
+        downloadLink.href = url;
+        document.getElementById('pdfDownloadLink').style.display = 'block';
+      };
+      
+      reader.readAsArrayBuffer(file);
+    }
+
+    function handleFileSelect(event) {
+      event.stopPropagation();
+      event.preventDefault();
+      const files = event.target.files || event.dataTransfer.files;
+      const file = files[0];
+      document.getElementById('fileInput').files = files;
+    }
+
+    function dragOverHandler(event) {
+      event.stopPropagation();
+      event.preventDefault();
+      event.dataTransfer.dropEffect = 'copy';
+    }
+
+    function dropHandler(event) {
+      event.stopPropagation();
+      event.preventDefault();
+      const files = event.dataTransfer.files;
+      document.getElementById('fileInput').files = files;
+    }
+  </script>
+</body>
+</html>
