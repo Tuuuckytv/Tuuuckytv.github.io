@@ -12,27 +12,22 @@
     padding: 0;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start; /* Adjusted alignment to top */
+    justify-content: flex-start;
     align-items: center;
-    font-family: Consolas, Arial, sans-serif; /* Change font to Consolas */
+    font-family: Consolas, Arial, sans-serif;
     color: #e5cd0b;
-    overflow: hidden; /* Hide overflow content */
-    background-image: url('alien.png'); /* Add alien image as background */
-    background-size: cover; /* Cover the entire background */
-    background-position: center; /* Center the background image */
-    background-position-y: calc(100% - 80px); /* Position background image below the header */
   }
   header {
     position: fixed;
     top: 0;
     width: 100%;
-    background-color: #000000; /* Set header color to black */
+    background-color: #000000;
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 2; /* Ensure header is above background image */
-    animation: fadeInHeader 1s ease forwards; /* Add fadeIn animation */
-    height: 80px; /* Set header height */
+    z-index: 2;
+    animation: fadeInHeader 1s ease forwards;
+    height: 80px;
   }
   @keyframes fadeInHeader {
     from { opacity: 0; transform: translateY(-20px); }
@@ -41,27 +36,27 @@
   h1 {
     font-size: 60px;
     margin-bottom: 20px;
-    text-align: center; /* Center align the text */
-    margin: 0; /* Remove default margin */
+    text-align: center;
+    margin: 0;
   }
   nav {
     position: fixed;
     top: 0;
-    left: -220px; /* Initially hide the menu off-screen */
-    width: 220px; /* Increased width for better appearance */
+    left: -220px;
+    width: 220px;
     height: 100vh;
-    background-color: #1f1f1f; /* Dark background color */
+    background-color: #1f1f1f;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start; /* Align items at the top */
+    justify-content: flex-start;
     align-items: center;
-    z-index: 3; /* Ensure menu is on top of header */
-    padding-top: 50px; /* Add padding to align menu items vertically */
-    transition: left 0.3s ease; /* Add transition for smooth animation */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Add box shadow for depth */
+    z-index: 3;
+    padding-top: 50px;
+    transition: left 0.3s ease;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   }
   nav.show {
-    left: 0; /* Show the menu by bringing it to the screen */
+    left: 0;
   }
   nav a {
     color: #e5cd0b;
@@ -69,16 +64,16 @@
     margin: 2.5px 0;
     padding: 10px 20px;
     font-size: 24px;
-    border-radius: 8px; /* Rounded corners for buttons */
-    transition: background-color 0.3s; /* Smooth transition for hover effect */
+    border-radius: 8px;
+    transition: background-color 0.3s;
   }
   nav a:hover {
-    background-color: #333; /* Darken background on hover */
+    background-color: #333;
   }
   .burger {
     position: fixed;
     top: 20px;
-    left: 20px; /* Static position regardless of menu visibility */
+    left: 20px;
     z-index: 10;
     cursor: pointer;
     display: flex;
@@ -89,14 +84,14 @@
     background-color: transparent;
     border: none;
     padding: 0;
-    transition: left 0.5s ease; /* Add transition for smooth animation */
+    transition: left 0.5s ease;
   }
   .burger div {
     width: 30px;
     height: 4px;
     background-color: #e5cd0b;
-    transition: all 0.3s ease; /* Add transition for smooth animation */
-    border-radius: 2px; /* Rounded corners for burger lines */
+    transition: all 0.3s ease;
+    border-radius: 2px;
   }
   .burger.active div:nth-child(1) {
     transform: translateY(10px) rotate(45deg);
@@ -128,6 +123,11 @@
   .footer-icon {
     margin-right: 5px;
   }
+
+  .alien-image {
+    width: 60%;
+    margin-top: 100px; /* Adjust margin to position image below header */
+  }
 </style>
 </head>
 <body>
@@ -147,6 +147,8 @@
     <a href="private">Private</a>
     <a href="work">Work</a>
   </nav>
+
+  <img src="alien.png" alt="Alien" class="alien-image">
 
   <footer>
     <p>&copy; 2024 kyletuck.com. All rights reserved.</p>
