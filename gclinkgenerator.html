@@ -73,11 +73,12 @@
     display: none;
     max-width: 90%;
     padding: 10px;
-    background-color: #fff;
+    background-color: #5a616a;
     color: #ffd700;
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     z-index: 999;
+    white-space: nowrap; /* Prevent wrapping */
 }
 
   nav {
@@ -263,7 +264,7 @@
       if (email !== "") {
           var link = "https://manage.gocardless.com/search?query=" + encodeURIComponent(email) + "&resource=customers";
           var resultBox = document.getElementById("result");
-          resultBox.innerHTML = "<a href='" + link + "' target='_blank'>" + link + "</a>";
+          resultBox.textContent = link; // Display link as plain text
           resultBox.style.display = "block"; // Show the result box
           document.getElementById("copyButton").disabled = false;
           setTimeout(resetForm, 30000); // Reset form after 30 seconds (30000 milliseconds)
@@ -281,10 +282,10 @@
     }
 
     function copyToClipboard() {
-      var link = document.getElementById("result").querySelector("a");
+      var link = document.getElementById("result").textContent; // Get text content of result box
       if (link) {
           var tempInput = document.createElement("input");
-          tempInput.value = link.href;
+          tempInput.value = link;
           document.body.appendChild(tempInput);
           tempInput.select();
           document.execCommand("copy");
@@ -295,19 +296,19 @@
     function resetForm() {
       document.getElementById("searchForm").reset();
       document.getElementById("result").style.display = "none"; // Hide the result box
-      document.getElementById("result").innerHTML = "";
+      document.getElementById("result").textContent = ""; // Clear the result text content
       document.getElementById("copyButton").disabled = true;
     }
 
     function goToLink() {
-      var link = document.getElementById("result").querySelector("a");
+      var link = document.getElementById("result").textContent; // Get text content of result box
       if (link) {
-          window.open(link.href, "_blank");
+          window.open(link, "_blank");
       }
     }
 
     function deleteLink() {
-      document.getElementById("result").innerHTML = "";
+      document.getElementById("result").textContent = ""; // Clear the result text content
       document.getElementById("result").style.display = "none";
       document.getElementById("copyButton").disabled = true;
     }
