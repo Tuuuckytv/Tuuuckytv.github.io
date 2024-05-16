@@ -73,7 +73,7 @@
     display: none;
     max-width: 90%;
     padding: 10px;
-    background-color: #5a616a;
+    background-color: #fff;
     color: #ffd700;
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
@@ -200,7 +200,7 @@
   }
 </style>
 </head>
-<body>
+<body onload="focusOnTextbox()">
   <button class="burger" onclick="toggleMenu()">
     <div></div>
     <div></div>
@@ -311,6 +311,10 @@
       document.getElementById("result").textContent = ""; // Clear the result text content
       document.getElementById("result").style.display = "none";
       document.getElementById("copyButton").disabled = true;
+    }
+
+    function focusOnTextbox() {
+      document.getElementById("email").focus();
     }
   </script>
 </body>
