@@ -67,7 +67,7 @@
 
 #result {
     position: absolute;
-    top: calc(50% + 50px); /* Adjusted to maintain distance from the form */
+    top: calc(50% + 50px);
     left: 50%;
     transform: translateX(-50%);
     display: none;
@@ -78,7 +78,11 @@
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     z-index: 999;
-    white-space: nowrap; /* Prevent wrapping */
+    white-space: pre-wrap; /* Wrap the text and preserve newline characters */
+    word-wrap: break-word; /* Break long words to fit */
+    overflow-wrap: break-word; /* Break long words to fit */
+    max-height: 50vh; /* Limit maximum height to 50% of viewport height */
+    overflow-y: auto; /* Add scrollbar if content overflows vertically */
 }
 
   nav {
