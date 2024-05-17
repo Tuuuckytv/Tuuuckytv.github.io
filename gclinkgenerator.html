@@ -25,7 +25,7 @@
     left: 50%;
     transform: translateX(-50%);
     margin-bottom: 20px;
-  }
+}
 
   form {
     display: flex;
@@ -63,9 +63,9 @@
     top: 20%; /* Adjusted to move the form closer to the top */
     left: 50%;
     transform: translateX(-50%);
-  }
+}
 
-  #result {
+#result {
     position: absolute;
     top: calc(50% + 50px);
     left: 50%;
@@ -83,7 +83,7 @@
     overflow-wrap: break-word; /* Break long words to fit */
     max-height: 50vh; /* Limit maximum height to 50% of viewport height */
     overflow-y: auto; /* Add scrollbar if content overflows vertically */
-  }
+}
 
   nav {
     position: fixed;
@@ -224,9 +224,10 @@
   <h2>GoCardless Customer Search</h2>
   <form id="searchForm">
       <label for="email">Enter Email Address:</label><br>
-      <input type="text" id="email" name="email" onkeydown="if(event.keyCode==13) generateOrPasteLink();"><br><br>
+      <input type="text" id="email" name="email" onkeydown="if(event.keyCode==13) generateLink();"><br><br>
       <div class="button-container">
-        <button type="button" onclick="generateOrPasteLink()">Paste Email/Generate Link</button>
+        <button type="button" onclick="pasteFromClipboard()">Paste Email</button>
+        <button type="button" onclick="generateLink()">Generate Link</button>
         <button type="button" onclick="goToLink()">Go to Link</button>
       </div>
       <div class="button-container">
@@ -262,22 +263,16 @@
       }
     }
 
-    function generateOrPasteLink() {
+    function generateLink() {
       var email = document.getElementById("email").value;
       if (email !== "") {
-        generateLink(email);
-      } else {
-        pasteFromClipboard();
+          var link = "https://manage.gocardless.com/search?query=" + encodeURIComponent(email) + "&resource=customers";
+          var resultBox = document.getElementById("result");
+          resultBox.textContent = link; // Display link as plain text
+          resultBox.style.display = "block"; // Show the result box
+          document.getElementById("copyButton").disabled = false;
+          setTimeout(resetForm, 30000); // Reset form after 30 seconds (30000 milliseconds)
       }
-    }
-    
-    function generateLink(email) {
-      var link = "https://manage.gocardless.com/search?query=" + encodeURIComponent(email) + "&resource=customers";
-      var resultBox = document.getElementById("result");
-      resultBox.textContent = link; // Display link as plain text
-      resultBox.style.display = "block"; // Show the result box
-      document.getElementById("copyButton").disabled = false;
-      setTimeout(resetForm, 30000); // Reset form after 30 seconds (30000 milliseconds)
     }
 
     function pasteFromClipboard() {
