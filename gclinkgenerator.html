@@ -14,18 +14,18 @@
     align-items: center;
     flex-direction: column;
     height: 100vh;
-    font-family: Consolas, Arial, sans-serif; /* Change font to Consolas */
+    font-family: Consolas, Arial, sans-serif;
     color: #e5cd0b;
     background-color: #373b41;
   }
 
   h2 {
     position: absolute;
-    top: 10%; /* Adjusted to move the title closer to the top */
+    top: 10%;
     left: 50%;
     transform: translateX(-50%);
     margin-bottom: 20px;
-}
+  }
 
   form {
     display: flex;
@@ -55,17 +55,17 @@
   }
 
   button:hover:not(.burger) {
-    background-color: #ffd700; /* Change only buttons that are not burger buttons on hover */
+    background-color: #ffd700;
   }
 
   form {
     position: absolute;
-    top: 20%; /* Adjusted to move the form closer to the top */
+    top: 20%;
     left: 50%;
     transform: translateX(-50%);
-}
+  }
 
-#result {
+  #result {
     position: absolute;
     top: calc(50% + 50px);
     left: 50%;
@@ -78,32 +78,32 @@
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     z-index: 999;
-    white-space: pre-wrap; /* Wrap the text and preserve newline characters */
-    word-wrap: break-word; /* Break long words to fit */
-    overflow-wrap: break-word; /* Break long words to fit */
-    max-height: 50vh; /* Limit maximum height to 50% of viewport height */
-    overflow-y: auto; /* Add scrollbar if content overflows vertically */
-}
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-height: 50vh;
+    overflow-y: auto;
+  }
 
   nav {
     position: fixed;
     top: 0;
-    left: -220px; /* Initially hide the menu off-screen */
-    width: 220px; /* Increased width for better appearance */
+    left: -220px;
+    width: 220px;
     height: 100vh;
-    background-color: #1f1f1f; /* Dark background color */
+    background-color: #1f1f1f;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start; /* Align items at the top */
+    justify-content: flex-start;
     align-items: center;
-    padding-top: 50px; /* Add padding to align menu items vertically */
-    transition: left 0.3s ease; /* Add transition for smooth animation */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Add box shadow for depth */
-    z-index: 4; /* Ensure the menu is on top of other elements */
+    padding-top: 50px;
+    transition: left 0.3s ease;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    z-index: 4;
   }
 
   nav.show {
-    left: 0; /* Show the menu by bringing it to the screen */
+    left: 0;
   }
 
   nav a {
@@ -112,19 +112,19 @@
     margin: 2.5px 0;
     padding: 10px 20px;
     font-size: 24px;
-    border-radius: 8px; /* Rounded corners for buttons */
-    transition: background-color 0.3s; /* Smooth transition for hover effect */
-    font-family: Consolas, Arial, sans-serif; /* Change font to Consolas */
+    border-radius: 8px;
+    transition: background-color 0.3s;
+    font-family: Consolas, Arial, sans-serif;
   }
 
   nav a:hover {
-    background-color: #333; /* Darken background on hover */
+    background-color: #333;
   }
 
   .burger {
     position: fixed;
     top: 20px;
-    left: 20px; /* Adjusted position on the same side as the menu */
+    left: 20px;
     z-index: 9999;
     cursor: pointer;
     display: flex;
@@ -135,15 +135,15 @@
     background-color: transparent;
     border: none;
     padding: 0;
-    transition: left 0.3s ease; /* Add transition for smooth animation */
+    transition: left 0.3s ease;
   }
 
   .burger div {
     width: 30px;
     height: 4px;
     background-color: #e5cd0b;
-    transition: all 0.3s ease; /* Add transition for smooth animation */
-    border-radius: 2px; /* Rounded corners for burger lines */
+    transition: all 0.3s ease;
+    border-radius: 2px;
   }
 
   .burger.active div:nth-child(1) {
@@ -158,24 +158,23 @@
     transform: translateY(-10px) rotate(-45deg);
   }
 
-  /* Adjust burger menu position based on menu visibility */
   .menu-show .burger {
-    left: 240px; /* Adjusted position when menu is shown */
+    left: 240px;
   }
 
   .footer {
-    position: fixed; /* Set to fixed position */
+    position: fixed;
     bottom: 0;
-    right: 0; /* Align right */
+    right: 0;
     padding: 10px;
     text-align: center;
     color: #e5cd0b;
     font-family: Consolas, Arial, sans-serif;
     font-size: 12px;
     background-color: #373b41;
-    z-index: 3; /* Ensure footer is above the main content */
-    display: flex; /* Align items horizontally */
-    align-items: center; /* Center items vertically */
+    z-index: 3;
+    display: flex;
+    align-items: center;
   }
 
   .footer-icons {
@@ -186,19 +185,16 @@
     margin-right: 5px;
   }
 
-  /* Added styles for buttons in the form */
   .button-container {
     display: flex;
     justify-content: space-between;
     margin-top: 10px;
   }
 
-  /* Added margin to separate buttons */
   .button-container button {
     margin-right: 5px;
   }
 
-  /* Added margin to separate buttons */
   .button-container button.copy-button {
     margin-top: 10px;
   }
@@ -216,18 +212,16 @@
     <a href="jobs">Jobs</a>
     <a href="gclinkgenerator">GoCardless</a>
     <a href="customerservice" class="menu-button">One Note</a>
-    <a href="private">Private</a> 
+    <a href="private">Private</a>
     <a href="work">Work</a>
   </nav>
 
-  <!-- GoCardless Customer Search Form -->
   <h2>GoCardless Customer Search</h2>
   <form id="searchForm">
       <label for="email">Enter Email Address:</label><br>
       <input type="text" id="email" name="email" onkeydown="if(event.keyCode==13) generateLink();"><br><br>
       <div class="button-container">
-        <button type="button" onclick="pasteFromClipboard()">Paste Email</button>
-        <button type="button" onclick="generateLink()">Generate Link</button>
+        <button type="button" onclick="pasteAndGenerate()">Paste Email and Generate Link</button>
         <button type="button" onclick="goToLink()">Go to Link</button>
       </div>
       <div class="button-container">
@@ -238,7 +232,6 @@
 
   <div id="result"></div>
 
-  <!-- Footer with icons -->
   <footer class="footer">
     <p>&copy; 2024 kyletuck.com. All rights reserved.</p>
     <div class="footer-icons">
@@ -255,7 +248,6 @@
       var burger = document.querySelector('.burger');
       burger.classList.toggle('active');
 
-      // Add or remove class to adjust burger position based on menu visibility
       if (menu.classList.contains('show')) {
         burger.classList.add('menu-show');
       } else {
@@ -263,30 +255,31 @@
       }
     }
 
-    function generateLink() {
-      var email = document.getElementById("email").value;
-      if (email !== "") {
-          var link = "https://manage.gocardless.com/search?query=" + encodeURIComponent(email) + "&resource=customers";
-          var resultBox = document.getElementById("result");
-          resultBox.textContent = link; // Display link as plain text
-          resultBox.style.display = "block"; // Show the result box
-          document.getElementById("copyButton").disabled = false;
-          setTimeout(resetForm, 30000); // Reset form after 30 seconds (30000 milliseconds)
-      }
-    }
-
-    function pasteFromClipboard() {
+    function pasteAndGenerate() {
       navigator.clipboard.readText()
           .then(text => {
               document.getElementById("email").value = text;
+              generateLink(); // Generate link after pasting the email
           })
           .catch(err => {
               console.error('Failed to read clipboard contents: ', err);
           });
     }
 
+    function generateLink() {
+      var email = document.getElementById("email").value;
+      if (email !== "") {
+          var link = "https://manage.gocardless.com/search?query=" + encodeURIComponent(email) + "&resource=customers";
+          var resultBox = document.getElementById("result");
+          resultBox.textContent = link;
+          resultBox.style.display = "block";
+          document.getElementById("copyButton").disabled = false;
+          setTimeout(resetForm, 30000);
+      }
+    }
+
     function copyToClipboard() {
-      var link = document.getElementById("result").textContent; // Get text content of result box
+      var link = document.getElementById("result").textContent;
       if (link) {
           var tempInput = document.createElement("input");
           tempInput.value = link;
@@ -299,20 +292,20 @@
 
     function resetForm() {
       document.getElementById("searchForm").reset();
-      document.getElementById("result").style.display = "none"; // Hide the result box
-      document.getElementById("result").textContent = ""; // Clear the result text content
+      document.getElementById("result").style.display = "none";
+      document.getElementById("result").textContent = "";
       document.getElementById("copyButton").disabled = true;
     }
 
     function goToLink() {
-      var link = document.getElementById("result").textContent; // Get text content of result box
+      var link = document.getElementById("result").textContent;
       if (link) {
           window.open(link, "_blank");
       }
     }
 
     function deleteLink() {
-      document.getElementById("result").textContent = ""; // Clear the result text content
+      document.getElementById("result").textContent = "";
       document.getElementById("result").style.display = "none";
       document.getElementById("copyButton").disabled = true;
     }
