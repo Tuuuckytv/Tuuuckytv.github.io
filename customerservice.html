@@ -259,6 +259,16 @@
       var burger = document.querySelector('.burger');
       burger.classList.toggle('active');
     }
+
+    // Close the menu if a click happens outside the menu or burger button
+    document.addEventListener('click', function(event) {
+      var menu = document.getElementById('menu');
+      var burger = document.querySelector('.burger');
+      if (menu.classList.contains('show') && !menu.contains(event.target) && !burger.contains(event.target)) {
+        menu.classList.remove('show');
+        burger.classList.remove('active');
+      }
+    });
     
     // Add fade-in animation to the image when the page loads
     window.addEventListener('load', function() {
