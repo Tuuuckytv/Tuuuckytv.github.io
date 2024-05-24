@@ -25,7 +25,7 @@
     left: 50%;
     transform: translateX(-50%);
     margin-bottom: 20px;
-}
+  }
 
   form {
     display: flex;
@@ -63,9 +63,9 @@
     top: 20%; /* Adjusted to move the form closer to the top */
     left: 50%;
     transform: translateX(-50%);
-}
+  }
 
-#result {
+  #result {
     position: absolute;
     top: calc(50% + 50px);
     left: 50%;
@@ -83,7 +83,7 @@
     overflow-wrap: break-word; /* Break long words to fit */
     max-height: 50vh; /* Limit maximum height to 50% of viewport height */
     overflow-y: auto; /* Add scrollbar if content overflows vertically */
-}
+  }
 
   nav {
     position: fixed;
@@ -262,6 +262,17 @@
         burger.classList.remove('menu-show');
       }
     }
+
+    // Close the menu if a click happens outside the menu or burger button
+    document.addEventListener('click', function(event) {
+      var menu = document.getElementById('menu');
+      var burger = document.querySelector('.burger');
+      if (menu.classList.contains('show') && !menu.contains(event.target) && !burger.contains(event.target)) {
+        menu.classList.remove('show');
+        burger.classList.remove('active');
+        burger.classList.remove('menu-show');
+      }
+    });
 
     function generateLink() {
       var email = document.getElementById("email").value;
