@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oh,Fuck</title>
+    <title>Oh, Fuck</title>
     <link rel="icon" href="spiderman.png" type="image/png">
     <style>
         body {
@@ -146,31 +146,32 @@
             border-radius: 5px;
             font-size: 18px;
             text-decoration: none;
+            z-index: 1000;
         }
 
         footer {
-  position: fixed;
-  bottom: 0;
-  right: 0;
-  padding: 10px;
-  color: #e5cd0b;
-  font-family: Consolas, Arial, sans-serif;
-  z-index: 1;
-  font-size: 12px;
-  display: flex;
-  align-items: center;
-}
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            padding: 10px;
+            color: #e5cd0b;
+            font-family: Consolas, Arial, sans-serif;
+            z-index: 1;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+        }
 
-.footer-icons {
-  margin-left: 10px;
-}
+        .footer-icons {
+            margin-left: 10px;
+        }
 
-.footer-icon {
-  margin-right: 5px;
-  width: 24px; /* Set the width of the icons */
-  height: 24px; /* Set the height of the icons */
-  object-fit: cover; /* Ensure the image covers the area without distortion */
-}
+        .footer-icon {
+            margin-right: 5px;
+            width: 24px;
+            height: 24px;
+            object-fit: cover;
+        }
 
         @media screen and (max-width: 768px) {
             .header {
@@ -192,8 +193,10 @@
             }
 
             .button {
-                bottom: 10px;
-                left: 10px;
+                bottom: auto;
+                left: auto;
+                top: 20px;
+                right: 20px;
                 padding: 8px 15px;
                 font-size: 14px;
             }
@@ -291,51 +294,29 @@
             const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-            countdownElement.textContent = `${hours}h ${minutes}m ${seconds}s`;
-
-            if (hours === 0 && minutes === 0 && seconds === 0) {
-                countdownElement.style.backgroundColor = "red";
-                setTimeout(() => {
-                    countdownElement.style.backgroundColor = "#EC008C";
-                }, 1000);
-            }
+            countdownElement.innerHTML = `${hours}h ${minutes}m ${seconds}s`;
         }
 
-        const dpdEndTime = new Date();
-        dpdEndTime.setUTCHours(17, 0, 0, 0);
-        const rmEndTime = new Date();
-        rmEndTime.setUTCHours(19, 0, 0, 0);
+        document.addEventListener('DOMContentLoaded', function() {
+            const dpdEndTime = new Date();
+            dpdEndTime.setHours(15, 0, 0, 0);
 
-        setInterval(function () {
-            updateCountdown(dpdEndTime, document.getElementById("dpdCountdown"));
-            updateCountdown(rmEndTime, document.getElementById("rmCountdown"));
-            updateSpecialCountdown();
-        }, 1000);
+            const rmEndTime = new Date();
+            rmEndTime.setHours(14, 0, 0, 0);
 
-        function updateSpecialCountdown() {
-            const now = new Date();
-            let specialEndTime = new Date(now);
-            if (now.getUTCHours() >= 13) {
-                specialEndTime.setDate(now.getDate() + 1);
-            }
-            specialEndTime.setUTCHours(13, 0, 0, 0);
+            const specialEndTime = new Date();
+            specialEndTime.setHours(16, 0, 0, 0);
 
-            updateCountdown(specialEndTime, document.getElementById("specialCountdown"));
-        }
+            const dpdCountdownElement = document.getElementById('dpdCountdown');
+            const rmCountdownElement = document.getElementById('rmCountdown');
+            const specialCountdownElement = document.getElementById('specialCountdown');
 
-        window.addEventListener('load', function() {
-            adjustMarginTop();
+            setInterval(function() {
+                updateCountdown(dpdEndTime, dpdCountdownElement);
+                updateCountdown(rmEndTime, rmCountdownElement);
+                updateCountdown(specialEndTime, specialCountdownElement);
+            }, 1000);
         });
-
-        window.addEventListener('resize', function() {
-            adjustMarginTop();
-        });
-
-        function adjustMarginTop() {
-            var headerHeight = document.querySelector('.header').offsetHeight;
-            var countdownTimers = document.querySelector('.countdown-timers');
-            countdownTimers.style.marginTop = headerHeight + 'px';
-        }
     </script>
 </body>
 </html>
