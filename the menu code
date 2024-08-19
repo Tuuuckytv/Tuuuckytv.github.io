@@ -97,28 +97,30 @@
     left: 240px; /* Adjusted position when menu is shown */
   }
 
-  .footer {
-    position: fixed; /* Set to fixed position */
-    bottom: 0;
-    right: 0; /* Align right */
-    padding: 10px;
-    text-align: center;
-    color: #e5cd0b;
-    font-family: Consolas, Arial, sans-serif;
-    font-size: 12px;
-    background-color: #373b41;
-    z-index: 3; /* Ensure footer is above the main content */
-    display: flex; /* Align items horizontally */
-    align-items: center; /* Center items vertically */
-  }
+  footer {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  padding: 10px;
+  color: #e5cd0b;
+  font-family: Consolas, Arial, sans-serif;
+  z-index: 1;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+}
 
-  .footer-icons {
-    margin-left: 10px;
-  }
+.footer-icons {
+  margin-left: 10px;
+}
 
-  .footer-icon {
-    margin-right: 5px;
-  }
+.footer-icon {
+  margin-right: 5px;
+  width: 24px; /* Set the width of the icons */
+  height: 24px; /* Set the height of the icons */
+  object-fit: cover; /* Ensure the image covers the area without distortion */
+}
+
 </style>
 </head>
 <body>
