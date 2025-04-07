@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sale Pipe Formatter</title>
-<link rel="icon" href="pipe.png" type="image/png">
+    <link rel="icon" href="pipe.png" type="image/png">
 
     <style>
         body {
@@ -39,6 +39,7 @@
             border-radius: 5px;
             outline: none;
             text-align: center;
+            caret-color: transparent; /* Hides blinking cursor */
         }
         .output-container {
             margin-top: 20px;
@@ -79,7 +80,8 @@
 </head>
 <body>
     <div class="container">
-        <h2>Paste sales  number here</h2>
+        <h2>Paste sales number here</h2>
+        <p style="margin-top: -10px; font-size: 14px; color: #555;">Ensure spaces between each sales number</p>
         <input type="text" id="inputText" placeholder="Enter text here" oninput="formatText()">
         <div class="button-container">
             <button id="copyButton" onclick="copyText()">Copy</button>
@@ -107,22 +109,29 @@
                 clearButton.style.display = "block";
             }
         }
-        
+
         function copyText() {
             let text = document.getElementById('outputText').innerText;
             navigator.clipboard.writeText(text).then(() => {
-                ;
+                // Optionally show feedback
             }).catch(err => {
                 console.error('Error copying text:', err);
             });
         }
 
         function clearText() {
-            document.getElementById('inputText').value = "";
+            const input = document.getElementById('inputText');
+            input.value = "";
             document.getElementById('outputText').style.display = "none";
             document.getElementById('copyButton').style.display = "none";
             document.getElementById('clearButton').style.display = "none";
+            input.focus(); // Re-focus input after clearing
         }
+
+        // Auto-focus the input on page load
+        window.onload = function () {
+            document.getElementById('inputText').focus();
+        };
     </script>
 </body>
 </html>
