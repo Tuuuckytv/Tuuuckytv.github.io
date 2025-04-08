@@ -17,6 +17,7 @@
             margin: 0;
             padding: 20px;
             box-sizing: border-box;
+            position: relative;
         }
         .container {
             text-align: center;
@@ -30,6 +31,12 @@
             flex-direction: column;
             align-items: center;
         }
+        #qtyMarker {
+            align-self: flex-start;
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 5px;
+        }
         input {
             width: calc(100% - 20px);
             padding: 10px;
@@ -39,7 +46,7 @@
             border-radius: 5px;
             outline: none;
             text-align: center;
-            caret-color: transparent; /* Hides blinking cursor */
+            caret-color: transparent;
         }
         .output-container {
             margin-top: 20px;
@@ -76,19 +83,35 @@
         button:hover {
             background-color: #0056b3;
         }
+
+        footer {
+            position: fixed;
+            bottom: 10px;
+            right: 15px;
+            font-size: 12px;
+            color: #777;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h2>Paste sales number here</h2>
         <p style="margin-top: -10px; font-size: 14px; color: #555;">Ensure spaces between each sales number</p>
+
+        <div id="qtyMarker">Qty: 0</div>
+
         <input type="text" id="inputText" placeholder="Enter text here" oninput="formatText()">
+        
         <div class="button-container">
             <button id="copyButton" onclick="copyText()">Copy</button>
             <button id="clearButton" onclick="clearText()">Clear</button>
         </div>
+
         <div class="output-container" id="outputText"></div>
     </div>
+
+    <footer>Please note qty may not reflect the actual number </footer>
 
     <script>
         function formatText() {
@@ -96,24 +119,28 @@
             let outputContainer = document.getElementById('outputText');
             let copyButton = document.getElementById('copyButton');
             let clearButton = document.getElementById('clearButton');
-            
+            let qtyMarker = document.getElementById('qtyMarker');
+
             if (input.trim() === "") {
                 outputContainer.style.display = "none";
                 copyButton.style.display = "none";
                 clearButton.style.display = "none";
+                qtyMarker.innerText = "Qty: 0";
             } else {
-                let formatted = input.trim().split(/\s+/).join('|');
+                let parts = input.trim().split(/\s+/);
+                let formatted = parts.join('|');
                 outputContainer.innerText = formatted;
                 outputContainer.style.display = "block";
                 copyButton.style.display = "block";
                 clearButton.style.display = "block";
+                qtyMarker.innerText = `Qty: ${parts.length}`;
             }
         }
 
         function copyText() {
             let text = document.getElementById('outputText').innerText;
             navigator.clipboard.writeText(text).then(() => {
-                // Optionally show feedback
+                // Optional feedback
             }).catch(err => {
                 console.error('Error copying text:', err);
             });
@@ -125,10 +152,10 @@
             document.getElementById('outputText').style.display = "none";
             document.getElementById('copyButton').style.display = "none";
             document.getElementById('clearButton').style.display = "none";
-            input.focus(); // Re-focus input after clearing
+            document.getElementById('qtyMarker').innerText = "Qty: 0";
+            input.focus();
         }
 
-        // Auto-focus the input on page load
         window.onload = function () {
             document.getElementById('inputText').focus();
         };
