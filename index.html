@@ -1,164 +1,237 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sale Pipe Formatter</title>
-    <link rel="icon" href="pipe.png" type="image/png">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sale Pipe Formatter</title>
+  <link rel="icon" href="pipe.png" type="image/png" />
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f6f7f8;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      padding: 20px;
+    }
 
-    <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #f6f7f8;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            box-sizing: border-box;
-            position: relative;
-        }
-        .container {
-            text-align: center;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            width: 90%;
-            max-width: 500px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        #qtyMarker {
-            align-self: flex-start;
-            font-size: 14px;
-            color: #555;
-            margin-bottom: 5px;
-        }
-        input {
-            width: calc(100% - 20px);
-            padding: 10px;
-            margin-top: 10px;
-            font-size: 16px;
-            border: 1px solid #000;
-            border-radius: 5px;
-            outline: none;
-            text-align: center;
-            caret-color: transparent;
-        }
-        .output-container {
-            margin-top: 20px;
-            max-height: 150px;
-            overflow-y: auto;
-            border: 1px solid #000;
-            padding: 10px;
-            background: #fff;
-            text-align: center;
-            font-weight: bold;
-            font-size: 16px;
-            word-break: break-word;
-            border-radius: 5px;
-            display: none;
-            width: calc(100% - 20px);
-        }
-        .button-container {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        button {
-            padding: 10px 15px;
-            font-size: 16px;
-            cursor: pointer;
-            border: none;
-            background-color: #0f858e;
-            color: white;
-            border-radius: 5px;
-            transition: background 0.3s;
-            display: none;
-            text-align: center;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
+    /* Pipes falling */
+    .pipe-background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      pointer-events: none;
+    }
 
-        footer {
-            position: fixed;
-            bottom: 10px;
-            right: 15px;
-            font-size: 12px;
-            color: #777;
-            font-style: italic;
-        }
-    </style>
+    .pipe {
+      position: absolute;
+      width: 30px;
+      height: auto;
+      animation: fall linear infinite;
+      opacity: 0.15;
+    }
+
+    @keyframes fall {
+      0% {
+        transform: translateY(-100px);
+        opacity: 0;
+      }
+      10% {
+        opacity: 0.15;
+      }
+      100% {
+        transform: translateY(110vh);
+        opacity: 0.15;
+      }
+    }
+
+    /* Main Container */
+    .container {
+      text-align: center;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 500px;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    #qtyMarker {
+      align-self: flex-start;
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 5px;
+    }
+
+    input {
+      width: calc(100% - 20px);
+      padding: 10px;
+      margin-top: 10px;
+      font-size: 16px;
+      border: 1px solid #000;
+      border-radius: 5px;
+      outline: none;
+      text-align: center;
+      caret-color: transparent;
+    }
+
+    .output-container {
+      margin-top: 20px;
+      max-height: 150px;
+      overflow-y: auto;
+      border: 1px solid #000;
+      padding: 10px;
+      background: #fff;
+      text-align: center;
+      font-weight: bold;
+      font-size: 16px;
+      word-break: break-word;
+      border-radius: 5px;
+      display: none;
+      width: calc(100% - 20px);
+    }
+
+    .button-container {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    button {
+      padding: 10px 15px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      background-color: #0f858e;
+      color: white;
+      border-radius: 5px;
+      transition: background 0.3s;
+      display: none;
+      text-align: center;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    footer {
+      position: fixed;
+      bottom: 10px;
+      right: 15px;
+      font-size: 12px;
+      color: #777;
+      font-style: italic;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h2>Paste sales number here</h2>
-        <p style="margin-top: -10px; font-size: 14px; color: #555;">Ensure spaces between each sales number</p>
 
-        <div id="qtyMarker">Qty: 0</div>
+  <!-- Pipe Rain -->
+  <div class="pipe-background" id="pipeBackground"></div>
 
-        <input type="text" id="inputText" placeholder="Enter text here" oninput="formatText()">
-        
-        <div class="button-container">
-            <button id="copyButton" onclick="copyText()">Copy</button>
-            <button id="clearButton" onclick="clearText()">Clear</button>
-        </div>
+  <div class="container">
+    <h2>Paste sales number here</h2>
+    <p style="margin-top: -10px; font-size: 14px; color: #555;">Ensure spaces between each sales number</p>
 
-        <div class="output-container" id="outputText"></div>
+    <div id="qtyMarker">Qty: 0</div>
+
+    <input type="text" id="inputText" placeholder="Enter text here" oninput="formatText()" />
+
+    <div class="button-container">
+      <button id="copyButton" onclick="copyText()">Copy</button>
+      <button id="clearButton" onclick="clearText()">Clear</button>
     </div>
 
-    <footer>Please note qty may not reflect the actual number </footer>
+    <div class="output-container" id="outputText"></div>
+  </div>
 
-    <script>
-        function formatText() {
-            let input = document.getElementById('inputText').value;
-            let outputContainer = document.getElementById('outputText');
-            let copyButton = document.getElementById('copyButton');
-            let clearButton = document.getElementById('clearButton');
-            let qtyMarker = document.getElementById('qtyMarker');
+  <footer>Please note qty may not reflect the actual number</footer>
 
-            if (input.trim() === "") {
-                outputContainer.style.display = "none";
-                copyButton.style.display = "none";
-                clearButton.style.display = "none";
-                qtyMarker.innerText = "Qty: 0";
-            } else {
-                let parts = input.trim().split(/\s+/);
-                let formatted = parts.join('|');
-                outputContainer.innerText = formatted;
-                outputContainer.style.display = "block";
-                copyButton.style.display = "block";
-                clearButton.style.display = "block";
-                qtyMarker.innerText = `Qty: ${parts.length}`;
-            }
-        }
+  <script>
+    function formatText() {
+      const input = document.getElementById('inputText').value;
+      const output = document.getElementById('outputText');
+      const copyBtn = document.getElementById('copyButton');
+      const clearBtn = document.getElementById('clearButton');
+      const qty = document.getElementById('qtyMarker');
 
-        function copyText() {
-            let text = document.getElementById('outputText').innerText;
-            navigator.clipboard.writeText(text).then(() => {
-                // Optional feedback
-            }).catch(err => {
-                console.error('Error copying text:', err);
-            });
-        }
+      if (input.trim() === "") {
+        output.style.display = "none";
+        copyBtn.style.display = "none";
+        clearBtn.style.display = "none";
+        qty.innerText = "Qty: 0";
+      } else {
+        const parts = input.trim().split(/\s+/);
+        const formatted = parts.join('|');
+        output.innerText = formatted;
+        output.style.display = "block";
+        copyBtn.style.display = "block";
+        clearBtn.style.display = "block";
+        qty.innerText = `Qty: ${parts.length}`;
+      }
+    }
 
-        function clearText() {
-            const input = document.getElementById('inputText');
-            input.value = "";
-            document.getElementById('outputText').style.display = "none";
-            document.getElementById('copyButton').style.display = "none";
-            document.getElementById('clearButton').style.display = "none";
-            document.getElementById('qtyMarker').innerText = "Qty: 0";
-            input.focus();
-        }
+    function copyText() {
+      const text = document.getElementById('outputText').innerText;
+      navigator.clipboard.writeText(text).catch(err => {
+        console.error('Error copying text:', err);
+      });
+    }
 
-        window.onload = function () {
-            document.getElementById('inputText').focus();
-        };
-    </script>
+    function clearText() {
+      const input = document.getElementById('inputText');
+      input.value = "";
+      document.getElementById('outputText').style.display = "none";
+      document.getElementById('copyButton').style.display = "none";
+      document.getElementById('clearButton').style.display = "none";
+      document.getElementById('qtyMarker').innerText = "Qty: 0";
+      input.focus();
+    }
+
+    // Rain setup
+    window.onload = () => {
+      const container = document.getElementById('pipeBackground');
+      const numPipes = 50;
+      const screenWidth = window.innerWidth;
+
+      for (let i = 0; i < numPipes; i++) {
+        const pipe = document.createElement('img');
+        pipe.src = 'pipe.png';
+        pipe.className = 'pipe';
+
+        // Random horizontal position
+        const left = Math.random() * screenWidth;
+
+        // Random top offset (start above screen)
+        const topOffset = -Math.random() * 1000;
+
+        // Random fall speed between 4 and 8 seconds
+        const duration = 8 + Math.random() * 4;
+
+        // Random animation delay
+        const delay = Math.random() * 5;
+
+        pipe.style.left = `${left}px`;
+        pipe.style.top = `${topOffset}px`;
+        pipe.style.animationDuration = `${duration}s`;
+        pipe.style.animationDelay = `${delay}s`;
+
+        container.appendChild(pipe);
+      }
+
+      document.getElementById('inputText').focus();
+    };
+  </script>
 </body>
 </html>
