@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Age Calculator</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+    }
+
+    #container {
+      text-align: center;
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    input {
+      padding: 0.5rem;
+      font-size: 1rem;
+      width: 250px;
+      margin-bottom: 1rem;
+    }
+
+    button {
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    #output {
+      margin-top: 1rem;
+      font-size: 1.1rem;
+    }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <h2>Enter Birthdate (e.g., Sat 10/05/2015)</h2>
+    <input type="text" id="birthInput" placeholder="Day dd/mm/yyyy" />
+    <br />
+    <button onclick="calculateAge()">Calculate Age</button>
+    <div id="output"></div>
+  </div>
+
+  <script>
+    function calculateAge() {
+      const input = document.getElementById("birthInput").value.trim();
+      const output = document.getElementById("output");
+
+      // Extract date part (assume user typed like "Sat 10/05/2015")
+      const datePart = input.split(" ").pop();
+      const parts = datePart.split("/");
+
+      if (parts.length !== 3) {
+        output.textContent = "Invalid date format. Use dd/mm/yyyy.";
+        return;
+      }
+
+      const [day, month, year] = parts.map(Number);
+      const birthDate = new Date(year, month - 1, day);
+      const today = new Date();
+
+      if (isNaN(birthDate.getTime())) {
+        output.textContent = "Invalid date.";
+        return;
+      }
+
+      let ageYears = today.getFullYear() - birthDate.getFullYear();
+      let ageMonths = today.getMonth() - birthDate.getMonth();
+      let ageDays = today.getDate() - birthDate.getDate();
+
+      if (ageDays < 0) {
+        ageMonths--;
+        const lastMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+        ageDays += lastMonth.getDate();
+      }
+
+      if (ageMonths < 0) {
+        ageYears--;
+        ageMonths += 12;
+      }
+
+      output.textContent = `Exact Age: ${ageYears} years, ${ageMonths} months, ${ageDays} days`;
+    }
+  </script>
+</body>
+</html>
