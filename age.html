@@ -184,6 +184,12 @@
 
       let [_, day, month, year] = dateMatch;
 
+      // Check if the month is valid
+      if (parseInt(month) > 12 || parseInt(month) < 1) {
+        output.textContent = "Invalid month. Must be between 01 and 12.";
+        return;
+      }
+
       if (year.length === 2) {
         year = +year > 30 ? "19" + year : "20" + year;
       }
