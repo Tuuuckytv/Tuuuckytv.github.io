@@ -18,51 +18,29 @@
       padding: 20px;
     }
 
-    .menu-button {
+    /* Buttons in the top left */
+    .top-buttons {
       position: fixed;
       top: 15px;
       left: 15px;
-      font-size: 24px;
-      color: #0f858e;
-      padding: 8px 12px;
-      border-radius: 5px;
-      cursor: pointer;
+      display: flex;
+      gap: 10px;
       z-index: 11;
     }
 
-    .side-menu {
-      position: fixed;
-      top: 0;
-      left: -200px;
-      width: 180px;
-      height: 100%;
-      background-color: #fff;
-      box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-      padding: 20px 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      z-index: 10;
-      transition: left 0.3s ease;
-      box-sizing: border-box;
-    }
-
-    /* Spacer to prevent overlap with menu-button */
-    .side-menu .spacer {
-      height: 40px;
-    }
-
-    .side-menu button {
-      padding: 10px;
+    .top-buttons button {
       font-size: 16px;
       background-color: #0f858e;
       color: white;
-      border: none;
+      padding: 8px 12px;
       border-radius: 5px;
       cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      border: none;
+      transition: background-color 0.3s;
     }
 
-    .side-menu button:hover {
+    .top-buttons button:hover {
       background-color: #0056b3;
     }
 
@@ -71,7 +49,7 @@
       background: white;
       padding: 2rem;
       border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
       width: 90%;
       max-width: 500px;
       z-index: 1;
@@ -123,12 +101,8 @@
 </head>
 <body>
 
-  <!-- Burger Menu Button -->
-  <div class="menu-button" onclick="toggleMenu()">☰</div>
-
-  <!-- Side Slide-Out Menu -->
-  <div class="side-menu" id="sideMenu">
-    <div class="spacer"></div>
+  <!-- Top Buttons for Navigation -->
+  <div class="top-buttons">
     <button onclick="location.href='age.html'">Ages</button>
     <button onclick="location.href='index.html'">Pipe Formatter</button>
   </div>
@@ -145,11 +119,6 @@
   <footer>Ensure valid date format for accurate results</footer>
 
   <script>
-    function toggleMenu() {
-      const menu = document.getElementById('sideMenu');
-      menu.style.left = (menu.style.left === '0px') ? '-200px' : '0px';
-    }
-
     function calculateAge() {
       const input = document.getElementById("birthInput").value.trim();
       const output = document.getElementById("output");
