@@ -52,6 +52,52 @@
       }
     }
 
+    /* Menu Button */
+    .menu-button {
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      font-size: 24px;
+      background-color: #0f858e;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+      z-index: 10;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    /* Side Menu */
+    .side-menu {
+      position: fixed;
+      top: 0;
+      left: -200px;
+      width: 180px;
+      height: 100%;
+      background-color: #fff;
+      box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+      padding: 20px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 9;
+      transition: left 0.3s ease;
+    }
+
+    .side-menu button {
+      padding: 10px;
+      font-size: 16px;
+      background-color: #0f858e;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .side-menu button:hover {
+      background-color: #0056b3;
+    }
+
     /* Main Container */
     .container {
       text-align: center;
@@ -137,9 +183,17 @@
 </head>
 <body>
 
+  <!-- Menu -->
+  <div class="menu-button" onclick="toggleMenu()">☰</div>
+  <div class="side-menu" id="sideMenu">
+    <button onclick="location.href='age.html'">Ages</button>
+    <button onclick="location.href='pipe-formatter.html'">Pipe Formatter</button>
+  </div>
+
   <!-- Pipe Rain -->
   <div class="pipe-background" id="pipeBackground"></div>
 
+  <!-- Main UI -->
   <div class="container">
     <h2>Paste sales number here</h2>
     <p style="margin-top: -10px; font-size: 14px; color: #555;">Ensure spaces between each sales number</p>
@@ -199,6 +253,15 @@
       input.focus();
     }
 
+    function toggleMenu() {
+      const menu = document.getElementById('sideMenu');
+      if (menu.style.left === '0px') {
+        menu.style.left = '-200px';
+      } else {
+        menu.style.left = '0px';
+      }
+    }
+
     // Rain setup
     window.onload = () => {
       const container = document.getElementById('pipeBackground');
@@ -210,16 +273,9 @@
         pipe.src = 'pipe.png';
         pipe.className = 'pipe';
 
-        // Random horizontal position
         const left = Math.random() * screenWidth;
-
-        // Random top offset (start above screen)
         const topOffset = -Math.random() * 1000;
-
-        // Random fall speed between 4 and 8 seconds
         const duration = 8 + Math.random() * 4;
-
-        // Random animation delay
         const delay = Math.random() * 5;
 
         pipe.style.left = `${left}px`;
