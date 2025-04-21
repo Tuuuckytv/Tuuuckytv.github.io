@@ -43,7 +43,6 @@
       100% { transform: translateY(110vh); opacity: 0.15; }
     }
 
-    /* Menu Button */
     .menu-buttons {
       position: fixed;
       top: 15px;
@@ -68,9 +67,30 @@
       background-color: #0056b3;
     }
 
-    .menu-buttons button:active {
-      background-color: #0056b3;
-      color: #fff;
+    .headline-scroller {
+      position: fixed;
+      top: 100px;
+      width: 100%;
+      color: #0f858e;
+      font-weight: bold;
+      font-size: 16px;
+      overflow: hidden;
+      white-space: nowrap;
+      z-index: 11;
+      height: 30px;
+      display: flex;
+      align-items: center;
+    }
+
+    .headline-text {
+      display: inline-block;
+      padding-left: 100%;
+      animation: scroll-left 20s linear infinite;
+    }
+
+    @keyframes scroll-left {
+      0% { transform: translateX(0%); }
+      100% { transform: translateX(-100%); }
     }
 
     .container {
@@ -157,16 +177,17 @@
 </head>
 <body>
 
-  <!-- Menu Buttons -->
+  <div class="headline-scroller">
+    <div class="headline-text" id="headlineText">Loading motivation...</div>
+  </div>
+
   <div class="menu-buttons">
     <button onclick="location.href='age'">Ages</button>
     <button onclick="location.href='index'">Pipe Formatter</button>
   </div>
 
-  <!-- Pipe Rain Effect -->
   <div class="pipe-background" id="pipeBackground"></div>
 
-  <!-- Main UI Content -->
   <div class="container">
     <h2>Paste sales number here</h2>
     <p style="margin-top: -10px; font-size: 14px; color: #555;">Ensure spaces between each sales number</p>
@@ -250,6 +271,17 @@
       }
 
       document.getElementById('inputText').focus();
+
+      fetch('motivation.txt')
+        .then(response => response.text())
+        .then(data => {
+          const lines = data.split('\n').filter(line => line.trim() !== '');
+          const randomLine = lines[Math.floor(Math.random() * lines.length)];
+          document.getElementById('headlineText').textContent = randomLine;
+        })
+        .catch(() => {
+          document.getElementById('headlineText').textContent = 'Stay positive. Keep pushing forward!';
+        });
     };
   </script>
 </body>
