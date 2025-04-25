@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Download Prompt</title>
+  <link rel="icon" href="pipe.png" type="image/png" />
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f6f7f8;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      padding: 20px;
+    }
+
+    .top-buttons {
+      position: fixed;
+      top: 16px;
+      left: 15px;
+      display: flex;
+      gap: 15px;
+      z-index: 11;
+    }
+
+    .top-buttons button {
+      font-size: 16px;
+      background-color: #0f858e;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      border: none;
+      transition: background-color 0.3s;
+    }
+
+    .top-buttons button:hover {
+      background-color: #0056b3;
+    }
+
+    .main-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      position: relative;
+    }
+
+    .preview-thumb {
+      position: absolute; /* Position the thumbnail independently */
+      left: -150px; /* Adjust left to position it correctly to the left of the container */
+      text-align: center;
+    }
+
+    .preview-thumb img {
+      width: 120px; /* Thumbnail size */
+      height: auto;
+      border-radius: 5px;
+      cursor: pointer;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .preview-thumb small {
+      display: block;
+      margin-top: 5px;
+      color: #666;
+      font-size: 11px;
+      font-style: italic;
+    }
+
+    /* Full-size image is hidden by default */
+    .full-preview {
+      display: none;
+      position: absolute;
+      top: -140px; /* Raised the image upwards by adjusting this value */
+      left: 130px; /* Position it to the right of the thumbnail */
+      background: rgba(0, 0, 0, 0.6); /* Dark shadow background */
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+      z-index: 1000;
+    }
+
+    /* When hovering over the thumbnail, show the full preview */
+    .preview-thumb:hover .full-preview {
+      display: block;
+    }
+
+    /* Scale factor: for every 120px thumbnail, scale image to 200 times larger */
+    .full-preview img {
+      width: 400px; /* Full-size image 200 times larger than the thumbnail (120px x 200 = 2400px) */
+      height: auto;
+      border-radius: 6px;
+    }
+
+    #container {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 500px;
+      z-index: 1;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center; /* Ensure content is vertically centered within the container */
+    }
+
+    .download-btn {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      background-color: #0f858e;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      transition: background 0.3s;
+    }
+
+    .download-btn:hover {
+      background-color: #0056b3;
+    }
+
+    footer {
+      position: fixed;
+      bottom: 10px;
+      right: 15px;
+      font-size: 12px;
+      color: #777;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <div class="top-buttons">
+    <button onclick="location.href='age'">Ages</button>
+    <button onclick="location.href='index'">Pipe Formatter</button>
+    <button onclick="location.href='download'">Prompt Generator</button>
+  </div>
+
+  <div class="main-wrapper">
+    <!-- Thumbnail with hover preview positioned to the left -->
+    <div class="preview-thumb">
+      <img src="prompt.png" alt="Prompt thumbnail" />
+      <small>Hover to preview</small>
+      <div class="full-preview">
+        <img src="prompt.png" alt="Full-size prompt preview" />
+      </div>
+    </div>
+
+    <!-- Download section centered -->
+    <div id="container">
+      <h2>Prompt Generator</h2>
+      <a class="download-btn" href="prompt.ahk" download>Get Prompt Manager</a>
+    </div>
+  </div>
+
+  <footer>Kyle Tuck Inc.</footer>
+</body>
+</html>
