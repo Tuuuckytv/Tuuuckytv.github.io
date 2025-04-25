@@ -121,10 +121,69 @@
       text-decoration: none;
       border-radius: 5px;
       transition: background 0.3s;
+      cursor: pointer;
     }
 
     .download-btn:hover {
       background-color: #0056b3;
+    }
+
+    /* Modal styling */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 1001;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      width: 320px;
+      max-width: 90%;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal input {
+      padding: 12px;
+      font-size: 16px;
+      width: 100%;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+
+    .modal button {
+      padding: 12px 25px;
+      background-color: #0f858e;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      width: 100%;
+      margin-bottom: 10px;
+      box-sizing: border-box;
+    }
+
+    .modal button:hover {
+      background-color: #0056b3;
+    }
+
+    .error-message {
+      color: red;
+      font-size: 14px;
+      margin-top: 10px;
+      display: none; /* Initially hidden */
     }
 
     footer {
@@ -136,6 +195,46 @@
       font-style: italic;
     }
   </style>
+  <script>
+    // Function to show the modal
+    function showModal() {
+      document.getElementById('passwordModal').style.display = 'flex';
+      document.getElementById('passwordInput').focus(); // Focus on the input field when the modal opens
+      document.getElementById('error-message').style.display = 'none'; // Hide any previous error messages
+    }
+
+    // Function to validate the password and trigger download
+    function checkPassword() {
+      const password = document.getElementById('passwordInput').value;
+
+      // Validate the password
+      if (password === 'JeffGoldblum') {
+        window.location.href = "prompt.ahk"; // Trigger the download
+        closeModal(); // Close the modal
+      } else {
+        document.getElementById('error-message').style.display = 'block'; // Show error message
+      }
+    }
+
+    // Function to close the modal
+    function closeModal() {
+      document.getElementById('passwordModal').style.display = 'none';
+    }
+
+    // Close modal if clicking outside of it
+    window.onclick = function(event) {
+      if (event.target === document.getElementById('passwordModal')) {
+        closeModal();
+      }
+    }
+
+    // Allow pressing "Enter" to submit the password
+    document.getElementById('passwordInput').addEventListener('keydown', function(event) {
+      if (event.key === 'Enter') {
+        checkPassword();
+      }
+    });
+  </script>
 </head>
 <body>
   <div class="top-buttons">
@@ -157,7 +256,18 @@
     <!-- Download section centered -->
     <div id="container">
       <h2>Prompt Generator</h2>
-      <a class="download-btn" href="prompt.ahk" download>Get Prompt Manager</a>
+      <button class="download-btn" onclick="showModal()">Get Prompt Manager</button>
+    </div>
+  </div>
+
+  <!-- Modal for password input -->
+  <div id="passwordModal" class="modal">
+    <div class="modal-content">
+      <h3>Enter Password</h3>
+      <input type="password" id="passwordInput" placeholder="Enter password" />
+      <button onclick="checkPassword()">Submit</button>
+      <button onclick="closeModal()">Cancel</button>
+      <div id="error-message" class="error-message">Incorrect password. Access denied.</div>
     </div>
   </div>
 
