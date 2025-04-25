@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sale Pipe Formatter</title>
+  <title>Kyle Tuck Tools</title>
   <link rel="icon" href="pipe.png" type="image/png" />
   <style>
     body {
@@ -15,153 +15,85 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      position: relative;
       padding: 20px;
+      position: relative;
     }
 
-    .pipe-background {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 0;
-      pointer-events: none;
-    }
-
-    .pipe {
-      position: absolute;
-      width: 30px;
-      height: auto;
-      animation: fall linear infinite;
-      opacity: 0.15;
-    }
-
-    @keyframes fall {
-      0% { transform: translateY(-100px); opacity: 0; }
-      10% { opacity: 0.15; }
-      100% { transform: translateY(110vh); opacity: 0.15; }
-    }
-
-    .menu-buttons {
+    .top-buttons {
       position: fixed;
-      top: 15px;
+      top: 16px;
       left: 15px;
-      z-index: 10;
       display: flex;
       gap: 15px;
+      z-index: 11;
     }
 
-    .menu-buttons button {
+    .top-buttons button {
       font-size: 16px;
       background-color: #0f858e;
       color: white;
       padding: 8px 12px;
       border-radius: 5px;
       cursor: pointer;
-      transition: background-color 0.3s;
       border: none;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      transition: background-color 0.3s;
     }
 
-    .menu-buttons button:hover {
+    .top-buttons button:hover {
       background-color: #0056b3;
-    }
-
-    .headline-scroller {
-      position: fixed;
-      top: 150px;
-      width: 100%;
-      color: #0f858e;
-      font-weight: bold;
-      font-size: 18px;
-      overflow: hidden;
-      white-space: nowrap;
-      z-index: 11;
-      height: 30px;
-      display: flex;
-      align-items: center;
-    }
-
-    .headline-text {
-      display: inline-block;
-      padding-left: 100%;
-      animation: scroll-left 10s linear infinite;
-    }
-
-    @keyframes scroll-left {
-      0% { transform: translateX(0%); }
-      100% { transform: translateX(-100%); }
     }
 
     .container {
-      text-align: center;
       background: white;
-      padding: 20px;
-      border-radius: 10px;
+      padding: 2rem;
+      border-radius: 12px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      max-width: 600px;
       width: 90%;
-      max-width: 500px;
+      text-align: center;
       z-index: 1;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+      color: #0f858e;
+    }
+
+    p {
+      margin-bottom: 30px;
+      color: #555;
+    }
+
+    .tool-grid {
       display: flex;
       flex-direction: column;
-      align-items: center;
+      gap: 15px;
     }
 
-    #qtyMarker {
-      align-self: flex-start;
-      font-size: 14px;
-      color: #555;
-      margin-bottom: 5px;
+    @media (min-width: 500px) {
+      .tool-grid {
+        flex-direction: row;
+        justify-content: center;
+      }
     }
 
-    input {
-      width: calc(100% - 20px);
-      padding: 10px;
-      margin-top: 10px;
-      font-size: 16px;
-      border: 1px solid #000;
-      border-radius: 5px;
-      outline: none;
-      text-align: center;
-      caret-color: transparent;
-    }
-
-    .output-container {
-      margin-top: 20px;
-      max-height: 150px;
-      overflow-y: auto;
-      border: 1px solid #000;
-      padding: 10px;
-      background: #fff;
+    .tool-card {
+      background-color: #e2f3f5;
+      border-radius: 8px;
+      padding: 20px;
+      flex: 1;
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.3s ease;
       text-align: center;
       font-weight: bold;
-      font-size: 16px;
-      word-break: break-word;
-      border-radius: 5px;
-      display: none;
-      width: calc(100% - 20px);
+      color: #0f858e;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
 
-    .button-container {
-      display: flex;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    button.copy-clear {
-      padding: 10px 15px;
-      font-size: 16px;
-      cursor: pointer;
-      border: none;
-      background-color: #0f858e;
-      color: white;
-      border-radius: 5px;
-      transition: background 0.3s;
-      display: none;
-    }
-
-    button.copy-clear:hover {
-      background-color: #0056b3;
+    .tool-card:hover {
+      background-color: #d0eff2;
+      transform: translateY(-3px);
     }
 
     footer {
@@ -171,119 +103,27 @@
       font-size: 12px;
       color: #777;
       font-style: italic;
-      z-index: 1;
     }
   </style>
 </head>
 <body>
 
-  <div class="headline-scroller">
-    <div class="headline-text" id="headlineText">Loading motivation...</div>
-  </div>
-
-  <div class="menu-buttons">
+  <div class="top-buttons">
     <button onclick="location.href='age'">Ages</button>
-    <button onclick="location.href='index'">Pipe Formatter</button>
+    <button onclick="location.href='pipes'">Pipe Formatter</button>
     <button onclick="location.href='download'">Prompt Generator</button>
   </div>
 
-  <div class="pipe-background" id="pipeBackground"></div>
-
   <div class="container">
-    <h2>Paste sales number here</h2>
-    <p style="margin-top: -10px; font-size: 14px; color: #555;">Ensure spaces between each sales number</p>
-
-    <div id="qtyMarker">Qty: 0</div>
-
-    <input type="text" id="inputText" placeholder="Enter text here" oninput="formatText()" />
-
-    <div class="button-container">
-      <button class="copy-clear" id="copyButton" onclick="copyText()">Copy</button>
-      <button class="copy-clear" id="clearButton" onclick="clearText()">Clear</button>
+    <h1>Welcome</h1>
+    <p>Choose your tool below to get started:</p>
+    <div class="tool-grid">
+      <div class="tool-card" onclick="location.href='pipes'">Pipe Formatter</div>
+      <div class="tool-card" onclick="location.href='age'">Age Checker</div>
+      <div class="tool-card" onclick="location.href='download'">Prompt Generator</div>
     </div>
-
-    <div class="output-container" id="outputText"></div>
   </div>
 
-  <footer>Please note qty may not reflect the actual number</footer>
-
-  <script>
-    function formatText() {
-      const input = document.getElementById('inputText').value;
-      const output = document.getElementById('outputText');
-      const copyBtn = document.getElementById('copyButton');
-      const clearBtn = document.getElementById('clearButton');
-      const qty = document.getElementById('qtyMarker');
-
-      if (input.trim() === "") {
-        output.style.display = "none";
-        copyBtn.style.display = "none";
-        clearBtn.style.display = "none";
-        qty.innerText = "Qty: 0";
-      } else {
-        const parts = input.trim().split(/\s+/);
-        const formatted = parts.join('|');
-        output.innerText = formatted;
-        output.style.display = "block";
-        copyBtn.style.display = "inline-block";
-        clearBtn.style.display = "inline-block";
-        qty.innerText = `Qty: ${parts.length}`;
-      }
-    }
-
-    function copyText() {
-      const text = document.getElementById('outputText').innerText;
-      navigator.clipboard.writeText(text).catch(err => {
-        console.error('Error copying text:', err);
-      });
-    }
-
-    function clearText() {
-      const input = document.getElementById('inputText');
-      input.value = "";
-      document.getElementById('outputText').style.display = "none";
-      document.getElementById('copyButton').style.display = "none";
-      document.getElementById('clearButton').style.display = "none";
-      document.getElementById('qtyMarker').innerText = "Qty: 0";
-      input.focus();
-    }
-
-    window.onload = () => {
-      const container = document.getElementById('pipeBackground');
-      const numPipes = 50;
-      const screenWidth = window.innerWidth;
-
-      for (let i = 0; i < numPipes; i++) {
-        const pipe = document.createElement('img');
-        pipe.src = 'pipe.png';
-        pipe.className = 'pipe';
-
-        const left = Math.random() * screenWidth;
-        const topOffset = -Math.random() * 1000;
-        const duration = 8 + Math.random() * 4;
-        const delay = Math.random() * 5;
-
-        pipe.style.left = `${left}px`;
-        pipe.style.top = `${topOffset}px`;
-        pipe.style.animationDuration = `${duration}s`;
-        pipe.style.animationDelay = `${delay}s`;
-
-        container.appendChild(pipe);
-      }
-
-      document.getElementById('inputText').focus();
-
-      fetch('motivation.txt')
-        .then(response => response.text())
-        .then(data => {
-          const lines = data.split('\n').filter(line => line.trim() !== '');
-          const randomLine = lines[Math.floor(Math.random() * lines.length)];
-          document.getElementById('headlineText').textContent = randomLine;
-        })
-        .catch(() => {
-          document.getElementById('headlineText').textContent = 'Stay positive. Keep pushing forward!';
-        });
-    };
-  </script>
+  <footer>Kyle Tuck Inc.</footer>
 </body>
 </html>
