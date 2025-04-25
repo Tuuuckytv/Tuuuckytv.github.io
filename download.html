@@ -52,13 +52,13 @@
     }
 
     .preview-thumb {
-      position: absolute; /* Position the thumbnail independently */
-      left: -150px; /* Adjust left to position it correctly to the left of the container */
+      position: absolute;
+      left: -150px;
       text-align: center;
     }
 
     .preview-thumb img {
-      width: 120px; /* Thumbnail size */
+      width: 120px;
       height: auto;
       border-radius: 5px;
       cursor: pointer;
@@ -73,27 +73,24 @@
       font-style: italic;
     }
 
-    /* Full-size image is hidden by default */
     .full-preview {
       display: none;
       position: absolute;
-      top: -140px; /* Raised the image upwards by adjusting this value */
-      left: 130px; /* Position it to the right of the thumbnail */
-      background: rgba(0, 0, 0, 0.6); /* Dark shadow background */
+      top: -140px;
+      left: 130px;
+      background: rgba(0, 0, 0, 0.6);
       padding: 20px;
       border-radius: 8px;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
       z-index: 1000;
     }
 
-    /* When hovering over the thumbnail, show the full preview */
     .preview-thumb:hover .full-preview {
       display: block;
     }
 
-    /* Scale factor: for every 120px thumbnail, scale image to 200 times larger */
     .full-preview img {
-      width: 400px; /* Full-size image 200 times larger than the thumbnail (120px x 200 = 2400px) */
+      width: 400px;
       height: auto;
       border-radius: 6px;
     }
@@ -109,7 +106,7 @@
       text-align: center;
       display: flex;
       flex-direction: column;
-      justify-content: center; /* Ensure content is vertically centered within the container */
+      justify-content: center;
     }
 
     .download-btn {
@@ -128,7 +125,6 @@
       background-color: #0056b3;
     }
 
-    /* Modal styling */
     .modal {
       display: none;
       position: fixed;
@@ -183,7 +179,7 @@
       color: red;
       font-size: 14px;
       margin-top: 10px;
-      display: none; /* Initially hidden */
+      display: none;
     }
 
     footer {
@@ -196,56 +192,54 @@
     }
   </style>
   <script>
-    // Function to show the modal
+    // Show modal
     function showModal() {
       document.getElementById('passwordModal').style.display = 'flex';
-      document.getElementById('passwordInput').focus(); // Focus on the input field when the modal opens
-      document.getElementById('error-message').style.display = 'none'; // Hide any previous error messages
+      document.getElementById('passwordInput').focus();
+      document.getElementById('error-message').style.display = 'none';
     }
 
-    // Function to validate the password and trigger download
+    // Check password
     function checkPassword() {
       const password = document.getElementById('passwordInput').value;
-
-      // Validate the password
-      if (password === 'JeffGoldblum') {
-        window.location.href = "prompt.ahk"; // Trigger the download
-        closeModal(); // Close the modal
+      if (password === 'Kyle123') {
+        window.location.href = "prompt.ahk";
+        closeModal();
       } else {
-        document.getElementById('error-message').style.display = 'block'; // Show error message
+        document.getElementById('error-message').style.display = 'block';
       }
     }
 
-    // Function to close the modal
+    // Close modal
     function closeModal() {
       document.getElementById('passwordModal').style.display = 'none';
     }
 
-    // Close modal if clicking outside of it
+    // Close modal when clicking outside
     window.onclick = function(event) {
       if (event.target === document.getElementById('passwordModal')) {
         closeModal();
       }
     }
 
-    // Allow pressing "Enter" to submit the password
-    document.getElementById('passwordInput').addEventListener('keydown', function(event) {
-      if (event.key === 'Enter') {
-        checkPassword();
-      }
+    // Enable "Enter" key to trigger submit
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('passwordInput').addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+          checkPassword();
+        }
+      });
     });
   </script>
 </head>
 <body>
   <div class="top-buttons">
-    <button onclick="location.href='index'">Home</button>
     <button onclick="location.href='age'">Ages</button>
-    <button onclick="location.href='pipes'">Pipe Formatter</button>
+    <button onclick="location.href='index'">Pipe Formatter</button>
     <button onclick="location.href='download'">Prompt Generator</button>
   </div>
 
   <div class="main-wrapper">
-    <!-- Thumbnail with hover preview positioned to the left -->
     <div class="preview-thumb">
       <img src="prompt.png" alt="Prompt thumbnail" />
       <small>Hover to preview</small>
@@ -254,14 +248,12 @@
       </div>
     </div>
 
-    <!-- Download section centered -->
     <div id="container">
       <h2>Prompt Generator</h2>
       <button class="download-btn" onclick="showModal()">Get Prompt Manager</button>
     </div>
   </div>
 
-  <!-- Modal for password input -->
   <div id="passwordModal" class="modal">
     <div class="modal-content">
       <h3>Enter Password</h3>
