@@ -173,6 +173,19 @@
       font-style: italic;
       z-index: 1;
     }
+
+    #prankBtn {
+      position: fixed;
+      bottom: 10px;
+      left: 15px;
+      opacity: 0%;
+      z-index: 999;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      width: 40px;
+      height: 40px;
+    }
   </style>
 </head>
 <body>
@@ -205,6 +218,10 @@
 
     <div class="output-container" id="outputText"></div>
   </div>
+
+  <button id="prankBtn" onclick="startPigeon()">Activate Sound</button>
+
+  <audio id="pigeonSound" src="pigeon.mp3" preload="auto"></audio>
 
   <footer>Please note qty may not reflect the actual number</footer>
 
@@ -285,6 +302,29 @@
           document.getElementById('headlineText').textContent = 'Stay positive. Keep pushing forward!';
         });
     };
+
+    function getRandomDelay() {
+      const minutes = [10, 11, 13];
+      const selected = minutes[Math.floor(Math.random() * minutes.length)];
+      return selected * 60 * 1000;
+    }
+
+    function scheduleNextPigeon() {
+      const delay = getRandomDelay();
+      setTimeout(() => {
+        document.getElementById('pigeonSound').play();
+        scheduleNextPigeon();
+      }, delay);
+    }
+
+    function startPigeon() {
+      const audio = document.getElementById('pigeonSound');
+      audio.play().then(() => {
+        scheduleNextPigeon();
+      }).catch(err => {
+        console.error('Playback error:', err);
+      });
+    }
   </script>
 </body>
 </html>
