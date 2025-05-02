@@ -10,39 +10,33 @@
       margin: 0;
       font-family: Arial, sans-serif;
       background-color: #f6f7f8;
-      height: 100vh;
-      overflow: hidden;
+      min-height: 100vh;
+      height: auto;
+      overflow-y: auto;
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 20px;
+      padding: 10px;
       position: relative;
       flex-direction: column;
-    }
-
-    .container {
-      background: white;
-      padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      max-width: 1000px;
-      width: 100%;
       text-align: center;
-      z-index: 1;
     }
 
     footer {
-      position: fixed;
-      bottom: 10px;
-      right: 15px;
-      font-size: 12px;
-      color: #777;
-      font-style: italic;
-    }
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  font-size: 12px;
+  color: #777;
+  font-style: italic;
+}
+
 
     iframe {
-      width: 90%;
-      height: 450px;
+      width: 50%;
+      max-width: 100%;
+      height: auto;
+      aspect-ratio: 16 / 9;
       border: 0;
       border-radius: 8px;
     }
@@ -67,18 +61,15 @@
 </head>
 <body>
 
-  <div class="container">
-    <h1>Route Map</h1>
-    
-    <!-- Button to open Google Maps -->
-    <button class="map-button" onclick="window.open('https://maps.app.goo.gl/CF5om4v2r89TrYZQ7', '_blank')">
-      Open in Google Maps
-    </button>
+  <h1>Route Map</h1>
 
-    
-    <!-- Embed Google Maps Iframe -->
-    <iframe src="https://www.google.com/maps/embed?pb=!1m62!1m12!1m3!1d2751134.855242932!2d-6.545097598403579!3d55.36814678549941!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m47!3e0!4m3!3m2!1d53.648556899999996!2d-3.0060439999999997!4m5!1s0x488930ea7b29b375%3A0xd1dce0f3c21732e7!2sGlencoe%2C%20Ballachulish!3m2!1d56.682559899999994!2d-5.1022713!4m5!1s0x48891fb77d9288bd%3A0xdc1458ec84f1954a!2sThe%20Green%20Welly%20Stop%2C%20A82%2C%20Tyndrum%2C%20Crianlarich%20FK20%208RY!3m2!1d56.438202!2d-4.712629!4m5!1s0x488f210df41b3beb%3A0x12170f9721af3cd0!2sFort%20Augustus!3m2!1d57.1448064!2d-4.6805166!4m5!1s0x488eccadec60951b%3A0x7d8745664c44af64!2sMorrisons%20Petrol%20Station%2C%20An%20Aird%20Playground%2C%20Road%2C%20Fort%20William%20PH33%206XZ!3m2!1d56.8225146!2d-5.1067807!4m5!1s0x4888cf505937e111%3A0xa0c681c77dfabd0!2sCamghouran%2C%20Pitlochry%20PH17%202QG!3m2!1d56.6756828!2d-4.3642711!4m5!1s0x488602c81ae685df%3A0x73ecc3cba1a72e45!2sPerth%20Rd%2C%20Pitlochry%20PH16%205LY!3m2!1d56.697413399999995!2d-3.7176533999999997!4m5!1s0x487b3edb98d3def1%3A0xe7b12eb944660e00!2sLord%20St%2C%20Southport!3m2!1d53.648288799999996!2d-3.0055878!5e1!3m2!1sen!2suk!4v1746177533298!5m2!1sen!2suk" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-  </div>
+  <!-- Button to open Google Maps -->
+  <button class="map-button" onclick="window.open('https://maps.app.goo.gl/CF5om4v2r89TrYZQ7', '_blank')">
+    Open in Google Maps
+  </button>
+
+  <!-- Embed Google Maps Iframe -->
+  <iframe src="https://www.google.com/maps/embed?pb=!1m62!1m12!1m3!1d2751134.855242932!2d-6.545097598403579!3d55.36814678549941!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m47!3e0!4m3!3m2!1d53.648556899999996!2d-3.0060439999999997!4m5!1s0x488930ea7b29b375%3A0xd1dce0f3c21732e7!2sGlencoe%2C%20Ballachulish!3m2!1d56.682559899999994!2d-5.1022713!4m5!1s0x48891fb77d9288bd%3A0xdc1458ec84f1954a!2sThe%20Green%20Welly%20Stop%2C%20A82%2C%20Tyndrum%2C%20Crianlarich%20FK20%208RY!3m2!1d56.438202!2d-4.712629!4m5!1s0x488f210df41b3beb%3A0x12170f9721af3cd0!2sFort%20Augustus!3m2!1d57.1448064!2d-4.6805166!4m5!1s0x488eccadec60951b%3A0x7d8745664c44af64!2sMorrisons%20Petrol%20Station%2C%20An%20Aird%20Playground%2C%20Road%2C%20Fort%20William%20PH33%206XZ!3m2!1d56.8225146!2d-5.1067807!4m5!1s0x4888cf505937e111%3A0xa0c681c77dfabd0!2sCamghouran%2C%20Pitlochry%20PH17%202QG!3m2!1d56.6756828!2d-4.3642711!4m5!1s0x488602c81ae685df%3A0x73ecc3cba1a72e45!2sPerth%20Rd%2C%20Pitlochry%20PH16%205LY!3m2!1d56.697413399999995!2d-3.7176533999999997!4m5!1s0x487b3edb98d3def1%3A0xe7b12eb944660e00!2sLord%20St%2C%20Southport!3m2!1d53.648288799999996!2d-3.0055878!5e1!3m2!1sen!2suk!4v1746177533298!5m2!1sen!2suk" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
 
   <!-- Footer -->
   <footer>Kyle Tuck Inc.</footer>
