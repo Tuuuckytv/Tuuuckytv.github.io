@@ -17,31 +17,45 @@
       align-items: center;
       padding: 20px;
       position: relative;
+      flex-direction: column;
     }
 
-    .top-buttons {
-      position: fixed;
-      top: 16px;
-      left: 15px;
-      display: flex;
-      gap: 15px;
-      z-index: 11;
+    .search-bar {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      width: 300px;
     }
 
-    .top-buttons button {
-      font-size: 16px;
-      background-color: #0f858e;
-      color: white;
+    #searchInput {
       padding: 8px 12px;
+      border: 1px solid #ccc;
       border-radius: 5px;
-      cursor: pointer;
-      border: none;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-      transition: background-color 0.3s;
+      font-size: 16px;
+      width: 100%;
     }
 
-    .top-buttons button:hover {
-      background-color: #0056b3;
+    .suggestions {
+      background: white;
+      border: 1px solid #ccc;
+      border-top: none;
+      max-height: 150px;
+      overflow-y: auto;
+      position: absolute;
+      width: 100%;
+      border-radius: 0 0 5px 5px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .suggestion {
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+
+    .suggestion:hover {
+      background-color: #eee;
     }
 
     .container {
@@ -53,16 +67,6 @@
       width: 90%;
       text-align: center;
       z-index: 1;
-    }
-
-    h1 {
-      margin-bottom: 10px;
-      color: #0f858e;
-    }
-
-    p {
-      margin-bottom: 30px;
-      color: #555;
     }
 
     .tool-grid {
@@ -108,7 +112,11 @@
 </head>
 <body>
 
-  
+  <div class="search-bar">
+    <input type="text" placeholder="Search page..." id="searchInput" oninput="showSuggestions()" onkeydown="handleKey(event)">
+    <div id="suggestions" class="suggestions" style="display: none;"></div>
+  </div>
+
   <div class="container">
     <h1>Welcome</h1>
     <p>Choose your tool below to get started:</p>
@@ -120,5 +128,60 @@
   </div>
 
   <footer>Kyle Tuck Inc.</footer>
+
+  <script>
+    const pages = [
+      { name: "Pipe Formatter", path: "pipes" },
+      { name: "Age Checker", path: "age" },
+      { name: "Prompt Generator", path: "download" }
+    ];
+
+    function showSuggestions() {
+      const input = document.getElementById("searchInput").value.toLowerCase();
+      const suggestionBox = document.getElementById("suggestions");
+      suggestionBox.innerHTML = "";
+
+      if (!input) {
+        suggestionBox.style.display = "none";
+        return;
+      }
+
+      const matches = pages.filter(p => p.name.toLowerCase().includes(input));
+      if (matches.length === 0) {
+        suggestionBox.style.display = "none";
+        return;
+      }
+
+      matches.forEach(page => {
+        const div = document.createElement("div");
+        div.className = "suggestion";
+        div.textContent = page.name;
+        div.onclick = () => {
+          window.location.href = page.path;
+        };
+        suggestionBox.appendChild(div);
+      });
+
+      suggestionBox.style.display = "block";
+    }
+
+    function handleKey(e) {
+      if (e.key === 'Enter') {
+        const input = document.getElementById("searchInput").value.toLowerCase();
+        const match = pages.find(p => p.name.toLowerCase().includes(input));
+        if (match) {
+          window.location.href = match.path;
+        }
+      }
+    }
+
+    document.addEventListener("click", function (e) {
+      const suggestions = document.getElementById("suggestions");
+      if (!document.getElementById("searchInput").contains(e.target)) {
+        suggestions.style.display = "none";
+      }
+    });
+  </script>
+
 </body>
 </html>
