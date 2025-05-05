@@ -101,10 +101,13 @@
 
   .note-container {
     width: 100%;
+    order: -1; /* Move note-container to the top */
     border-right: none;
     border-bottom: 1px solid #ccc;
-    font-size: 16px; /* Increase font size */
-    padding: 20px;    /* More padding */
+    font-size: 18px;
+    padding: 25px;
+    line-height: 1.6;
+    background-color: #fff;
   }
 
   .center-wrapper {
@@ -116,6 +119,17 @@
   }
 }
 
+@media (max-width: 480px) {
+  .note-container {
+    font-size: 20px;
+    padding: 30px;
+    line-height: 1.7;
+  }
+
+  .button-grid {
+    grid-template-columns: 1fr;
+  }
+}
 
     @media (max-width: 480px) {
       .button-grid {
@@ -140,7 +154,7 @@
       <h1>Route Map</h1>
 
 <div style="display: flex; justify-content: center; width: 100%;">
-  <button class="map-button" onclick="window.open('https://maps.app.goo.gl/piJq9PayYPesEQ1s5', '_blank')">Full Journey</button>
+  <button class="map-button" onclick="window.open('https://maps.app.goo.gl/w4jKc2f4jZUSmtCL8', '_blank')">Full Journey</button>
 </div>  
 
       <div class="button-grid">
