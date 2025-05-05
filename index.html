@@ -135,7 +135,7 @@
       { name: "Pipe Formatter", path: "pipes" },
       { name: "Age Checker", path: "age" },
       { name: "Prompt Generator", path: "download" },
-      { name: "Road Trip", path: "roadtrip.html" }
+      { name: "Road Trip", path: "roadtrip.html", hidden: true } // Hidden from suggestions
     ];
 
     let currentSelection = -1;
@@ -151,7 +151,11 @@
         return;
       }
 
-      const matches = pages.filter(p => p.name.toLowerCase().includes(input));
+      // Only show non-hidden items in dropdown
+      const matches = pages.filter(p =>
+        p.name.toLowerCase().includes(input) && !p.hidden
+      );
+
       if (matches.length === 0) {
         suggestionBox.style.display = "none";
         return;
@@ -173,24 +177,29 @@
 
     function handleKey(e) {
       const suggestions = Array.from(document.querySelectorAll(".suggestion"));
-      if (suggestions.length === 0) return;
-
       if (e.key === "ArrowDown") {
         e.preventDefault();
-        currentSelection = (currentSelection + 1) % suggestions.length;
-        updateHighlight(suggestions);
+        if (suggestions.length > 0) {
+          currentSelection = (currentSelection + 1) % suggestions.length;
+          updateHighlight(suggestions);
+        }
       } else if (e.key === "ArrowUp") {
         e.preventDefault();
-        currentSelection = (currentSelection - 1 + suggestions.length) % suggestions.length;
-        updateHighlight(suggestions);
+        if (suggestions.length > 0) {
+          currentSelection = (currentSelection - 1 + suggestions.length) % suggestions.length;
+          updateHighlight(suggestions);
+        }
       } else if (e.key === "Enter") {
         e.preventDefault();
         if (currentSelection >= 0 && currentSelection < suggestions.length) {
           suggestions[currentSelection].click();
         } else {
+          // Match including hidden pages
           const input = document.getElementById("searchInput").value.toLowerCase();
           const match = pages.find(p => p.name.toLowerCase().includes(input));
-          if (match) window.location.href = match.path;
+          if (match) {
+            window.location.href = match.path;
+          }
         }
       }
     }
