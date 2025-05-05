@@ -54,7 +54,8 @@
       cursor: pointer;
     }
 
-    .suggestion:hover {
+    .suggestion:hover,
+    .suggestion.selected {
       background-color: #eee;
     }
 
@@ -134,13 +135,16 @@
       { name: "Pipe Formatter", path: "pipes" },
       { name: "Age Checker", path: "age" },
       { name: "Prompt Generator", path: "download" },
-      { name: "Road Trip", path: "roadtrip.html" } // Added Road Trip
+      { name: "Road Trip", path: "roadtrip.html" }
     ];
+
+    let currentSelection = -1;
 
     function showSuggestions() {
       const input = document.getElementById("searchInput").value.toLowerCase();
       const suggestionBox = document.getElementById("suggestions");
       suggestionBox.innerHTML = "";
+      currentSelection = -1;
 
       if (!input) {
         suggestionBox.style.display = "none";
@@ -153,10 +157,11 @@
         return;
       }
 
-      matches.forEach(page => {
+      matches.forEach((page, index) => {
         const div = document.createElement("div");
         div.className = "suggestion";
         div.textContent = page.name;
+        div.dataset.index = index;
         div.onclick = () => {
           window.location.href = page.path;
         };
@@ -167,19 +172,39 @@
     }
 
     function handleKey(e) {
-      if (e.key === 'Enter') {
-        const input = document.getElementById("searchInput").value.toLowerCase();
-        const match = pages.find(p => p.name.toLowerCase().includes(input));
-        if (match) {
-          window.location.href = match.path;
+      const suggestions = Array.from(document.querySelectorAll(".suggestion"));
+      if (suggestions.length === 0) return;
+
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        currentSelection = (currentSelection + 1) % suggestions.length;
+        updateHighlight(suggestions);
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        currentSelection = (currentSelection - 1 + suggestions.length) % suggestions.length;
+        updateHighlight(suggestions);
+      } else if (e.key === "Enter") {
+        e.preventDefault();
+        if (currentSelection >= 0 && currentSelection < suggestions.length) {
+          suggestions[currentSelection].click();
+        } else {
+          const input = document.getElementById("searchInput").value.toLowerCase();
+          const match = pages.find(p => p.name.toLowerCase().includes(input));
+          if (match) window.location.href = match.path;
         }
       }
     }
 
+    function updateHighlight(suggestions) {
+      suggestions.forEach((el, index) => {
+        el.classList.toggle("selected", index === currentSelection);
+      });
+    }
+
     document.addEventListener("click", function (e) {
-      const suggestions = document.getElementById("suggestions");
-      if (!document.getElementById("searchInput").contains(e.target)) {
-        suggestions.style.display = "none";
+      const suggestionsBox = document.getElementById("suggestions");
+      if (!document.querySelector(".search-bar").contains(e.target)) {
+        suggestionsBox.style.display = "none";
       }
     });
   </script>
