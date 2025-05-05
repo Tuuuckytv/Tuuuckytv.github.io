@@ -101,13 +101,17 @@
 
   .note-container {
     width: 100%;
-    order: -1; /* Move note-container to the top */
+    order: -1;
     border-right: none;
     border-bottom: 1px solid #ccc;
     font-size: 18px;
     padding: 25px;
     line-height: 1.6;
     background-color: #fff;
+
+    /* Make it taller */
+    min-height: 300px; /* You can increase this if needed */
+    flex-grow: 0;
   }
 
   .center-wrapper {
@@ -124,6 +128,7 @@
     font-size: 20px;
     padding: 30px;
     line-height: 1.7;
+    min-height: 350px; /* Slightly taller on very small screens */
   }
 
   .button-grid {
