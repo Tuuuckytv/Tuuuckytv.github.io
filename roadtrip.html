@@ -94,25 +94,28 @@
     }
 
     @media (max-width: 768px) {
-      body {
-        flex-direction: column;
-        overflow-y: auto;
-      }
+  body {
+    flex-direction: column;
+    overflow-y: auto;
+  }
 
-      .note-container {
-        width: 100%;
-        border-right: none;
-        border-bottom: 1px solid #ccc;
-      }
+  .note-container {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #ccc;
+    font-size: 16px; /* Increase font size */
+    padding: 20px;    /* More padding */
+  }
 
-      .center-wrapper {
-        padding: 10px;
-      }
+  .center-wrapper {
+    padding: 10px;
+  }
 
-      .button-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
+  .button-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 
     @media (max-width: 480px) {
       .button-grid {
@@ -137,7 +140,7 @@
       <h1>Route Map</h1>
 
 <div style="display: flex; justify-content: center; width: 100%;">
-  <button class="map-button" onclick="window.open('https://maps.app.goo.gl/W4iTcGv8fNiVHbSV6', '_blank')">Full Journey</button>
+  <button class="map-button" onclick="window.open('https://maps.app.goo.gl/piJq9PayYPesEQ1s5', '_blank')">Full Journey</button>
 </div>  
 
       <div class="button-grid">
