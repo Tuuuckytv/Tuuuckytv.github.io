@@ -64,7 +64,7 @@
       border-radius: 5px;
       outline: none;
       text-align: center;
-      caret-color: transparent; /* Hide blinking cursor */
+      caret-color: transparent;
     }
 
     button {
@@ -110,9 +110,8 @@
   <div id="container">
     <h2>Enter date</h2>
     <input type="text" id="birthInput" placeholder="dd - mm - yyyy" />
-    
+
     <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 1rem;">
-      <button onclick="calculateAge()">Calculate Age</button>
       <button onclick="clearInput()">Clear</button>
     </div>
 
@@ -124,10 +123,8 @@
   <script>
     const input = document.getElementById("birthInput");
 
-    // Autofocus
     window.onload = () => input.focus();
 
-    // Auto-format input
     input.addEventListener("input", () => {
       let val = input.value.replace(/\D/g, "").slice(0, 8);
       let formatted = "";
@@ -140,9 +137,9 @@
       else if (val.length > 4) formatted += " - ";
 
       input.value = formatted;
+      calculateAge();
     });
 
-    // Format pasted input
     input.addEventListener("paste", (e) => {
       e.preventDefault();
       let pasted = (e.clipboardData || window.clipboardData).getData("text");
@@ -157,36 +154,27 @@
       else if (pasted.length > 4) formatted += " - ";
 
       input.value = formatted;
+      calculateAge();
     });
 
-    // Enter key triggers calculation
-    input.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        calculateAge();
-      }
-    });
-
-    // Clear input and output
     function clearInput() {
       input.value = "";
       document.getElementById("output").textContent = "";
       input.focus();
     }
 
-    // Calculate age
     function calculateAge() {
       const inputVal = input.value.trim();
       const dateMatch = inputVal.match(/(\d{2})\s*[-/]\s*(\d{2})\s*[-/]\s*(\d{2,4})/);
       const output = document.getElementById("output");
 
       if (!dateMatch) {
-        output.textContent = "Invalid date format. Use dd - mm - yyyy.";
+        output.textContent = "";
         return;
       }
 
       let [_, day, month, year] = dateMatch;
 
-      // Check if the month is valid
       if (parseInt(month) > 12 || parseInt(month) < 1) {
         output.textContent = "Invalid month. Must be between 01 and 12.";
         return;
