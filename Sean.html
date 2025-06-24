@@ -626,9 +626,10 @@ function showCountdownModal() {
     countdownInterval = setInterval(() => {
         const remainingTime = endTime - Date.now();
 
-        if (remainingTime <= 0) {
+        // Check if time is less than or equal to 10ms (0.01s)
+        if (remainingTime <= 10) {
             clearInterval(countdownInterval);
-            countdownTimerEl.textContent = "00 : 000";
+            countdownTimerEl.textContent = "00 : 01"; // Set final display
             countdownModal.classList.add("success");
             congratulationsMessageEl.style.display = 'block';
             missionAccomplishedBtn.style.display = 'block';
