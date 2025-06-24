@@ -12,7 +12,7 @@
       color: #fff;
       overflow: hidden;
     }
-    #modal, #wordle-modal, #riddle-modal, #binary-modal, #rotating-modal {
+    #modal, #wordle-modal, #riddle-modal, #binary-modal, #rotating-modal, #countdown-modal {
       position: fixed; top: 0; left: 0;
       width: 100vw; height: 100vh;
       background: rgba(0,0,0,0.95);
@@ -81,7 +81,7 @@
       0%,100%{background:rgba(255,0,0,.1);}50%{background:rgba(255,0,0,.4);}
     }
     #modal.success, #wordle-modal.success, #riddle-modal.success,
-    #binary-modal.success, #rotating-modal.success { animation: blink-green 1s ease-in-out 3; }
+    #binary-modal.success, #rotating-modal.success, #countdown-modal.success { animation: blink-green 1s ease-in-out 3; }
     #modal.error, #riddle-modal.error, #binary-modal.error { animation: blink-red .6s ease-in-out; }
 
     .success .modal-content {
@@ -91,7 +91,8 @@
     .success .mission-text,
     .success input,
     .success .separator,
-    .success #binary-string {
+    .success #binary-string,
+    .success #countdown-timer {
       color: limegreen;
       border-color: limegreen;
     }
@@ -160,7 +161,7 @@
       position: relative;
       user-select: none;
       touch-action: none;
-      flex-wrap: wrap;
+      flex-wrap: nowrap; /* Changed to prevent wrapping on mobile */
     }
     .column {
       width: 50px;
@@ -201,28 +202,61 @@
       z-index: 10;
     }
 
+    #countdown-timer {
+        font-size: 3rem;
+        font-weight: bold;
+        color: red;
+        margin: 1.5rem 0;
+        transition: color 0.5s ease;
+    }
+    #congratulations-message {
+        display: none;
+        font-size: 1.5rem;
+        color: limegreen;
+        margin-bottom: 1rem;
+        font-weight: bold;
+    }
+    #mission-accomplished-btn {
+        display: none;
+        font-size: 1.2rem;
+        padding: 0.8rem 1.5rem;
+        background: limegreen;
+        color: black;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+        text-transform: uppercase;
+        margin-left: auto; /* Added for centering */
+        margin-right: auto; /* Added for centering */
+    }
+
+
     /* Responsive Text Scaling */
     @media (max-width: 480px) {
       .mission-text { font-size: 1.1rem; }
-      .word-cell, .column {
+      /* Separated rules to fix column height bug */
+      .word-cell {
         width: 36px;
         height: 36px;
       }
+      .column {
+        width: 36px; /* Only adjust width, not height */
+      }
       .letter { font-size: 1.4rem; }
       .modal-content { padding: 1.5rem 1rem; }
+      #countdown-timer { font-size: 2.2rem; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Password Modal -->
   <div id="modal"><div class="modal-content" id="modal-content">
     <div class="mission-text">Your mission, should you choose to accept it:</div>
     <form id="password-form" class="password-fields"></form>
     <div class="denied" id="denied-message"></div>
   </div></div>
 
-  <!-- Wordle Modal -->
   <div id="wordle-modal" style="display:none;">
     <div class="modal-content">
       <div class="mission-text">Second phase: Identify the agent's code name.</div>
@@ -232,7 +266,6 @@
     </div>
   </div>
 
-  <!-- Riddle Modal -->
   <div id="riddle-modal" style="display:none;">
     <div class="modal-content">
       <div class="mission-text">Solve the riddle</div>
@@ -244,7 +277,6 @@
     </div>
   </div>
 
-  <!-- Binary Modal -->
   <div id="binary-modal" style="display:none;">
     <div class="modal-content">
       <div class="mission-text">Final Encryption Layer</div>
@@ -254,7 +286,6 @@
     </div>
   </div>
 
-  <!-- Rotating Modal -->
   <div id="rotating-modal" style="display:none;">
     <div class="modal-content">
       <div class="mission-text fade-in" id="rotating-mission">AQUWV XMOO</div>
@@ -262,6 +293,16 @@
       </div>
     </div>
   </div>
+
+  <div id="countdown-modal" style="display:none;">
+    <div class="modal-content">
+      <div id="countdown-mission-text" class="mission-text">Disarm Before Detonation!</div>
+      <div id="countdown-timer">10 : 000</div>
+      <div id="congratulations-message">Congratulations</div>
+      <button id="mission-accomplished-btn">Mission Accomplished</button>
+    </div>
+  </div>
+
 
 <script>
 // Constants
@@ -278,6 +319,7 @@ const wordleModal = document.getElementById("wordle-modal");
 const riddleModal = document.getElementById("riddle-modal");
 const binaryModal = document.getElementById("binary-modal");
 const rotatingModal = document.getElementById("rotating-modal");
+const countdownModal = document.getElementById("countdown-modal");
 
 const riddleInput = document.getElementById("riddle-input");
 const riddleMessage = document.getElementById("riddle-message");
@@ -287,6 +329,10 @@ const binaryMessage = document.getElementById("binary-message");
 
 const rotatingContainer = document.getElementById("rotating-container");
 const rotatingMissionText = document.getElementById("rotating-mission");
+
+const countdownTimerEl = document.getElementById("countdown-timer");
+const congratulationsMessageEl = document.getElementById("congratulations-message");
+const missionAccomplishedBtn = document.getElementById("mission-accomplished-btn");
 
 // Build password inputs
 const inputs = [];
@@ -470,6 +516,7 @@ function shuffle(arr){
   }
 }
 function createColumns(){
+  rotatingContainer.innerHTML = ''; // Clear previous columns
   columns=[]; columnOffsets=new Array(columnsCount).fill(0); columnElems=[];
   for (let c=0;c<columnsCount;c++){
     const colLetters=[];
@@ -480,7 +527,7 @@ function createColumns(){
       else {
         let rand;
         do { rand=letterSet.charAt(Math.floor(Math.random()*letterSet.length)); }
-        while(rand===targetChar);
+        while(rand===targetChar || colLetters.includes(rand));
         colLetters.push(rand);
       }
     }
@@ -502,7 +549,7 @@ function updateColumns(){
     const letters=columns[c];
     const divs=columnElems[c].querySelectorAll(".letter");
     for (let i=0;i<lettersPerColumn;i++){
-      const idx=(i+offset)%lettersPerColumn;
+      const idx=(i+offset+lettersPerColumn)%lettersPerColumn;
       divs[i].textContent = letters[idx];
     }
   }
@@ -510,12 +557,11 @@ function updateColumns(){
 function checkRotatingPassword(){
   let formed="";
   for (let c=0;c<columnsCount;c++){
-    const centerIndex=(3+columnOffsets[c])%lettersPerColumn;
+    const centerIndex=(Math.floor(lettersPerColumn/2)+columnOffsets[c]+lettersPerColumn)%lettersPerColumn;
     formed += columns[c][centerIndex];
   }
   if (formed===targetWord){
     rotatingModal.classList.add("success");
-    // Fade-out AQUWV XMOO
     rotatingMissionText.classList.add("fade-out");
     setTimeout(()=>{
       rotatingMissionText.textContent = "Simon Pegg";
@@ -524,7 +570,8 @@ function checkRotatingPassword(){
     },1000);
     setTimeout(()=>{
       rotatingModal.style.display="none";
-    },3500); // fade+stay before close
+      showCountdownModal(); // Transition to the new countdown modal
+    },3000); 
   }
 }
 function onDragStart(e){
@@ -543,17 +590,65 @@ function onDragMove(e){
   const curY = e.type.startsWith("touch")?e.touches[0].clientY:e.clientY;
   const dy = curY - dragState.startY;
   dragState.accumulatedDy = dy;
-  let moves = Math.floor(dragState.accumulatedDy / dragState.letterHeight);
+  let moves = Math.round(dragState.accumulatedDy / dragState.letterHeight);
   let newOffset = (dragState.startOffset - moves) % lettersPerColumn;
   if (newOffset < 0) newOffset += lettersPerColumn;
-  columnOffsets[dragState.columnIndex] = newOffset;
-  updateColumns();
+  if (columnOffsets[dragState.columnIndex] !== newOffset) {
+     columnOffsets[dragState.columnIndex] = newOffset;
+     updateColumns();
+  }
 }
 function onDragEnd(){
   if (!dragState.active) return;
   dragState.active=false;
   checkRotatingPassword();
 }
+
+// Countdown Timer
+let countdownInterval;
+function showCountdownModal() {
+    countdownModal.style.display = 'flex';
+    countdownModal.classList.remove('success');
+    congratulationsMessageEl.style.display = 'none';
+    missionAccomplishedBtn.style.display = 'none';
+    
+    // Style for MS timer
+    countdownTimerEl.style.color = 'red';
+    countdownTimerEl.style.fontFamily = "'Courier New', Courier, monospace";
+    countdownTimerEl.style.letterSpacing = '3px';
+
+    // Clear any previous timer
+    if (countdownInterval) clearInterval(countdownInterval);
+
+    const duration = 10 * 1000; // 10 seconds in MS
+    const endTime = Date.now() + duration;
+
+    countdownInterval = setInterval(() => {
+        const remainingTime = endTime - Date.now();
+
+        if (remainingTime <= 0) {
+            clearInterval(countdownInterval);
+            countdownTimerEl.textContent = "00 : 000";
+            countdownModal.classList.add("success");
+            congratulationsMessageEl.style.display = 'block';
+            missionAccomplishedBtn.style.display = 'block';
+            return;
+        }
+
+        const seconds = Math.floor(remainingTime / 1000);
+        const milliseconds = remainingTime % 1000;
+
+        const formattedSeconds = String(seconds).padStart(2, '0');
+        const formattedMilliseconds = String(milliseconds).padStart(3, '0');
+        
+        countdownTimerEl.textContent = `${formattedSeconds} : ${formattedMilliseconds}`;
+    }, 17); // Update frequently for a smooth animation
+}
+
+missionAccomplishedBtn.addEventListener('click', () => {
+    countdownModal.style.display = 'none';
+});
+
 
 // Initialization
 rotatingContainer.addEventListener("mousedown", onDragStart);
