@@ -260,7 +260,7 @@
 
   <div id="wordle-modal" style="display:none;">
     <div class="modal-content">
-      <div class="mission-text">Second phase: Identify the agent's code name.</div>
+      <div class="mission-text">Mission impossidle</div>
       <div id="wordle-board"></div>
       <input type="text" id="wordle-input" maxlength="5" style="margin-top:1rem;font-size:1.2rem;text-align:center;background:black;border:1px solid red;color:red;padding:0.3rem;border-radius:5px;">
       <div class="denied" id="wordle-message"></div>
@@ -269,9 +269,10 @@
 
   <div id="riddle-modal" style="display:none;">
     <div class="modal-content">
-      <div class="mission-text">Solve the riddle</div>
+      <div class="mission-text"></div>
       <div style="color:red;font-size:1.3rem;margin-bottom:1rem;">
-        Q: Humpty Dumpty sat on a?
+        What is the next letter?
+        H D s o a
       </div>
       <input type="text" id="riddle-input" maxlength="10" style="font-size:1.2rem;text-align:center;background:black;border:1px solid red;color:red;padding:0.3rem;border-radius:5px;">
       <div class="denied" id="riddle-message"></div>
@@ -309,7 +310,7 @@
 // Constants
 const correctPassword = ["96","00","06","11","15","18","23","25"];
 const correctWord = "JULIA";
-const riddleAnswer = "WALL";
+const riddleAnswer = "W";
 const binaryAnswer = "LUTHER";
 
 // Elements
@@ -621,7 +622,7 @@ function showCountdownModal() {
     // Clear any previous timer
     if (countdownInterval) clearInterval(countdownInterval);
 
-    const duration = 10 * 1000; // 10 seconds in MS
+    const duration = 20 * 1000; // 10 seconds in MS
     const endTime = Date.now() + duration;
 
     countdownInterval = setInterval(() => {
