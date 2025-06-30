@@ -13,7 +13,7 @@
       color: #fff;
       overflow: hidden;
     }
-    #modal, #wordle-modal, #riddle-modal, #binary-modal, #rotating-modal, #countdown-modal {
+    #modal, #wordle-modal, #riddle-modal, #binary-modal, #rotating-modal, #countdown-modal, #final-gift-modal {
       position: fixed; top: 0; left: 0;
       width: 100vw; height: 100vh;
       background: rgba(0,0,0,0.95);
@@ -232,6 +232,21 @@
         margin-right: auto; /* Added for centering */
     }
 
+    /* Styles for the final gift modal content */
+    #final-gift-modal .modal-content h1 {
+        font-size: 2.5rem;
+        color: limegreen;
+        margin-bottom: 1rem;
+        text-shadow: 0 0 15px limegreen;
+    }
+    #final-gift-modal .modal-content p {
+        font-size: 1.8rem;
+        color: #ddd;
+        font-family: 'Courier New', Courier, monospace;
+        letter-spacing: 2px;
+        word-break: break-all;
+    }
+
 
     /* Responsive Text Scaling */
     @media (max-width: 480px) {
@@ -247,6 +262,8 @@
       .letter { font-size: 1.4rem; }
       .modal-content { padding: 1.5rem 1rem; }
       #countdown-timer { font-size: 2.2rem; }
+      #final-gift-modal .modal-content h1 { font-size: 1.8rem; }
+      #final-gift-modal .modal-content p { font-size: 1.2rem; }
     }
   </style>
 </head>
@@ -305,6 +322,13 @@
     </div>
   </div>
 
+  <div id="final-gift-modal" style="display:none;">
+    <div class="modal-content success">
+        <h1>Amazon gift code</h1>
+        <p>93L5-UKGBPZ-CMB6</p>
+    </div>
+  </div>
+
 
 <script>
 // Constants
@@ -322,6 +346,7 @@ const riddleModal = document.getElementById("riddle-modal");
 const binaryModal = document.getElementById("binary-modal");
 const rotatingModal = document.getElementById("rotating-modal");
 const countdownModal = document.getElementById("countdown-modal");
+const finalGiftModal = document.getElementById("final-gift-modal");
 
 const riddleInput = document.getElementById("riddle-input");
 const riddleMessage = document.getElementById("riddle-message");
@@ -596,8 +621,8 @@ function onDragMove(e){
   let newOffset = (dragState.startOffset - moves) % lettersPerColumn;
   if (newOffset < 0) newOffset += lettersPerColumn;
   if (columnOffsets[dragState.columnIndex] !== newOffset) {
-     columnOffsets[dragState.columnIndex] = newOffset;
-     updateColumns();
+      columnOffsets[dragState.columnIndex] = newOffset;
+      updateColumns();
   }
 }
 function onDragEnd(){
@@ -613,7 +638,7 @@ function showCountdownModal() {
     countdownModal.classList.remove('success');
     congratulationsMessageEl.style.display = 'none';
     missionAccomplishedBtn.style.display = 'none';
-    
+   
     // Style for MS timer
     countdownTimerEl.style.color = 'red';
     countdownTimerEl.style.fontFamily = "'Courier New', Courier, monospace";
@@ -622,7 +647,7 @@ function showCountdownModal() {
     // Clear any previous timer
     if (countdownInterval) clearInterval(countdownInterval);
 
-    const duration = 20 * 1000; // 10 seconds in MS
+    const duration = 20 * 1000; // 20 seconds in MS
     const endTime = Date.now() + duration;
 
     countdownInterval = setInterval(() => {
@@ -631,7 +656,7 @@ function showCountdownModal() {
         // Check if time is less than or equal to 10ms (0.01s)
         if (remainingTime <= 10) {
             clearInterval(countdownInterval);
-            countdownTimerEl.textContent = "00 : 01"; // Set final display
+            countdownTimerEl.textContent = "00 : 001"; // Set final display
             countdownModal.classList.add("success");
             congratulationsMessageEl.style.display = 'block';
             missionAccomplishedBtn.style.display = 'block';
@@ -643,13 +668,15 @@ function showCountdownModal() {
 
         const formattedSeconds = String(seconds).padStart(2, '0');
         const formattedMilliseconds = String(milliseconds).padStart(3, '0');
-        
+       
         countdownTimerEl.textContent = `${formattedSeconds} : ${formattedMilliseconds}`;
     }, 17); // Update frequently for a smooth animation
 }
 
 missionAccomplishedBtn.addEventListener('click', () => {
     countdownModal.style.display = 'none';
+    // Show the final gift modal
+    finalGiftModal.style.display = 'flex';
 });
 
 
