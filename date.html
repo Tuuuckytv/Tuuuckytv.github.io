@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Date Calculator</title>
+  <title>Age Calculator</title>
   <link rel="icon" href="pipe.png" type="image/png" />
   <style>
     body {
@@ -42,6 +42,93 @@
 
     .top-buttons button:hover {
       background-color: #0056b3;
+    }
+
+    /* --- ENHANCED TOGGLE SWITCH STYLES --- */
+    .toggle-container {
+      position: fixed;
+      top: 16px;
+      right: 15px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 12;
+    }
+
+    .toggle-container span {
+      font-weight: bold;
+      font-size: 16px;
+      transition: color 0.4s ease;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 60px;
+      height: 34px;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.4s ease;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "✖";
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 26px;
+      width: 26px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      color: #999;
+      font-size: 14px;
+      font-weight: bold;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      transition: transform 0.4s ease, color 0.4s ease;
+    }
+    
+    input:checked + .slider {
+      background-color: #0f858e;
+    }
+    
+    input:checked + .slider:before {
+      transform: translateX(26px);
+      content: "✔";
+      color: #0f858e;
+      font-size: 16px;
+    }
+
+    .slider.round {
+      border-radius: 34px;
+    }
+
+    .slider.round:before {
+      border-radius: 50%;
+    }
+
+    /* Accessibility focus outline */
+    .switch input:focus-visible + .slider {
+      outline: 2px solid #0056b3;
+      outline-offset: 2px;
     }
 
     #container {
@@ -103,9 +190,17 @@
 <body>
   <div class="top-buttons">
     <button onclick="location.href='index.html'">Home</button>
-    <button onclick="location.href='date'">Date</button>
+    <button onclick="location.href='age'">Ages</button>
     <button onclick="location.href='pipes'">Pipe Formatter</button>
     <button onclick="location.href='download'">Prompt Generator</button>
+  </div>
+  
+  <div class="toggle-container">
+    <span>Doing returns</span>
+    <label class="switch" for="orderToggle" tabindex="0">
+      <input type="checkbox" id="orderToggle">
+      <span class="slider round"></span>
+    </label>
   </div>
 
   <div id="container">
@@ -122,10 +217,43 @@
   <footer>Kyle Tuck Inc.</footer>
 
   <script>
+    // --- Element References ---
     const input = document.getElementById("birthInput");
+    const orderToggle = document.getElementById("orderToggle");
+    const switchLabel = document.querySelector('.switch');
+    const toggleText = document.querySelector('.toggle-container span');
 
-    window.onload = () => input.focus();
+    // --- Advanced Toggle Features ---
+    function updateToggleUI(state) {
+      toggleText.textContent = state ? 'Returns: ON' : 'Returns: OFF';
+      toggleText.style.color = state ? '#0f858e' : '#777';
+    }
 
+    function triggerVibration() {
+      if ('vibrate' in navigator) {
+        navigator.vibrate(20);
+      }
+    }
+    
+    function onToggleStateChange() {
+      const state = orderToggle.checked;
+      updateToggleUI(state);
+      localStorage.setItem('toggleState', state);
+      triggerVibration();
+      calculateAge();
+    }
+    
+    function loadInitialState() {
+      const savedState = localStorage.getItem('toggleState') === 'true';
+      orderToggle.checked = savedState;
+      updateToggleUI(savedState);
+      input.focus();
+      calculateAge(); // Initial calculation on load
+    }
+
+    // --- Event Listeners ---
+    window.addEventListener('load', loadInitialState);
+    orderToggle.addEventListener('change', onToggleStateChange);
     input.addEventListener("input", () => {
       let val = input.value.replace(/\D/g, "").slice(0, 8);
       let formatted = "";
@@ -145,23 +273,28 @@
       e.preventDefault();
       let pasted = (e.clipboardData || window.clipboardData).getData("text");
       pasted = pasted.replace(/\D/g, "").slice(0, 8);
-
       let formatted = "";
       if (pasted.length >= 1) formatted += pasted.slice(0, 2);
       if (pasted.length >= 3) formatted += " - " + pasted.slice(2, 4);
-      else if (pasted.length > 2) formatted += " - ";
-
       if (pasted.length >= 5) formatted += " - " + pasted.slice(4);
-      else if (pasted.length > 4) formatted += " - ";
-
       input.value = formatted;
       calculateAge();
     });
 
+    // Keyboard accessibility for the switch
+    switchLabel.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        orderToggle.click(); // Simulate a click to trigger the 'change' event
+      }
+    });
+
+    // --- Core Functions ---
     function clearInput() {
       input.value = "";
       document.getElementById("output").textContent = "";
       input.focus();
+      calculateAge();
     }
 
     function calculateAge() {
@@ -194,7 +327,6 @@
       today.setHours(0, 0, 0, 0);
 
       let output1Text;
-
       if (inputDate.getTime() === today.getTime()) {
         output1Text = "Today";
       } else {
@@ -211,30 +343,22 @@
           const lastDayOfPrevMonth = new Date(end.getFullYear(), end.getMonth(), 0).getDate();
           daysDiff += lastDayOfPrevMonth;
         }
-
         if (monthsDiff < 0) {
           yearsDiff--;
           monthsDiff += 12;
         }
         
         const parts = [];
-        if (yearsDiff > 0) {
-            parts.push(`${yearsDiff} year${yearsDiff === 1 ? '' : 's'}`);
-        }
-        if (monthsDiff > 0) {
-            parts.push(`${monthsDiff} month${monthsDiff === 1 ? '' : 's'}`);
-        }
-        if (daysDiff > 0) {
-            parts.push(`${daysDiff} day${daysDiff === 1 ? '' : 's'}`);
-        }
+        if (yearsDiff > 0) parts.push(`${yearsDiff} year${yearsDiff === 1 ? '' : 's'}`);
+        if (monthsDiff > 0) parts.push(`${monthsDiff} month${monthsDiff === 1 ? '' : 's'}`);
+        if (daysDiff > 0) parts.push(`${daysDiff} day${daysDiff === 1 ? '' : 's'}`);
         
         const diffString = parts.join(', ');
-        
-        if (isPast) {
-          output1Text = `${diffString} ago`;
-        } else {
-          output1Text = `In ${diffString}`;
-        }
+        output1Text = isPast ? `${diffString} ago` : `In ${diffString}`;
+      }
+
+      if (orderToggle.checked && output1Text !== "Today" && output1Text) {
+          output1Text = `Order left: ${output1Text}`;
       }
 
       const futureDate = new Date(inputDate);
@@ -243,22 +367,56 @@
       const getDaySuffix = (d) => {
         if (d > 3 && d < 21) return 'th';
         switch (d % 10) {
-          case 1: return "st";
-          case 2: return "nd";
-          case 3: return "rd";
-          default: return "th";
+          case 1: return "st"; case 2: return "nd"; case 3: return "rd"; default: return "th";
         }
       };
       
       const dayOfMonth = futureDate.getDate();
       const monthName = futureDate.toLocaleString('en-GB', { month: 'long' });
       const fullYear = futureDate.getFullYear();
-      
       const formattedFutureDate = `${dayOfMonth}${getDaySuffix(dayOfMonth)} ${monthName} ${fullYear}`;
       const output2Text = `Expiry: ${formattedFutureDate}`;
 
       output.innerHTML = `${output1Text}<br>${output2Text}`;
     }
+
+    // --- Draggable Toggle Logic ---
+    (() => {
+        let isDragging = false;
+        let hasDragged = false;
+        let startX = 0;
+
+        const onDown = (e) => {
+            isDragging = true;
+            hasDragged = false;
+            startX = e.pageX || e.touches[0].pageX;
+        };
+        const onMove = (e) => {
+            if (!isDragging) return;
+            const currentX = e.pageX || e.touches[0].pageX;
+            if (Math.abs(currentX - startX) > 5) hasDragged = true;
+        };
+        const onUp = (e) => {
+            if (!isDragging) return;
+            if (hasDragged) {
+                const rect = switchLabel.getBoundingClientRect();
+                const midpoint = rect.left + rect.width / 2;
+                const endX = e.pageX || e.changedTouches[0].pageX;
+                if ((endX > midpoint) !== orderToggle.checked) {
+                    orderToggle.click();
+                }
+            }
+            isDragging = false;
+            hasDragged = false;
+        };
+        
+        switchLabel.addEventListener('mousedown', onDown);
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup', onUp);
+        switchLabel.addEventListener('touchstart', onDown, { passive: true });
+        document.addEventListener('touchmove', onMove, { passive: true });
+        document.addEventListener('touchend', onUp);
+    })();
   </script>
 </body>
 </html>
