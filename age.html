@@ -87,6 +87,7 @@
       font-size: 1.1rem;
       font-weight: bold;
       color: #333;
+      line-height: 1.6;
     }
 
     footer {
@@ -146,11 +147,11 @@
       pasted = pasted.replace(/\D/g, "").slice(0, 8);
 
       let formatted = "";
-      if (pasted.length >= 2) formatted += pasted.slice(0, 2);
-      if (pasted.length >= 4) formatted += " - " + pasted.slice(2, 4);
+      if (pasted.length >= 1) formatted += pasted.slice(0, 2);
+      if (pasted.length >= 3) formatted += " - " + pasted.slice(2, 4);
       else if (pasted.length > 2) formatted += " - ";
 
-      if (pasted.length >= 6) formatted += " - " + pasted.slice(4);
+      if (pasted.length >= 5) formatted += " - " + pasted.slice(4);
       else if (pasted.length > 4) formatted += " - ";
 
       input.value = formatted;
@@ -165,49 +166,98 @@
 
     function calculateAge() {
       const inputVal = input.value.trim();
-      const dateMatch = inputVal.match(/(\d{2})\s*[-/]\s*(\d{2})\s*[-/]\s*(\d{2,4})/);
       const output = document.getElementById("output");
+      const dateMatch = inputVal.match(/(\d{2})\s*[-/]\s*(\d{2})\s*[-/]\s*(\d{2,4})/);
 
       if (!dateMatch) {
-        output.textContent = "";
+        output.innerHTML = "";
         return;
       }
 
-      let [_, day, month, year] = dateMatch;
+      let [_, dayStr, monthStr, yearStr] = dateMatch;
+      const day = parseInt(dayStr, 10);
+      const month = parseInt(monthStr, 10);
+      let year = parseInt(yearStr, 10);
 
-      if (parseInt(month) > 12 || parseInt(month) < 1) {
-        output.textContent = "Invalid month. Must be between 01 and 12.";
-        return;
+      if (yearStr.length === 2) {
+        year = year > 30 ? 1900 + year : 2000 + year;
       }
+      
+      const inputDate = new Date(year, month - 1, day);
 
-      if (year.length === 2) {
-        year = +year > 30 ? "19" + year : "20" + year;
-      }
-
-      const birthDate = new Date(year, month - 1, day);
-      const today = new Date();
-
-      if (isNaN(birthDate.getTime())) {
+      if (isNaN(inputDate.getTime()) || inputDate.getDate() !== day || inputDate.getMonth() !== month - 1 || inputDate.getFullYear() !== year) {
         output.textContent = "Invalid date.";
         return;
       }
 
-      let ageYears = today.getFullYear() - birthDate.getFullYear();
-      let ageMonths = today.getMonth() - birthDate.getMonth();
-      let ageDays = today.getDate() - birthDate.getDate();
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
 
-      if (ageDays < 0) {
-        ageMonths--;
-        const lastMonth = new Date(today.getFullYear(), today.getMonth(), 0);
-        ageDays += lastMonth.getDate();
+      let output1Text;
+
+      if (inputDate.getTime() === today.getTime()) {
+        output1Text = "Today";
+      } else {
+        const isPast = inputDate < today;
+        const start = isPast ? inputDate : today;
+        const end = isPast ? today : inputDate;
+
+        let yearsDiff = end.getFullYear() - start.getFullYear();
+        let monthsDiff = end.getMonth() - start.getMonth();
+        let daysDiff = end.getDate() - start.getDate();
+
+        if (daysDiff < 0) {
+          monthsDiff--;
+          const lastDayOfPrevMonth = new Date(end.getFullYear(), end.getMonth(), 0).getDate();
+          daysDiff += lastDayOfPrevMonth;
+        }
+
+        if (monthsDiff < 0) {
+          yearsDiff--;
+          monthsDiff += 12;
+        }
+        
+        const parts = [];
+        if (yearsDiff > 0) {
+            parts.push(`${yearsDiff} year${yearsDiff === 1 ? '' : 's'}`);
+        }
+        if (monthsDiff > 0) {
+            parts.push(`${monthsDiff} month${monthsDiff === 1 ? '' : 's'}`);
+        }
+        if (daysDiff > 0) {
+            parts.push(`${daysDiff} day${daysDiff === 1 ? '' : 's'}`);
+        }
+        
+        const diffString = parts.join(', ');
+        
+        if (isPast) {
+          output1Text = `${diffString} ago`;
+        } else {
+          output1Text = `In ${diffString}`;
+        }
       }
 
-      if (ageMonths < 0) {
-        ageYears--;
-        ageMonths += 12;
-      }
+      const futureDate = new Date(inputDate);
+      futureDate.setDate(futureDate.getDate() + 30);
 
-      output.textContent = `Exact Age: ${ageYears} years, ${ageMonths} months, ${ageDays} days`;
+      const getDaySuffix = (d) => {
+        if (d > 3 && d < 21) return 'th';
+        switch (d % 10) {
+          case 1: return "st";
+          case 2: return "nd";
+          case 3: return "rd";
+          default: return "th";
+        }
+      };
+      
+      const dayOfMonth = futureDate.getDate();
+      const monthName = futureDate.toLocaleString('en-GB', { month: 'long' });
+      const fullYear = futureDate.getFullYear();
+      
+      const formattedFutureDate = `${dayOfMonth}${getDaySuffix(dayOfMonth)} ${monthName} ${fullYear}`;
+      const output2Text = `Expiry: ${formattedFutureDate}`;
+
+      output.innerHTML = `${output1Text}<br>${output2Text}`;
     }
   </script>
 </body>
