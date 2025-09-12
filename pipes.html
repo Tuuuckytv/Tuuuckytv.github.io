@@ -63,71 +63,11 @@
     .menu-buttons button:hover {
       background-color: #0056b3;
     }
-    
-    /* MODIFICATION: Container for the top-right controls */
-    .top-right-controls {
-        position: fixed;
-        top: 15px;
-        right: 15px;
-        z-index: 10;
-        display: flex;
-        align-items: center;
-        gap: 20px;
-    }
 
-    /* MODIFICATION: All new styles for the custom toggle switch */
-    .toggle-container {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-    .toggle-label {
-        font-size: 14px;
-        color: #333;
-        font-weight: bold;
-    }
-    .switch {
-        position: relative;
-        display: inline-block;
-        width: 50px;
-        height: 28px;
-    }
-    .switch input {
-        opacity: 0;
-        width: 0;
-        height: 0;
-    }
-    .slider {
-        position: absolute;
-        cursor: pointer;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: #ccc;
-        transition: .4s;
-        border-radius: 28px;
-    }
-    .slider:before {
-        position: absolute;
-        content: "";
-        height: 20px;
-        width: 20px;
-        left: 4px;
-        bottom: 4px;
-        background-color: white;
-        transition: .4s;
-        border-radius: 50%;
-    }
-    input:checked + .slider {
-        background-color: #0f858e;
-    }
-    input:checked + .slider:before {
-        transform: translateX(22px);
-    }
-    
-    /* MODIFICATION: Export button no longer needs fixed positioning */
     .export-btn {
+      position: fixed;
+      top: 15px;
+      right: 15px;
       font-size: 16px;
       background-color: #0f858e;
       color: white;
@@ -136,6 +76,7 @@
       cursor: pointer;
       transition: background-color: 0.3s;
       border: none;
+      z-index: 10;
     }
 
     .export-btn:hover {
@@ -252,6 +193,62 @@
     #duplicateList div:not(:last-child) {
         margin-bottom: 10px;
     }
+    
+    /* MODIFICATION: Styles for the new toggle switch */
+    .toggle-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 15px; /* Add space below the toggle */
+        padding-bottom: 10px; /* Add a bit more space */
+        border-bottom: 1px solid #eee; /* Separator line */
+    }
+    .toggle-label {
+        font-size: 14px;
+        color: #333;
+        font-weight: bold;
+    }
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 28px;
+    }
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 28px;
+    }
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 20px;
+        width: 20px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+    input:checked + .slider {
+        background-color: #0f858e;
+    }
+    input:checked + .slider:before {
+        transform: translateX(22px);
+    }
+
 
     #qtyMarker {
       align-self: flex-start;
@@ -342,18 +339,8 @@
     <button onclick="location.href='pipes'">Pipe Formatter</button>
     <button onclick="location.href='download'">Prompt Generator</button>
   </div>
-  
-  <div class="top-right-controls">
-      <div class="toggle-container">
-          <span class="toggle-label">Remove Duplicates</span>
-          <label class="switch">
-              <input type="checkbox" id="removeDuplicatesToggle" checked onchange="formatText()">
-              <span class="slider"></span>
-          </label>
-      </div>
-      <button class="export-btn" onclick="exportCSV()">Export CSV</button>
-  </div>
 
+  <button class="export-btn" onclick="exportCSV()">Export CSV</button>
 
   <div class="headline-scroller" id="headlineScroller">
     <div class="headline-text" id="headlineText"></div>
@@ -363,11 +350,18 @@
 
   <div class="remove-modal" id="removeModal">
     <label for="removeText">Remove Order Numbers:</label>
-    <input type="text" id="removeText" placeholder="Type numbers to remove" oninput="formatText()" />
+    <input type="text" id="removeText" placeholder="Type numbers) to remove" oninput="formatText()" />
   </div>
 
   <div class="duplicate-modal" id="duplicateModal">
     <h4>Removed Duplicate</h4>
+    <div class="toggle-container">
+        <span class="toggle-label">Show Only These</span>
+        <label class="switch">
+            <input type="checkbox" id="showOnlyDuplicatesToggle" onchange="formatText()">
+            <span class="slider"></span>
+        </label>
+    </div>
     <div id="duplicateList">None</div>
   </div>
 
@@ -445,8 +439,8 @@
       const duplicateListDiv = document.getElementById('duplicateList');
       const container = document.querySelector('.container');
       
-      // MODIFICATION: Read the state of the toggle switch
-      const shouldRemoveDuplicates = document.getElementById('removeDuplicatesToggle').checked;
+      // MODIFICATION: Get the state of the new toggle
+      const showOnlyDuplicates = document.getElementById('showOnlyDuplicatesToggle').checked;
 
       if (input.trim() === "") {
         output.style.display = "none";
@@ -465,36 +459,36 @@
       for (const p of allParts) { counts[p] = (counts[p] || 0) + 1; }
       itemCounts = counts;
       
-      let parts;
-
-      // MODIFICATION: Main logic depends on the toggle state
-      if (shouldRemoveDuplicates) {
-        const duplicateDisplayBlocks = [];
-        for (const number in counts) {
-          if (counts[number] > 1) {
-            const removedCount = counts[number] - 1;
-            const capitalizedName = number.charAt(0).toUpperCase() + number.slice(1);
-            const block = `<div><strong>${capitalizedName}</strong><br>removed x${removedCount}<br>appears x${counts[number]}</div>`;
-            duplicateDisplayBlocks.push(block);
-          }
+      const duplicateDisplayBlocks = [];
+      const duplicatedItems = new Set(); // Keep track of which items were duplicates
+      for (const number in counts) {
+        if (counts[number] > 1) {
+          duplicatedItems.add(number);
+          const removedCount = counts[number] - 1;
+          const capitalizedName = number.charAt(0).toUpperCase() + number.slice(1);
+          const block = `<div><strong>${capitalizedName}</strong><br>removed x${removedCount}<br>appears x${counts[number]}</div>`;
+          duplicateDisplayBlocks.push(block);
         }
-        if (duplicateDisplayBlocks.length > 0) {
-          duplicateListDiv.innerHTML = duplicateDisplayBlocks.join('');
-          duplicateModal.style.display = "block";
-        } else {
-          duplicateListDiv.innerText = "None";
-          duplicateModal.style.display = "none";
-        }
-        parts = Object.keys(counts);
-      } else {
-        duplicateModal.style.display = "none";
-        parts = allParts;
       }
 
+      if (duplicateDisplayBlocks.length > 0) {
+        duplicateListDiv.innerHTML = duplicateDisplayBlocks.join('');
+        duplicateModal.style.display = "block";
+      } else {
+        duplicateListDiv.innerText = "None";
+        duplicateModal.style.display = "none";
+      }
+
+      let parts = Object.keys(counts);
 
       if (removeInput !== "") {
         const removeList = new Set(removeInput.split(/\s+/));
         parts = parts.filter(p => !removeList.has(p));
+      }
+      
+      // MODIFICATION: Filter the final output based on the new toggle
+      if (showOnlyDuplicates) {
+          parts = parts.filter(p => duplicatedItems.has(p));
       }
 
       const formatted = parts.join('|');
@@ -534,6 +528,8 @@
       document.getElementById('clearButton').style.display = "none";
       document.getElementById('qtyMarker').innerText = "Qty: 0";
       itemCounts = {};
+      // MODIFICATION: Reset the toggle on clear
+      document.getElementById('showOnlyDuplicatesToggle').checked = false;
       input.focus();
     }
 
@@ -543,8 +539,8 @@
         const headers = ["Sales number", "Duplicated", "Removed", "Appears"];
         const rows = [headers];
         
-        // Use unique numbers for the report rows, but get data from the full counts
-        const uniqueNumbers = [...new Set(document.getElementById('inputText').value.trim().split(/\s+/).filter(p => p))];
+        // Use unique numbers from the ORIGINAL input for the report, not the potentially filtered output
+        const uniqueNumbers = Object.keys(itemCounts);
 
         for (const num of uniqueNumbers) {
             const totalCount = itemCounts[num] || 1;
