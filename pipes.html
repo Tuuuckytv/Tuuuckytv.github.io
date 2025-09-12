@@ -12,9 +12,6 @@
       background-color: #f6f7f8;
       height: 100vh;
       overflow: hidden;
-      display: flex;
-      justify-content: center;
-      align-items: center;
       position: relative;
       padding: 20px;
     }
@@ -67,33 +64,40 @@
       background-color: #0056b3;
     }
 
+    /* scroller container - full width, hides overflow */
     .headline-scroller {
       position: fixed;
       top: 150px;
+      left: 0;
+      right: 0;
       width: 100%;
       color: #0f858e;
       font-weight: bold;
       font-size: 18px;
       overflow: hidden;
       white-space: nowrap;
-      z-index: 11;
+      z-index: 1;
       height: 30px;
       display: flex;
       align-items: center;
+      box-sizing: border-box;
+      padding-left: 8px; /* small left padding so text doesn't stick to edge */
     }
 
+    /* headline text prepared for JS-controlled transform animation */
     .headline-text {
       display: inline-block;
-      padding-left: 100%;
-      animation: scroll-left 10s linear infinite;
-    }
-
-    @keyframes scroll-left {
-      0% { transform: translateX(0%); }
-      100% { transform: translateX(-100%); }
+      white-space: nowrap;
+      position: relative;
+      will-change: transform;
+      /* no animation here — JS will create and apply it */
     }
 
     .container {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
       text-align: center;
       background: white;
       padding: 20px;
@@ -101,10 +105,43 @@
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
       width: 90%;
       max-width: 500px;
-      z-index: 1;
+      z-index: 2;
       display: flex;
       flex-direction: column;
       align-items: center;
+    }
+
+    .remove-modal {
+      position: fixed;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: calc(50% + 180px);
+      background: #ffffff;
+      border-radius: 8px;
+      padding: 15px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+      width: 260px;
+      text-align: center;
+      z-index: 3;
+      display: none;
+    }
+
+    .remove-modal label {
+      font-size: 14px;
+      color: #555;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .remove-modal input {
+      width: 100%;
+      padding: 8px;
+      font-size: 14px;
+      border: 1px solid #000;
+      border-radius: 5px;
+      outline: none;
+      text-align: center;
+      box-sizing: border-box;
     }
 
     #qtyMarker {
@@ -123,7 +160,6 @@
       border-radius: 5px;
       outline: none;
       text-align: center;
-      caret-color: transparent;
     }
 
     .output-container {
@@ -203,6 +239,11 @@
 
   <div class="pipe-background" id="pipeBackground"></div>
 
+  <div class="remove-modal" id="removeModal">
+    <label for="removeText">Remove Order Number(s):</label>
+    <input type="text" id="removeText" placeholder="Type number(s) to remove" oninput="formatText()" />
+  </div>
+
   <div class="container">
     <h2>Paste sales number here</h2>
     <p style="margin-top: -10px; font-size: 14px; color: #555;">Ensure spaces between each sales number</p>
@@ -220,33 +261,149 @@
   </div>
 
   <button id="prankBtn" onclick="startPigeon()">Activate Sound</button>
-
   <audio id="pigeonSound" src="pigeon.mp3" preload="auto"></audio>
-
   <footer>Please note qty may not reflect the actual number</footer>
 
   <script>
+    // ---- Utility: debounce ----
+    function debounce(fn, wait = 120) {
+      let t;
+      return (...args) => {
+        clearTimeout(t);
+        t = setTimeout(() => fn.apply(this, args), wait);
+      };
+    }
+
+    // ---- Marquee logic (robust) ----
+    (function() {
+      const textEl = document.getElementById('headlineText');
+      const scroller = document.querySelector('.headline-scroller');
+      let styleTag = null;
+      let currentAnimationName = null;
+
+      function makeAnimationName() {
+        return 'scroll_left_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+      }
+
+      async function setupMarquee() {
+        // Wait for fonts/layout to be stable
+        if (document.fonts && document.fonts.ready) {
+          try { await document.fonts.ready; } catch(e) { /* ignore */ }
+        }
+        // Wait a frame to ensure DOM painted
+        await new Promise(r => requestAnimationFrame(r));
+
+        const text = textEl.textContent || '';
+        if (!text.trim()) {
+          // nothing to animate
+          textEl.style.animation = 'none';
+          return;
+        }
+
+        // measure widths
+        const textRect = textEl.getBoundingClientRect();
+        const scrollerRect = scroller.getBoundingClientRect();
+        const textWidth = Math.ceil(textRect.width);
+        const scrollerWidth = Math.ceil(scrollerRect.width);
+
+        // if either is zero, bail (can retry later)
+        if (!textWidth || !scrollerWidth) {
+          // try again next frame
+          requestAnimationFrame(setupMarquee);
+          return;
+        }
+
+        const distance = textWidth + scrollerWidth;
+
+        // speed px/sec (adjust to taste)
+        const speed = 300; // px per second
+        const duration = Math.max(3, distance / speed); // minimum 3s
+
+        // remove old style tag (to avoid huge stylesheet pileup)
+        if (styleTag) {
+          styleTag.remove();
+          styleTag = null;
+        }
+
+        // create unique animation name to avoid caching issues
+        currentAnimationName = makeAnimationName();
+
+        // create @keyframes that start the text at scrollerWidth (off-right) and finish at -textWidth (off-left)
+        const keyframes = `
+@keyframes ${currentAnimationName} {
+  0%   { transform: translateX(${scrollerWidth}px); }
+  100% { transform: translateX(-${textWidth}px); }
+}
+        `;
+        styleTag = document.createElement('style');
+        styleTag.id = 'marquee-style-' + currentAnimationName;
+        styleTag.textContent = keyframes;
+        document.head.appendChild(styleTag);
+
+        // apply animation (reset first to ensure the browser restarts)
+        textEl.style.animation = 'none';
+        // set transform to the start position to avoid visual jump between setups
+        textEl.style.transform = `translateX(${scrollerWidth}px)`;
+
+        // force reflow then set animation
+        void textEl.offsetWidth; // trigger reflow
+        textEl.style.animation = `${currentAnimationName} ${duration}s linear infinite`;
+      }
+
+      // debounce/resize + mutation observer so changes recalc properly
+      const debouncedSetup = debounce(setupMarquee, 150);
+      window.addEventListener('resize', debouncedSetup);
+
+      // re-run when headline text changes
+      const mo = new MutationObserver(debouncedSetup);
+      mo.observe(textEl, { childList: true, characterData: true, subtree: true });
+
+      // expose a call to start (used after loading content)
+      window.startMarqueeNow = setupMarquee;
+    })();
+
+    // ---- Existing app logic (unchanged) ----
     function formatText() {
       const input = document.getElementById('inputText').value;
+      const removeInput = document.getElementById('removeText').value.trim();
       const output = document.getElementById('outputText');
       const copyBtn = document.getElementById('copyButton');
       const clearBtn = document.getElementById('clearButton');
       const qty = document.getElementById('qtyMarker');
+      const removeModal = document.getElementById('removeModal');
+      const container = document.querySelector('.container');
 
       if (input.trim() === "") {
         output.style.display = "none";
         copyBtn.style.display = "none";
         clearBtn.style.display = "none";
         qty.innerText = "Qty: 0";
-      } else {
-        const parts = input.trim().split(/\s+/);
-        const formatted = parts.join('|');
-        output.innerText = formatted;
-        output.style.display = "block";
-        copyBtn.style.display = "inline-block";
-        clearBtn.style.display = "inline-block";
-        qty.innerText = `Qty: ${parts.length}`;
+        removeModal.style.display = "none";
+        return;
       }
+
+      removeModal.style.display = "block";
+
+      let parts = input.trim().split(/\s+/);
+
+      if (removeInput !== "") {
+        const removeList = removeInput.split(/\s+/);
+        parts = parts.filter(p => !removeList.includes(p));
+      }
+
+      const formatted = parts.join('|');
+      output.innerText = formatted;
+      output.style.display = "block";
+      copyBtn.style.display = "inline-block";
+      clearBtn.style.display = "inline-block";
+      qty.innerText = `Qty: ${parts.length}`;
+      
+      setTimeout(() => {
+        const containerHeight = container.offsetHeight;
+        const gap = 15;
+        const offset = (containerHeight / 2) + gap;
+        removeModal.style.bottom = `calc(50% + ${offset}px)`;
+      }, 0);
     }
 
     function copyText() {
@@ -258,7 +415,11 @@
 
     function clearText() {
       const input = document.getElementById('inputText');
+      const remove = document.getElementById('removeText');
+      const removeModal = document.getElementById('removeModal');
       input.value = "";
+      remove.value = "";
+      removeModal.style.display = "none";
       document.getElementById('outputText').style.display = "none";
       document.getElementById('copyButton').style.display = "none";
       document.getElementById('clearButton').style.display = "none";
@@ -267,6 +428,7 @@
     }
 
     window.onload = () => {
+      // pipe background creation (unchanged)
       const container = document.getElementById('pipeBackground');
       const numPipes = 50;
       const screenWidth = window.innerWidth;
@@ -291,15 +453,19 @@
 
       document.getElementById('inputText').focus();
 
+      // load headline lines and start marquee after content set
       fetch('motivation.txt')
         .then(response => response.text())
         .then(data => {
           const lines = data.split('\n').filter(line => line.trim() !== '');
-          const randomLine = lines[Math.floor(Math.random() * lines.length)];
+          const randomLine = lines.length ? lines[Math.floor(Math.random() * lines.length)] : 'Stay positive. Keep pushing forward!';
           document.getElementById('headlineText').textContent = randomLine;
+          // start the marquee now that we set text
+          if (window.startMarqueeNow) window.startMarqueeNow();
         })
         .catch(() => {
           document.getElementById('headlineText').textContent = 'Stay positive. Keep pushing forward!';
+          if (window.startMarqueeNow) window.startMarqueeNow();
         });
     };
 
