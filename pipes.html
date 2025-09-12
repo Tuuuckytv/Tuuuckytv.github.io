@@ -63,11 +63,71 @@
     .menu-buttons button:hover {
       background-color: #0056b3;
     }
+    
+    /* MODIFICATION: Container for the top-right controls */
+    .top-right-controls {
+        position: fixed;
+        top: 15px;
+        right: 15px;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
 
+    /* MODIFICATION: All new styles for the custom toggle switch */
+    .toggle-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .toggle-label {
+        font-size: 14px;
+        color: #333;
+        font-weight: bold;
+    }
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 28px;
+    }
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 28px;
+    }
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 20px;
+        width: 20px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+    input:checked + .slider {
+        background-color: #0f858e;
+    }
+    input:checked + .slider:before {
+        transform: translateX(22px);
+    }
+    
+    /* MODIFICATION: Export button no longer needs fixed positioning */
     .export-btn {
-      position: fixed;
-      top: 15px;
-      right: 15px;
       font-size: 16px;
       background-color: #0f858e;
       color: white;
@@ -76,14 +136,12 @@
       cursor: pointer;
       transition: background-color: 0.3s;
       border: none;
-      z-index: 10;
     }
 
     .export-btn:hover {
       background-color: #0056b3;
     }
 
-    /* scroller hidden until the headline text is ready */
     .headline-scroller {
       position: fixed;
       top: 150px;
@@ -97,13 +155,12 @@
       white-space: nowrap;
       z-index: 1;
       height: 30px;
-      display: none; /* will be shown when text ready */
+      display: none;
       align-items: center;
       box-sizing: border-box;
       padding-left: 8px;
     }
 
-    /* headline text — animation controlled by JS */
     .headline-text {
       display: inline-block;
       white-space: nowrap;
@@ -160,10 +217,9 @@
       outline: none;
       text-align: center;
       box-sizing: border-box;
-      caret-color: transparent; /* <- caret removed */
+      caret-color: transparent;
     }
 
-    /* Duplicate modal (right side) */
     .duplicate-modal {
       position: fixed;
       right: 15px;
@@ -194,7 +250,7 @@
     }
     
     #duplicateList div:not(:last-child) {
-        margin-bottom: 10px; /* Add space between entries */
+        margin-bottom: 10px;
     }
 
     #qtyMarker {
@@ -213,7 +269,7 @@
       border-radius: 5px;
       outline: none;
       text-align: center;
-      caret-color: transparent; /* <- caret removed (no blinking cursor) */
+      caret-color: transparent;
     }
 
     .output-container {
@@ -286,8 +342,18 @@
     <button onclick="location.href='pipes'">Pipe Formatter</button>
     <button onclick="location.href='download'">Prompt Generator</button>
   </div>
+  
+  <div class="top-right-controls">
+      <div class="toggle-container">
+          <span class="toggle-label">Remove Duplicates</span>
+          <label class="switch">
+              <input type="checkbox" id="removeDuplicatesToggle" checked onchange="formatText()">
+              <span class="slider"></span>
+          </label>
+      </div>
+      <button class="export-btn" onclick="exportCSV()">Export CSV</button>
+  </div>
 
-  <button class="export-btn" onclick="exportCSV()">Export CSV</button>
 
   <div class="headline-scroller" id="headlineScroller">
     <div class="headline-text" id="headlineText"></div>
@@ -301,7 +367,7 @@
   </div>
 
   <div class="duplicate-modal" id="duplicateModal">
-    <h4>Removed Duplicates</h4>
+    <h4>Removed Duplicate</h4>
     <div id="duplicateList">None</div>
   </div>
 
@@ -326,94 +392,45 @@
   <footer>Please note qty may not reflect the actual number</footer>
 
   <script>
-    // ---------- Robust marquee setup ----------
     (function() {
       const textEl = document.getElementById('headlineText');
       const scroller = document.getElementById('headlineScroller');
       let styleTag = null;
       let currentAnimationName = null;
-
-      function makeAnimationName() {
-        return 'marq_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
-      }
-
+      function makeAnimationName() { return 'marq_' + Date.now() + '_' + Math.floor(Math.random() * 1000); }
       async function setupMarquee() {
-        // Wait for fonts/layout to be stable
-        if (document.fonts && document.fonts.ready) {
-          try { await document.fonts.ready; } catch(e) { /* ignore */ }
-        }
+        if (document.fonts && document.fonts.ready) { try { await document.fonts.ready; } catch(e) {} }
         await new Promise(r => requestAnimationFrame(r));
-
         const text = textEl.textContent || '';
-        if (!text.trim()) {
-          textEl.style.animation = 'none';
-          return;
-        }
-
-        // measure widths
+        if (!text.trim()) { textEl.style.animation = 'none'; return; }
         const textRect = textEl.getBoundingClientRect();
         const scrollerRect = scroller.getBoundingClientRect();
         const textWidth = Math.ceil(textRect.width);
         const scrollerWidth = Math.ceil(scrollerRect.width);
-
-        if (!textWidth || !scrollerWidth) {
-          requestAnimationFrame(setupMarquee);
-          return;
-        }
-
+        if (!textWidth || !scrollerWidth) { requestAnimationFrame(setupMarquee); return; }
         const distance = textWidth + scrollerWidth;
-        const speed = 120; // px per second (adjust this number to change speed)
+        const speed = 120;
         const duration = Math.max(3, distance / speed);
-
-        // clean previous style tag if present
-        if (styleTag) {
-          styleTag.remove();
-          styleTag = null;
-        }
-
+        if (styleTag) { styleTag.remove(); styleTag = null; }
         currentAnimationName = makeAnimationName();
-
-        const keyframes = `
-@keyframes ${currentAnimationName} {
-  0%   { transform: translateX(${scrollerWidth}px); }
-  100% { transform: translateX(-${textWidth}px); }
-}
-        `;
+        const keyframes = `@keyframes ${currentAnimationName} { 0% { transform: translateX(${scrollerWidth}px); } 100% { transform: translateX(-${textWidth}px); }}`;
         styleTag = document.createElement('style');
         styleTag.id = 'marquee-style-' + currentAnimationName;
         styleTag.textContent = keyframes;
         document.head.appendChild(styleTag);
-
-        // reset and apply
         textEl.style.animation = 'none';
         textEl.style.transform = `translateX(${scrollerWidth}px)`;
-        void textEl.offsetWidth; // force reflow
+        void textEl.offsetWidth;
         textEl.style.animation = `${currentAnimationName} ${duration}s linear infinite`;
       }
-
-      // debounce utility
-      function debounce(fn, wait = 150) {
-        let t;
-        return (...args) => {
-          clearTimeout(t);
-          t = setTimeout(() => fn.apply(this, args), wait);
-        };
-      }
-
+      function debounce(fn, wait = 150) { let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn.apply(this, args), wait); }; }
       const debouncedSetup = debounce(setupMarquee, 150);
       window.addEventListener('resize', debouncedSetup);
-
       const mo = new MutationObserver(debouncedSetup);
       mo.observe(textEl, { childList: true, characterData: true, subtree: true });
-
-      // Expose starter
       window.startMarqueeNow = setupMarquee;
     })();
 
-
-    // ---------- Main app logic ----------
-    
-    // Variable to store the full count details for the CSV export
     let itemCounts = {};
 
     function formatText() {
@@ -427,6 +444,9 @@
       const duplicateModal = document.getElementById('duplicateModal');
       const duplicateListDiv = document.getElementById('duplicateList');
       const container = document.querySelector('.container');
+      
+      // MODIFICATION: Read the state of the toggle switch
+      const shouldRemoveDuplicates = document.getElementById('removeDuplicatesToggle').checked;
 
       if (input.trim() === "") {
         output.style.display = "none";
@@ -439,58 +459,46 @@
       }
 
       removeModal.style.display = "block";
-
-      let allParts = input.trim().split(/\s+/);
-
-      // Count frequencies of all entered parts
+      
+      let allParts = input.trim().split(/\s+/).filter(p => p);
       const counts = {};
-      for (const p of allParts) {
-        counts[p] = (counts[p] || 0) + 1;
-      }
-
-      // Store the full counts object for the export function
+      for (const p of allParts) { counts[p] = (counts[p] || 0) + 1; }
       itemCounts = counts;
       
-      // Create a detailed breakdown for each duplicated item for the on-page summary
-      const duplicateDisplayBlocks = [];
-      for (const number in counts) {
-        const count = counts[number];
-        if (count > 1) {
-          const removedCount = count - 1;
-          const capitalizedName = number.charAt(0).toUpperCase() + number.slice(1);
-          const block = `
-            <div>
-              <strong>${capitalizedName}</strong><br>
-              removed x${removedCount}<br>
-              appears x${count}
-            </div>
-          `;
-          duplicateDisplayBlocks.push(block);
+      let parts;
+
+      // MODIFICATION: Main logic depends on the toggle state
+      if (shouldRemoveDuplicates) {
+        const duplicateDisplayBlocks = [];
+        for (const number in counts) {
+          if (counts[number] > 1) {
+            const removedCount = counts[number] - 1;
+            const capitalizedName = number.charAt(0).toUpperCase() + number.slice(1);
+            const block = `<div><strong>${capitalizedName}</strong><br>removed x${removedCount}<br>appears x${counts[number]}</div>`;
+            duplicateDisplayBlocks.push(block);
+          }
         }
-      }
-
-      // Update the duplicate modal with the formatted blocks
-      if (duplicateDisplayBlocks.length > 0) {
-        duplicateListDiv.innerHTML = duplicateDisplayBlocks.join('');
-        duplicateModal.style.display = "block";
+        if (duplicateDisplayBlocks.length > 0) {
+          duplicateListDiv.innerHTML = duplicateDisplayBlocks.join('');
+          duplicateModal.style.display = "block";
+        } else {
+          duplicateListDiv.innerText = "None";
+          duplicateModal.style.display = "none";
+        }
+        parts = Object.keys(counts);
       } else {
-        duplicateListDiv.innerText = "None";
         duplicateModal.style.display = "none";
+        parts = allParts;
       }
 
-      // The 'parts' variable for the final output is the list of unique numbers
-      let parts = Object.keys(counts);
 
-      // Apply explicit remove list (if any)
       if (removeInput !== "") {
         const removeList = new Set(removeInput.split(/\s+/));
         parts = parts.filter(p => !removeList.has(p));
       }
 
-      // MODIFICATION: Reverted to plain text output without highlighting
       const formatted = parts.join('|');
       output.innerText = formatted;
-
       output.style.display = "block";
       copyBtn.style.display = "inline-block";
       clearBtn.style.display = "inline-block";
@@ -507,9 +515,7 @@
     function copyText() {
       const text = document.getElementById('outputText').innerText;
       if (!text) return;
-      navigator.clipboard.writeText(text).catch(err => {
-        console.error('Error copying text:', err);
-      });
+      navigator.clipboard.writeText(text).catch(err => console.error('Error copying text:', err));
     }
 
     function clearText() {
@@ -522,41 +528,35 @@
       removeModal.style.display = "none";
       duplicateModal.style.display = "none";
       document.getElementById('duplicateList').innerText = "None";
-      document.getElementById('outputText').innerText = ""; // Reverted to innerText
+      document.getElementById('outputText').innerText = "";
       document.getElementById('outputText').style.display = "none";
       document.getElementById('copyButton').style.display = "none";
       document.getElementById('clearButton').style.display = "none";
       document.getElementById('qtyMarker').innerText = "Qty: 0";
-      itemCounts = {}; // Clear the counts object
+      itemCounts = {};
       input.focus();
     }
 
-    // This function for the detailed 4-column CSV export is unchanged
     function exportCSV() {
         const text = document.getElementById('outputText').innerText;
         if (!text) return;
-
-        // Define the 4-column headers
         const headers = ["Sales number", "Duplicated", "Removed", "Appears"];
         const rows = [headers];
+        
+        // Use unique numbers for the report rows, but get data from the full counts
+        const uniqueNumbers = [...new Set(document.getElementById('inputText').value.trim().split(/\s+/).filter(p => p))];
 
-        const numbers = text.split('|');
-        for (const num of numbers) {
-            // Get the full count from the global itemCounts object
-            const totalCount = itemCounts[num] || 1; // Default to 1 if not found
-            
+        for (const num of uniqueNumbers) {
+            const totalCount = itemCounts[num] || 1;
             const isDuplicate = totalCount > 1 ? 'Yes' : 'No';
             const removedCount = totalCount > 1 ? totalCount - 1 : 0;
             const appearsCount = totalCount;
-
             rows.push([num, isDuplicate, removedCount, appearsCount]);
         }
         
-        // Escape values to handle commas, etc., and build the CSV string
         const csvContent = rows.map(row => 
             row.map(item => `"${String(item).replace(/"/g, '""')}"`).join(',')
         ).join('\n');
-
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
@@ -569,32 +569,19 @@
     }
 
     window.onload = () => {
-      // falling pipes background
       const container = document.getElementById('pipeBackground');
       const numPipes = 50;
-      const screenWidth = window.innerWidth;
-
       for (let i = 0; i < numPipes; i++) {
         const pipe = document.createElement('img');
         pipe.src = 'pipe.png';
         pipe.className = 'pipe';
-
-        const left = Math.random() * screenWidth;
-        const topOffset = -Math.random() * 1000;
-        const duration = 8 + Math.random() * 4;
-        const delay = Math.random() * 5;
-
-        pipe.style.left = `${left}px`;
-        pipe.style.top = `${topOffset}px`;
-        pipe.style.animationDuration = `${duration}s`;
-        pipe.style.animationDelay = `${delay}s`;
-
+        pipe.style.left = `${Math.random() * window.innerWidth}px`;
+        pipe.style.top = `${-Math.random() * 1000}px`;
+        pipe.style.animationDuration = `${8 + Math.random() * 4}s`;
+        pipe.style.animationDelay = `${Math.random() * 5}s`;
         container.appendChild(pipe);
       }
-
       document.getElementById('inputText').focus();
-
-      // Load the headline text and only show scroller once ready
       fetch('motivation.txt')
         .then(response => response.text())
         .then(data => {
@@ -613,25 +600,17 @@
 
     function getRandomDelay() {
       const minutes = [10, 11, 13];
-      const selected = minutes[Math.floor(Math.random() * minutes.length)];
-      return selected * 60 * 1000;
+      return minutes[Math.floor(Math.random() * minutes.length)] * 60 * 1000;
     }
-
     function scheduleNextPigeon() {
-      const delay = getRandomDelay();
       setTimeout(() => {
-        document.getElementById('pigeonSound').play();
+        document.getElementById('pigeonSound').play().catch(e => console.error("Audio failed:", e));
         scheduleNextPigeon();
-      }, delay);
+      }, getRandomDelay());
     }
-
     function startPigeon() {
       const audio = document.getElementById('pigeonSound');
-      audio.play().then(() => {
-        scheduleNextPigeon();
-      }).catch(err => {
-        console.error('Playback error:', err);
-      });
+      audio.play().then(scheduleNextPigeon).catch(e => console.error('Playback error:', e));
     }
   </script>
 </body>
