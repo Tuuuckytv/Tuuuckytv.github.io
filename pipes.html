@@ -63,68 +63,11 @@
     .menu-buttons button:hover {
       background-color: #0056b3;
     }
-    
-    .top-right-controls {
-        position: fixed;
-        top: 15px;
-        right: 15px;
-        z-index: 10;
-        display: flex;
-        align-items: center;
-        gap: 20px;
-    }
 
-    .toggle-container {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-    .toggle-label {
-        font-size: 14px;
-        color: #333;
-        font-weight: bold;
-    }
-    .switch {
-        position: relative;
-        display: inline-block;
-        width: 50px;
-        height: 28px;
-    }
-    .switch input {
-        opacity: 0;
-        width: 0;
-        height: 0;
-    }
-    .slider {
-        position: absolute;
-        cursor: pointer;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: #ccc;
-        transition: .4s;
-        border-radius: 28px;
-    }
-    .slider:before {
-        position: absolute;
-        content: "";
-        height: 20px;
-        width: 20px;
-        left: 4px;
-        bottom: 4px;
-        background-color: white;
-        transition: .4s;
-        border-radius: 50%;
-    }
-    input:checked + .slider {
-        background-color: #0f858e;
-    }
-    input:checked + .slider:before {
-        transform: translateX(22px);
-    }
-    
     .export-btn {
+      position: fixed;
+      top: 15px;
+      right: 15px;
       font-size: 16px;
       background-color: #0f858e;
       color: white;
@@ -133,6 +76,7 @@
       cursor: pointer;
       transition: background-color: 0.3s;
       border: none;
+      z-index: 10;
     }
 
     .export-btn:hover {
@@ -192,10 +136,9 @@
       border-radius: 8px;
       padding: 15px;
       box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-      width: 90%;
-      max-width: 260px;
+      width: 260px;
       text-align: center;
-      z-index: 4;
+      z-index: 3;
       display: none;
     }
 
@@ -251,6 +194,62 @@
         margin-bottom: 10px;
     }
 
+    /* Styles for the new toggle switch */
+    .toggle-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #eee;
+    }
+    .toggle-label {
+        font-size: 14px;
+        color: #333;
+        font-weight: bold;
+    }
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 28px;
+    }
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 28px;
+    }
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 20px;
+        width: 20px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+    input:checked + .slider {
+        background-color: #0f858e;
+    }
+    input:checked + .slider:before {
+        transform: translateX(22px);
+    }
+
+
     #qtyMarker {
       align-self: flex-start;
       font-size: 14px;
@@ -291,7 +290,7 @@
       gap: 10px;
       margin-top: 10px;
     }
-
+    
     button.copy-clear, button.paste-btn {
       padding: 10px 15px;
       font-size: 16px;
@@ -304,11 +303,11 @@
     }
     
     button.copy-clear {
-        display: none; /* Copy/Clear are hidden by default */
+      display: none;
     }
-    
+
     button.paste-btn {
-        display: inline-block; /* Paste is visible by default */
+      display: inline-block;
     }
 
     button.copy-clear:hover, button.paste-btn:hover {
@@ -337,34 +336,6 @@
       width: 40px;
       height: 40px;
     }
-
-    @media screen and (max-width: 800px) {
-        .duplicate-modal {
-            right: 50%;
-            top: 70px;
-            transform: translateX(50%);
-            width: 85%;
-            max-width: 350px;
-        }
-    }
-
-    @media screen and (max-width: 500px) {
-        .toggle-label {
-            display: none;
-        }
-        .top-right-controls {
-            gap: 10px;
-        }
-        .menu-buttons {
-            gap: 5px;
-            align-items: center;
-        }
-         .menu-buttons button, .export-btn {
-            padding: 6px 8px;
-            font-size: 14px;
-        }
-    }
-
   </style>
 </head>
 <body>
@@ -375,18 +346,8 @@
     <button onclick="location.href='pipes'">Pipe Formatter</button>
     <button onclick="location.href='download'">Prompt Generator</button>
   </div>
-  
-  <div class="top-right-controls">
-      <div class="toggle-container">
-          <span class="toggle-label">Remove Duplicates</span>
-          <label class="switch">
-              <input type="checkbox" id="removeDuplicatesToggle" checked onchange="formatText()">
-              <span class="slider"></span>
-          </label>
-      </div>
-      <button class="export-btn" onclick="exportCSV()">Export CSV</button>
-  </div>
 
+  <button class="export-btn" onclick="exportCSV()">Export CSV</button>
 
   <div class="headline-scroller" id="headlineScroller">
     <div class="headline-text" id="headlineText"></div>
@@ -396,11 +357,18 @@
 
   <div class="remove-modal" id="removeModal">
     <label for="removeText">Remove Order Numbers:</label>
-    <input type="text" id="removeText" placeholder="Type numbers) to remove" oninput="formatText()" />
+    <input type="text" id="removeText" placeholder="Type numbers to remove" oninput="formatText()" />
   </div>
 
   <div class="duplicate-modal" id="duplicateModal">
     <h4>Removed Duplicate</h4>
+    <div class="toggle-container">
+        <span class="toggle-label">Keep Duplicates</span>
+        <label class="switch">
+            <input type="checkbox" id="keepDuplicatesToggle" onchange="formatText()">
+            <span class="slider"></span>
+        </label>
+    </div>
     <div id="duplicateList">None</div>
   </div>
 
@@ -473,31 +441,29 @@
       const output = document.getElementById('outputText');
       const copyBtn = document.getElementById('copyButton');
       const clearBtn = document.getElementById('clearButton');
-      const pasteBtn = document.getElementById('pasteButton'); // MODIFICATION: Get paste button
+      const pasteBtn = document.getElementById('pasteButton');
       const qty = document.getElementById('qtyMarker');
       const removeModal = document.getElementById('removeModal');
       const duplicateModal = document.getElementById('duplicateModal');
       const duplicateListDiv = document.getElementById('duplicateList');
       
-      const shouldRemoveDuplicates = document.getElementById('removeDuplicatesToggle').checked;
+      const keepDuplicates = document.getElementById('keepDuplicatesToggle').checked;
 
       if (input.trim() === "") {
         output.style.display = "none";
         copyBtn.style.display = "none";
         clearBtn.style.display = "none";
-        pasteBtn.style.display = "inline-block"; // MODIFICATION: Show paste button
+        pasteBtn.style.display = "inline-block";
         qty.innerText = "Qty: 0";
         removeModal.style.display = "none";
         duplicateModal.style.display = "none";
         return;
       }
       
-      // If there is text, hide paste button and show others
       pasteBtn.style.display = "none";
       copyBtn.style.display = "inline-block";
       clearBtn.style.display = "inline-block";
       output.style.display = "block";
-
       removeModal.style.display = "block";
       
       let allParts = input.trim().split(/\s+/).filter(p => p);
@@ -505,31 +471,30 @@
       for (const p of allParts) { counts[p] = (counts[p] || 0) + 1; }
       itemCounts = counts;
       
-      let parts;
-
-      if (shouldRemoveDuplicates) {
-        const duplicateDisplayBlocks = [];
-        for (const number in counts) {
-          if (counts[number] > 1) {
-            const removedCount = counts[number] - 1;
-            const capitalizedName = number.charAt(0).toUpperCase() + number.slice(1);
-            const block = `<div><strong>${capitalizedName}</strong><br>removed x${removedCount}<br>appears x${counts[number]}</div>`;
-            duplicateDisplayBlocks.push(block);
-          }
+      const duplicateDisplayBlocks = [];
+      for (const number in counts) {
+        if (counts[number] > 1) {
+          const removedCount = counts[number] - 1;
+          const capitalizedName = number.charAt(0).toUpperCase() + number.slice(1);
+          const block = `<div><strong>${capitalizedName}</strong><br>removed x${removedCount}<br>appears x${counts[number]}</div>`;
+          duplicateDisplayBlocks.push(block);
         }
-        if (duplicateDisplayBlocks.length > 0) {
-          duplicateListDiv.innerHTML = duplicateDisplayBlocks.join('');
-          duplicateModal.style.display = "block";
-        } else {
-          duplicateListDiv.innerText = "None";
-          duplicateModal.style.display = "none";
-        }
-        parts = Object.keys(counts);
-      } else {
-        duplicateModal.style.display = "none";
-        parts = allParts;
       }
 
+      if (duplicateDisplayBlocks.length > 0) {
+        duplicateListDiv.innerHTML = duplicateDisplayBlocks.join('');
+        duplicateModal.style.display = "block";
+      } else {
+        duplicateListDiv.innerText = "None";
+        duplicateModal.style.display = "none";
+      }
+      
+      let parts;
+      if (keepDuplicates) {
+          parts = allParts;
+      } else {
+          parts = Object.keys(counts);
+      }
 
       if (removeInput !== "") {
         const removeList = new Set(removeInput.split(/\s+/));
@@ -548,14 +513,14 @@
       }, 0);
     }
     
-    // MODIFICATION: New async function to handle pasting from clipboard
     async function pasteText() {
         try {
             const text = await navigator.clipboard.readText();
             const inputField = document.getElementById('inputText');
             if (text) {
-                inputField.value = text;
-                formatText(); // Process the pasted text immediately
+                const formattedText = text.replace(/[\n\t\r]/g, ' ').replace(/\s+/g, ' ').trim();
+                inputField.value = formattedText;
+                formatText();
             }
         } catch (err) {
             console.error('Failed to read clipboard contents: ', err);
@@ -574,7 +539,8 @@
       const remove = document.getElementById('removeText');
       input.value = "";
       remove.value = "";
-      formatText(); // Call formatText to reset the whole UI
+      document.getElementById('keepDuplicatesToggle').checked = false;
+      formatText();
       input.focus();
     }
 
@@ -584,9 +550,10 @@
         const headers = ["Sales number", "Duplicated", "Removed", "Appears"];
         const rows = [headers];
         
-        const uniqueNumbers = [...new Set(document.getElementById('inputText').value.trim().split(/\s+/).filter(p => p))];
+        const uniqueNumbers = Object.keys(itemCounts);
 
         for (const num of uniqueNumbers) {
+            if (!num) continue;
             const totalCount = itemCounts[num] || 1;
             const isDuplicate = totalCount > 1 ? 'Yes' : 'No';
             const removedCount = totalCount > 1 ? totalCount - 1 : 0;
@@ -621,7 +588,26 @@
         pipe.style.animationDelay = `${Math.random() * 5}s`;
         container.appendChild(pipe);
       }
-      document.getElementById('inputText').focus();
+      
+      const inputText = document.getElementById('inputText');
+      inputText.focus();
+
+      inputText.addEventListener('paste', (event) => {
+          event.preventDefault();
+          const pastedText = (event.clipboardData || window.clipboardData).getData('text');
+          const formattedText = pastedText.replace(/[\n\t\r]/g, ' ').replace(/\s+/g, ' ').trim();
+          
+          const start = inputText.selectionStart;
+          const end = inputText.selectionEnd;
+          const textBefore = inputText.value.substring(0, start);
+          const textAfter = inputText.value.substring(end, inputText.value.length);
+          
+          inputText.value = textBefore + formattedText + textAfter;
+          inputText.selectionStart = inputText.selectionEnd = start + formattedText.length;
+          
+          formatText();
+      });
+
       fetch('motivation.txt')
         .then(response => response.text())
         .then(data => {
