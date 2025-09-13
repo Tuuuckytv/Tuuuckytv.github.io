@@ -194,15 +194,14 @@
         margin-bottom: 10px;
     }
     
-    /* MODIFICATION: Styles for the new toggle switch */
     .toggle-container {
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 10px;
-        margin-bottom: 15px; /* Add space below the toggle */
-        padding-bottom: 10px; /* Add a bit more space */
-        border-bottom: 1px solid #eee; /* Separator line */
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #eee;
     }
     .toggle-label {
         font-size: 14px;
@@ -329,6 +328,17 @@
       width: 40px;
       height: 40px;
     }
+    
+    @media screen and (max-width: 800px) {
+        .duplicate-modal {
+            right: 50%;
+            top: 70px;
+            transform: translateX(50%);
+            width: 85%;
+            max-width: 350px;
+        }
+    }
+
   </style>
 </head>
 <body>
@@ -356,9 +366,9 @@
   <div class="duplicate-modal" id="duplicateModal">
     <h4>Removed Duplicate</h4>
     <div class="toggle-container">
-        <span class="toggle-label">Show Only These</span>
+        <span class="toggle-label">Keep Duplicates</span>
         <label class="switch">
-            <input type="checkbox" id="showOnlyDuplicatesToggle" onchange="formatText()">
+            <input type="checkbox" id="keepDuplicatesToggle" onchange="formatText()">
             <span class="slider"></span>
         </label>
     </div>
@@ -437,10 +447,8 @@
       const removeModal = document.getElementById('removeModal');
       const duplicateModal = document.getElementById('duplicateModal');
       const duplicateListDiv = document.getElementById('duplicateList');
-      const container = document.querySelector('.container');
       
-      // MODIFICATION: Get the state of the new toggle
-      const showOnlyDuplicates = document.getElementById('showOnlyDuplicatesToggle').checked;
+      const keepDuplicates = document.getElementById('keepDuplicatesToggle').checked;
 
       if (input.trim() === "") {
         output.style.display = "none";
@@ -459,11 +467,11 @@
       for (const p of allParts) { counts[p] = (counts[p] || 0) + 1; }
       itemCounts = counts;
       
+      // MODIFICATION: The logic for displaying the duplicate modal is now separate
+      // and happens regardless of the toggle state.
       const duplicateDisplayBlocks = [];
-      const duplicatedItems = new Set(); // Keep track of which items were duplicates
       for (const number in counts) {
         if (counts[number] > 1) {
-          duplicatedItems.add(number);
           const removedCount = counts[number] - 1;
           const capitalizedName = number.charAt(0).toUpperCase() + number.slice(1);
           const block = `<div><strong>${capitalizedName}</strong><br>removed x${removedCount}<br>appears x${counts[number]}</div>`;
@@ -478,19 +486,20 @@
         duplicateListDiv.innerText = "None";
         duplicateModal.style.display = "none";
       }
-
-      let parts = Object.keys(counts);
+      
+      // MODIFICATION: The toggle now ONLY decides which set of parts to use for the output.
+      let parts;
+      if (keepDuplicates) {
+          parts = allParts;
+      } else {
+          parts = Object.keys(counts);
+      }
 
       if (removeInput !== "") {
         const removeList = new Set(removeInput.split(/\s+/));
         parts = parts.filter(p => !removeList.has(p));
       }
       
-      // MODIFICATION: Filter the final output based on the new toggle
-      if (showOnlyDuplicates) {
-          parts = parts.filter(p => duplicatedItems.has(p));
-      }
-
       const formatted = parts.join('|');
       output.innerText = formatted;
       output.style.display = "block";
@@ -499,7 +508,7 @@
       qty.innerText = `Qty: ${parts.length}`;
 
       setTimeout(() => {
-        const containerHeight = container.offsetHeight;
+        const containerHeight = document.querySelector('.container').offsetHeight;
         const gap = 15;
         const offset = (containerHeight / 2) + gap;
         removeModal.style.bottom = `calc(50% + ${offset}px)`;
@@ -528,8 +537,7 @@
       document.getElementById('clearButton').style.display = "none";
       document.getElementById('qtyMarker').innerText = "Qty: 0";
       itemCounts = {};
-      // MODIFICATION: Reset the toggle on clear
-      document.getElementById('showOnlyDuplicatesToggle').checked = false;
+      document.getElementById('keepDuplicatesToggle').checked = false;
       input.focus();
     }
 
@@ -539,10 +547,10 @@
         const headers = ["Sales number", "Duplicated", "Removed", "Appears"];
         const rows = [headers];
         
-        // Use unique numbers from the ORIGINAL input for the report, not the potentially filtered output
         const uniqueNumbers = Object.keys(itemCounts);
 
         for (const num of uniqueNumbers) {
+            if (!num) continue;
             const totalCount = itemCounts[num] || 1;
             const isDuplicate = totalCount > 1 ? 'Yes' : 'No';
             const removedCount = totalCount > 1 ? totalCount - 1 : 0;
