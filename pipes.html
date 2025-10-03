@@ -640,6 +640,28 @@
       const audio = document.getElementById('pigeonSound');
       audio.play().then(scheduleNextPigeon).catch(e => console.error('Playback error:', e));
     }
+
+// Always keep focus on the main input field
+const inputField = document.getElementById('inputText');
+
+document.addEventListener('click', () => {
+  setTimeout(() => inputField.focus(), 0);
+});
+
+document.addEventListener('keydown', () => {
+  setTimeout(() => inputField.focus(), 0);
+});
+
+// Also refocus after copy/clear/paste buttons
+['copyButton', 'clearButton', 'pasteButton'].forEach(id => {
+  const btn = document.getElementById(id);
+  if (btn) {
+    btn.addEventListener('click', () => {
+      setTimeout(() => inputField.focus(), 0);
+    });
+  }
+});
+
   </script>
 </body>
 </html>
