@@ -6,6 +6,7 @@
   <title>Kyle Tuck</title>
   <link rel="icon" href="pipe.png" type="image/png" />
   <style>
+    /* ---------- GLOBAL STYLES ---------- */
     body {
       margin: 0;
       font-family: Arial, sans-serif;
@@ -20,6 +21,102 @@
       flex-direction: column;
     }
 
+    /* ---------- LOADING SCREEN ---------- */
+    #loader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #f6f7f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.4s ease, visibility 0.4s ease;
+    }
+
+    #loader.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .cubes {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform-style: preserve-3d;
+    }
+
+    .loop {
+      transform: rotateX(-35deg) rotateY(-45deg) translateZ(1.5625em);
+    }
+
+    @keyframes s {
+      to {
+        transform: scale3d(0.2, 0.2, 0.2);
+      }
+    }
+
+    .item {
+      margin: -1.5625em;
+      width: 3.125em;
+      height: 3.125em;
+      transform-origin: 50% 50% -1.5625em;
+      box-shadow: 0 0 0.125em currentColor;
+      background: currentColor;
+      animation: s 0.6s cubic-bezier(0.45, 0.03, 0.51, 0.95) infinite alternate;
+    }
+
+    .item:before,
+    .item:after {
+      position: absolute;
+      width: inherit;
+      height: inherit;
+      transform-origin: 0 100%;
+      box-shadow: inherit;
+      background: currentColor;
+      content: "";
+    }
+
+    .item:before {
+      bottom: 100%;
+      transform: rotateX(90deg);
+    }
+
+    .item:after {
+      left: 100%;
+      transform: rotateY(90deg);
+    }
+
+    /* Teal / aqua gradient color theme */
+    .item:nth-child(1) { margin-top: 6.25em;  color: #0f858e;  animation-delay: -1.2s; }
+    .item:nth-child(1):before { color: #15a6b1; }
+    .item:nth-child(1):after { color: #13bac8; }
+
+    .item:nth-child(2) { margin-top: 3.125em; color: #19a0aa; animation-delay: -1s; }
+    .item:nth-child(2):before { color: #22bcc5; }
+    .item:nth-child(2):after { color: #28cfd8; }
+
+    .item:nth-child(3) { margin-top: 0; color: #26b8c3; animation-delay: -0.8s; }
+    .item:nth-child(3):before { color: #3bd2dc; }
+    .item:nth-child(3):after { color: #52e1ea; }
+
+    .item:nth-child(4) { margin-top: -3.125em; color: #40cdd6; animation-delay: -0.6s; }
+    .item:nth-child(4):before { color: #63dee4; }
+    .item:nth-child(4):after { color: #78e8ee; }
+
+    .item:nth-child(5) { margin-top: -6.25em; color: #5adfe1; animation-delay: -0.4s; }
+    .item:nth-child(5):before { color: #8df0f6; }
+    .item:nth-child(5):after { color: #a0f6fb; }
+
+    .item:nth-child(6) { margin-top: -9.375em; color: #7bf0f5; animation-delay: -0.2s; }
+    .item:nth-child(6):before { color: #a6f8fa; }
+    .item:nth-child(6):after { color: #c0fbfd; }
+
+    /* ---------- MAIN PAGE STYLES ---------- */
     .search-bar {
       position: absolute;
       top: 50px;
@@ -94,6 +191,7 @@
       font-weight: bold;
       color: #0f858e;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      overflow: hidden;
     }
 
     .tool-card:hover {
@@ -109,33 +207,72 @@
       color: #777;
       font-style: italic;
     }
+
+    #animation .text-xl {
+      font-size: 3rem;
+      color: black;
+      letter-spacing: 0.06em;
+    }
+
+    .animated-title {
+      display: inline-block;
+    }
   </style>
 </head>
 <body>
 
+  <!-- ---------- LOADER ---------- -->
+  <div id="loader">
+    <div class="loop cubes">
+      <div class="item cubes"></div>
+      <div class="item cubes"></div>
+      <div class="item cubes"></div>
+      <div class="item cubes"></div>
+      <div class="item cubes"></div>
+      <div class="item cubes"></div>
+    </div>
+  </div>
+
+  <!-- ---------- MAIN CONTENT ---------- -->
   <div class="search-bar">
     <input type="text" placeholder="Search page..." id="searchInput" oninput="showSuggestions()" onkeydown="handleKey(event)">
     <div id="suggestions" class="suggestions" style="display: none;"></div>
   </div>
 
   <div class="container">
-    <h1>Welcome</h1>
+    <div id="animation" class="docs-demo-html">
+      <div class="large grid centered square-grid">
+        <h2 class="text-xl animated-title">Welcome</h2>
+      </div>
+    </div>
+
     <p>Choose your tool below to get started:</p>
     <div class="tool-grid">
-      <div class="tool-card" onclick="location.href='pipes'">Pipe Formatter</div>
-      <div class="tool-card" onclick="location.href='date'">Date Checker</div>
+      <div class="tool-card" onclick="loadPage('pipes')">Pipe Formatter</div>
+      <div class="tool-card" onclick="loadPage('date')">Date Checker</div>
     </div>
   </div>
 
   <footer>Kyle Tuck Inc.</footer>
 
+  <!-- ---------- PAGE SCRIPT ---------- -->
   <script>
+    // Show loader when navigating
+    function loadPage(path) {
+      const loader = document.getElementById('loader');
+      loader.classList.add('active');
+      setTimeout(() => {
+        window.location.href = path;
+      }, 3500);
+    }
+
+    // Search bar functionality
     const pages = [
-  { name: "Pipe Formatter", path: "pipes" },
-  { name: "Date Checker", path: "date" },
-  { name: "Prompt Generator", path: "download", hidden: true },
-  { name: "Road Trip", path: "roadtrip", hidden: true },
-];
+      { name: "Pipe Formatter", path: "pipes" },
+      { name: "Date Checker", path: "date" },
+      { name: "Prompt Generator", path: "download", hidden: true },
+      { name: "Road Trip", path: "roadtrip", hidden: true },
+    ];
 
     let currentSelection = -1;
 
@@ -150,7 +287,6 @@
         return;
       }
 
-      // Only show non-hidden items in dropdown
       const matches = pages.filter(p =>
         p.name.toLowerCase().includes(input) && !p.hidden
       );
@@ -166,7 +302,7 @@
         div.textContent = page.name;
         div.dataset.index = index;
         div.onclick = () => {
-          window.location.href = page.path;
+          loadPage(page.path);
         };
         suggestionBox.appendChild(div);
       });
@@ -193,12 +329,9 @@
         if (currentSelection >= 0 && currentSelection < suggestions.length) {
           suggestions[currentSelection].click();
         } else {
-          // Match including hidden pages
           const input = document.getElementById("searchInput").value.toLowerCase();
           const match = pages.find(p => p.name.toLowerCase().includes(input));
-          if (match) {
-            window.location.href = match.path;
-          }
+          if (match) loadPage(match.path);
         }
       }
     }
@@ -217,5 +350,27 @@
     });
   </script>
 
+  <!-- ---------- ANIMEJS TITLE ANIMATION (Welcome only) ---------- -->
+  <script type="module">
+    import { animate, stagger, splitText } from 'https://esm.sh/animejs';
+
+    const title = document.querySelector('.animated-title');
+    const { chars } = splitText(title, { words: false, chars: true });
+
+    animate(chars, {
+      y: [
+        { to: '-2.75rem', ease: 'outExpo', duration: 600 },
+        { to: 0, ease: 'outBounce', duration: 800, delay: 100 }
+      ],
+      rotate: {
+        from: '-1turn',
+        delay: 0
+      },
+      delay: stagger(50),
+      ease: 'inOutCirc',
+      loopDelay: 1500,
+      loop: true
+    });
+  </script>
 </body>
 </html>
