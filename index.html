@@ -5,12 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Kyle Tuck</title>
   <link rel="icon" href="pipe.png" type="image/png" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     /* ---------- GLOBAL STYLES ---------- */
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
-      background-color: #f6f7f8;
+      font-family: 'Poppins', sans-serif;
+      background-color: #f5f6f7;
+      color: #1e1e1e;
       height: 100vh;
       overflow: hidden;
       display: flex;
@@ -21,6 +27,21 @@
       flex-direction: column;
     }
 
+    h2 {
+      font-weight: 700;
+      font-size: 3rem;
+      color: #15757e;
+      letter-spacing: 0.06em;
+      margin: 0;
+    }
+
+    p {
+      font-size: 1rem;
+      font-weight: 400;
+      color: #555;
+      margin-bottom: 2rem;
+    }
+
     /* ---------- LOADING SCREEN ---------- */
     #loader {
       position: fixed;
@@ -28,7 +49,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background-color: #f6f7f8;
+      background-color: #f5f6f7;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -91,30 +112,30 @@
       transform: rotateY(90deg);
     }
 
-    /* Teal / aqua gradient color theme */
-    .item:nth-child(1) { margin-top: 6.25em;  color: #0f858e;  animation-delay: -1.2s; }
-    .item:nth-child(1):before { color: #15a6b1; }
-    .item:nth-child(1):after { color: #13bac8; }
+    /* Professional teal-gray gradient */
+    .item:nth-child(1) { margin-top: 6.25em;  color: #15757e;  animation-delay: -1.2s; }
+    .item:nth-child(1):before { color: #1a8d97; }
+    .item:nth-child(1):after { color: #22a3ae; }
 
-    .item:nth-child(2) { margin-top: 3.125em; color: #19a0aa; animation-delay: -1s; }
-    .item:nth-child(2):before { color: #22bcc5; }
-    .item:nth-child(2):after { color: #28cfd8; }
+    .item:nth-child(2) { margin-top: 3.125em; color: #18848d; animation-delay: -1s; }
+    .item:nth-child(2):before { color: #25a0a9; }
+    .item:nth-child(2):after { color: #30b4bd; }
 
-    .item:nth-child(3) { margin-top: 0; color: #26b8c3; animation-delay: -0.8s; }
-    .item:nth-child(3):before { color: #3bd2dc; }
-    .item:nth-child(3):after { color: #52e1ea; }
+    .item:nth-child(3) { margin-top: 0; color: #1f9aa5; animation-delay: -0.8s; }
+    .item:nth-child(3):before { color: #34b9c3; }
+    .item:nth-child(3):after { color: #4ccfd9; }
 
-    .item:nth-child(4) { margin-top: -3.125em; color: #40cdd6; animation-delay: -0.6s; }
-    .item:nth-child(4):before { color: #63dee4; }
-    .item:nth-child(4):after { color: #78e8ee; }
+    .item:nth-child(4) { margin-top: -3.125em; color: #27adb7; animation-delay: -0.6s; }
+    .item:nth-child(4):before { color: #4bc8d3; }
+    .item:nth-child(4):after { color: #67d7e0; }
 
-    .item:nth-child(5) { margin-top: -6.25em; color: #5adfe1; animation-delay: -0.4s; }
-    .item:nth-child(5):before { color: #8df0f6; }
-    .item:nth-child(5):after { color: #a0f6fb; }
+    .item:nth-child(5) { margin-top: -6.25em; color: #39bcc4; animation-delay: -0.4s; }
+    .item:nth-child(5):before { color: #73dce5; }
+    .item:nth-child(5):after { color: #90e5ed; }
 
-    .item:nth-child(6) { margin-top: -9.375em; color: #7bf0f5; animation-delay: -0.2s; }
-    .item:nth-child(6):before { color: #a6f8fa; }
-    .item:nth-child(6):after { color: #c0fbfd; }
+    .item:nth-child(6) { margin-top: -9.375em; color: #5ed0d6; animation-delay: -0.2s; }
+    .item:nth-child(6):before { color: #a2e9f2; }
+    .item:nth-child(6):after { color: #c0f5fb; }
 
     /* ---------- MAIN PAGE STYLES ---------- */
     .search-bar {
@@ -132,6 +153,7 @@
       border-radius: 5px;
       font-size: 16px;
       width: 100%;
+      font-family: 'Poppins', sans-serif;
     }
 
     .suggestions {
@@ -149,6 +171,7 @@
     .suggestion {
       padding: 8px 12px;
       cursor: pointer;
+      font-family: 'Poppins', sans-serif;
     }
 
     .suggestion:hover,
@@ -160,7 +183,7 @@
       background: white;
       padding: 2rem;
       border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
       max-width: 600px;
       width: 90%;
       text-align: center;
@@ -170,7 +193,8 @@
     .tool-grid {
       display: flex;
       flex-direction: column;
-      gap: 15px;
+      align-items: center;
+      gap: 20px;
     }
 
     @media (min-width: 500px) {
@@ -180,42 +204,61 @@
       }
     }
 
-    .tool-card {
-      background-color: #e2f3f5;
-      border-radius: 8px;
-      padding: 20px;
-      flex: 1;
-      cursor: pointer;
-      transition: transform 0.2s ease, background 0.3s ease;
-      text-align: center;
-      font-weight: bold;
-      color: #0f858e;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      overflow: hidden;
-    }
-
-    .tool-card:hover {
-      background-color: #d0eff2;
-      transform: translateY(-3px);
-    }
-
     footer {
       position: fixed;
       bottom: 10px;
       right: 15px;
       font-size: 12px;
-      color: #777;
+      color: #888;
       font-style: italic;
-    }
-
-    #animation .text-xl {
-      font-size: 3rem;
-      color: black;
-      letter-spacing: 0.06em;
     }
 
     .animated-title {
       display: inline-block;
+    }
+
+    /* ---------- BUTTON STYLE (vikiWayne refined) ---------- */
+    .button {
+      padding: 1em 2em;
+      border: none;
+      border-radius: 5px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      color: #15757e;
+      transition: all 800ms;
+      font-size: 15px;
+      position: relative;
+      overflow: hidden;
+      outline: 2px solid #15757e;
+      background: white;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .button:hover {
+      color: #ffffff;
+      transform: scale(1.05);
+      outline: 2px solid #1f9aa5;
+      background-color: #1f9aa5;
+      box-shadow: 0 4px 12px rgba(21, 117, 126, 0.3);
+    }
+
+    .button::before {
+      content: "";
+      position: absolute;
+      left: -50px;
+      top: 0;
+      width: 0;
+      height: 100%;
+      background-color: #15757e;
+      transform: skewX(45deg);
+      z-index: -1;
+      transition: width 800ms;
+    }
+
+    .button:hover::before {
+      width: 250%;
     }
   </style>
 </head>
@@ -240,24 +283,19 @@
   </div>
 
   <div class="container">
-    <div id="animation" class="docs-demo-html">
-      <div class="large grid centered square-grid">
-        <h2 class="text-xl animated-title">Welcome</h2>
-      </div>
-    </div>
-
+    <h2 class="animated-title">Welcome</h2>
     <p>Choose your tool below to get started:</p>
+
     <div class="tool-grid">
-      <div class="tool-card" onclick="loadPage('pipes')">Pipe Formatter</div>
-      <div class="tool-card" onclick="loadPage('date')">Date Checker</div>
+      <button class="button" onclick="loadPage('pipes')">Pipe Formatter</button>
+      <button class="button" onclick="loadPage('date')">Date Checker</button>
     </div>
   </div>
 
   <footer>Kyle Tuck Inc.</footer>
 
-  <!-- ---------- PAGE SCRIPT ---------- -->
+  <!-- ---------- SCRIPT ---------- -->
   <script>
-    // Show loader when navigating
     function loadPage(path) {
       const loader = document.getElementById('loader');
       loader.classList.add('active');
@@ -266,7 +304,6 @@
       }, 3500);
     }
 
-    // Search bar functionality
     const pages = [
       { name: "Pipe Formatter", path: "pipes" },
       { name: "Date Checker", path: "date" },
@@ -350,7 +387,7 @@
     });
   </script>
 
-  <!-- ---------- ANIMEJS TITLE ANIMATION (Welcome only) ---------- -->
+  <!-- ---------- ANIMEJS TITLE ANIMATION ---------- -->
   <script type="module">
     import { animate, stagger, splitText } from 'https://esm.sh/animejs';
 
