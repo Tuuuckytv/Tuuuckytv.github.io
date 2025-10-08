@@ -5,155 +5,169 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Kyle Tuck</title>
   <link rel="icon" href="pipe.png" type="image/png" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    /* ---------- GLOBAL STYLES ---------- */
-    * {
-      box-sizing: border-box;
+    :root {
+      --accent: #0f858e;
+      --accent-light: #20a6b3;
+      --bg: #eaf4f5;
+      --text: #333;
+      --glass-bg: rgba(255, 255, 255, 0.85);
+      --shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+      --blur: 12px;
     }
+
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
-      font-family: 'Poppins', sans-serif;
-      background-color: #f5f6f7;
-      color: #1e1e1e;
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
       height: 100vh;
       overflow: hidden;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
-      padding: 20px;
       position: relative;
-      flex-direction: column;
+      padding: 20px;
     }
 
-    h2 {
-      font-weight: 700;
-      font-size: 3rem;
-      color: #15757e;
-      letter-spacing: 0.06em;
-      margin: 0;
-    }
-
-    p {
-      font-size: 1rem;
-      font-weight: 400;
-      color: #555;
-      margin-bottom: 2rem;
-    }
-
-    /* ---------- LOADING SCREEN ---------- */
+    /* Loader */
     #loader {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: #f5f6f7;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-color: var(--bg);
+      display: flex; justify-content: center; align-items: center;
       z-index: 9999;
-      opacity: 0;
-      visibility: hidden;
+      opacity: 0; visibility: hidden;
       transition: opacity 0.4s ease, visibility 0.4s ease;
     }
-
-    #loader.active {
-      opacity: 1;
-      visibility: visible;
-    }
+    #loader.active { opacity: 1; visibility: visible; }
 
     .cubes {
-      position: absolute;
-      top: 50%;
-      left: 50%;
+      position: absolute; top: 50%; left: 50%;
       transform-style: preserve-3d;
     }
-
-    .loop {
-      transform: rotateX(-35deg) rotateY(-45deg) translateZ(1.5625em);
-    }
-
-    @keyframes s {
-      to {
-        transform: scale3d(0.2, 0.2, 0.2);
-      }
-    }
-
+    .loop { transform: rotateX(-35deg) rotateY(-45deg) translateZ(1.5625em); }
+    @keyframes s { to { transform: scale3d(0.2, 0.2, 0.2); } }
     .item {
       margin: -1.5625em;
-      width: 3.125em;
-      height: 3.125em;
+      width: 3.125em; height: 3.125em;
       transform-origin: 50% 50% -1.5625em;
       box-shadow: 0 0 0.125em currentColor;
       background: currentColor;
       animation: s 0.6s cubic-bezier(0.45, 0.03, 0.51, 0.95) infinite alternate;
     }
+    .item:before, .item:after {
+      position: absolute; width: inherit; height: inherit;
+      transform-origin: 0 100%; box-shadow: inherit;
+      background: currentColor; content: "";
+    }
+    .item:before { bottom: 100%; transform: rotateX(90deg); }
+    .item:after { left: 100%; transform: rotateY(90deg); }
+    .item:nth-child(1){margin-top:6.25em;color:var(--accent);animation-delay:-1.2s;}
+    .item:nth-child(2){margin-top:3.125em;color:#18848d;animation-delay:-1s;}
+    .item:nth-child(3){margin-top:0;color:#1f9aa5;animation-delay:-0.8s;}
+    .item:nth-child(4){margin-top:-3.125em;color:#27adb7;animation-delay:-0.6s;}
+    .item:nth-child(5){margin-top:-6.25em;color:#39bcc4;animation-delay:-0.4s;}
+    .item:nth-child(6){margin-top:-9.375em;color:#5ed0d6;animation-delay:-0.2s;}
 
-    .item:before,
-    .item:after {
-      position: absolute;
-      width: inherit;
-      height: inherit;
-      transform-origin: 0 100%;
-      box-shadow: inherit;
-      background: currentColor;
+    /* Container */
+    .container {
+      background: var(--glass-bg);
+      backdrop-filter: blur(var(--blur));
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 2.5rem;
+      width: 90%; max-width: 550px;
+      text-align: center;
+      animation: fadeIn 0.8s ease;
+      z-index: 1;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h2 {
+      font-weight: 700;
+      font-size: 2.6rem;
+      letter-spacing: 0.05em;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 1rem;
+      color: #555;
+      margin-bottom: 2rem;
+    }
+
+    /* Buttons */
+    .button {
+      padding: 0.9em 2em;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      color: var(--accent);
+      transition: all 0.4s ease;
+      font-size: 15px;
+      position: relative;
+      overflow: hidden;
+      outline: 2px solid var(--accent);
+      background: transparent;
+      font-family: 'Inter', sans-serif;
+    }
+    .button:hover {
+      color: #fff;
+      transform: scale(1.05);
+      outline: 2px solid var(--accent-light);
+      box-shadow: 2px 4px 10px -2px #0d6c75;
+    }
+    .button::before {
       content: "";
-    }
-
-    .item:before {
-      bottom: 100%;
-      transform: rotateX(90deg);
-    }
-
-    .item:after {
-      left: 100%;
-      transform: rotateY(90deg);
-    }
-
-    /* Professional teal-gray gradient */
-    .item:nth-child(1) { margin-top: 6.25em;  color: #15757e;  animation-delay: -1.2s; }
-    .item:nth-child(1):before { color: #1a8d97; }
-    .item:nth-child(1):after { color: #22a3ae; }
-
-    .item:nth-child(2) { margin-top: 3.125em; color: #18848d; animation-delay: -1s; }
-    .item:nth-child(2):before { color: #25a0a9; }
-    .item:nth-child(2):after { color: #30b4bd; }
-
-    .item:nth-child(3) { margin-top: 0; color: #1f9aa5; animation-delay: -0.8s; }
-    .item:nth-child(3):before { color: #34b9c3; }
-    .item:nth-child(3):after { color: #4ccfd9; }
-
-    .item:nth-child(4) { margin-top: -3.125em; color: #27adb7; animation-delay: -0.6s; }
-    .item:nth-child(4):before { color: #4bc8d3; }
-    .item:nth-child(4):after { color: #67d7e0; }
-
-    .item:nth-child(5) { margin-top: -6.25em; color: #39bcc4; animation-delay: -0.4s; }
-    .item:nth-child(5):before { color: #73dce5; }
-    .item:nth-child(5):after { color: #90e5ed; }
-
-    .item:nth-child(6) { margin-top: -9.375em; color: #5ed0d6; animation-delay: -0.2s; }
-    .item:nth-child(6):before { color: #a2e9f2; }
-    .item:nth-child(6):after { color: #c0f5fb; }
-
-    /* ---------- MAIN PAGE STYLES ---------- */
-    .search-bar {
       position: absolute;
-      top: 50px;
+      left: -50px;
+      top: 0;
+      width: 0;
+      height: 100%;
+      background-color: var(--accent);
+      transform: skewX(45deg);
+      z-index: -1;
+      transition: width 0.5s ease;
+    }
+    .button:hover::before { width: 250%; }
+
+    /* Search */
+    .search-bar {
+      position: fixed;
+      top: 20px;
       left: 50%;
       transform: translateX(-50%);
       z-index: 10;
       width: 300px;
     }
-
     #searchInput {
-      padding: 8px 12px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      font-size: 16px;
+      padding: 10px 14px;
+      border: 1px solid rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+      font-size: 15px;
       width: 100%;
-      font-family: 'Poppins', sans-serif;
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(6px);
+      outline: none;
+      transition: all 0.3s ease;
+      font-family: 'Inter', sans-serif;
+    }
+    #searchInput:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(15,133,142,0.15);
     }
 
     .suggestions {
@@ -164,44 +178,27 @@
       overflow-y: auto;
       position: absolute;
       width: 100%;
-      border-radius: 0 0 5px 5px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 0 0 8px 8px;
+      box-shadow: var(--shadow);
     }
-
     .suggestion {
       padding: 8px 12px;
       cursor: pointer;
-      font-family: 'Poppins', sans-serif;
+      transition: background 0.3s ease;
     }
-
-    .suggestion:hover,
-    .suggestion.selected {
-      background-color: #eee;
-    }
-
-    .container {
-      background: white;
-      padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-      max-width: 600px;
-      width: 90%;
-      text-align: center;
-      z-index: 1;
+    .suggestion:hover, .suggestion.selected {
+      background-color: rgba(15,133,142,0.1);
     }
 
     .tool-grid {
       display: flex;
       flex-direction: column;
+      gap: 15px;
+      justify-content: center;
       align-items: center;
-      gap: 20px;
     }
-
     @media (min-width: 500px) {
-      .tool-grid {
-        flex-direction: row;
-        justify-content: center;
-      }
+      .tool-grid { flex-direction: row; gap: 20px; }
     }
 
     footer {
@@ -209,83 +206,30 @@
       bottom: 10px;
       right: 15px;
       font-size: 12px;
-      color: #888;
+      color: #777;
       font-style: italic;
-    }
-
-    .animated-title {
-      display: inline-block;
-    }
-
-    /* ---------- BUTTON STYLE (vikiWayne refined) ---------- */
-    .button {
-      padding: 1em 2em;
-      border: none;
-      border-radius: 5px;
-      font-weight: 600;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      cursor: pointer;
-      color: #15757e;
-      transition: all 800ms;
-      font-size: 15px;
-      position: relative;
-      overflow: hidden;
-      outline: 2px solid #15757e;
-      background: white;
-      font-family: 'Poppins', sans-serif;
-    }
-
-    .button:hover {
-      color: #ffffff;
-      transform: scale(1.05);
-      outline: 2px solid #1f9aa5;
-      background-color: #1f9aa5;
-      box-shadow: 0 4px 12px rgba(21, 117, 126, 0.3);
-    }
-
-    .button::before {
-      content: "";
-      position: absolute;
-      left: -50px;
-      top: 0;
-      width: 0;
-      height: 100%;
-      background-color: #15757e;
-      transform: skewX(45deg);
-      z-index: -1;
-      transition: width 800ms;
-    }
-
-    .button:hover::before {
-      width: 250%;
     }
   </style>
 </head>
 <body>
 
-  <!-- ---------- LOADER ---------- -->
+  <!-- Loader -->
   <div id="loader">
     <div class="loop cubes">
-      <div class="item cubes"></div>
-      <div class="item cubes"></div>
-      <div class="item cubes"></div>
-      <div class="item cubes"></div>
-      <div class="item cubes"></div>
-      <div class="item cubes"></div>
+      <div class="item cubes"></div><div class="item cubes"></div><div class="item cubes"></div>
+      <div class="item cubes"></div><div class="item cubes"></div><div class="item cubes"></div>
     </div>
   </div>
 
-  <!-- ---------- MAIN CONTENT ---------- -->
+  <!-- Main Content -->
   <div class="search-bar">
     <input type="text" placeholder="Search page..." id="searchInput" oninput="showSuggestions()" onkeydown="handleKey(event)">
     <div id="suggestions" class="suggestions" style="display: none;"></div>
   </div>
 
   <div class="container">
-    <h2 class="animated-title">Welcome</h2>
+    <h2 id="animatedTitle">Welcome</h2>
     <p>Choose your tool below to get started:</p>
-
     <div class="tool-grid">
       <button class="button" onclick="loadPage('pipes')">Pipe Formatter</button>
       <button class="button" onclick="loadPage('date')">Date Checker</button>
@@ -294,14 +238,12 @@
 
   <footer>Kyle Tuck Inc.</footer>
 
-  <!-- ---------- SCRIPT ---------- -->
+  <!-- Loader Logic + Search -->
   <script>
     function loadPage(path) {
       const loader = document.getElementById('loader');
       loader.classList.add('active');
-      setTimeout(() => {
-        window.location.href = path;
-      }, 3500);
+      setTimeout(() => { window.location.href = path; }, 3500);
     }
 
     const pages = [
@@ -319,31 +261,19 @@
       suggestionBox.innerHTML = "";
       currentSelection = -1;
 
-      if (!input) {
-        suggestionBox.style.display = "none";
-        return;
-      }
+      if (!input) { suggestionBox.style.display = "none"; return; }
 
-      const matches = pages.filter(p =>
-        p.name.toLowerCase().includes(input) && !p.hidden
-      );
-
-      if (matches.length === 0) {
-        suggestionBox.style.display = "none";
-        return;
-      }
+      const matches = pages.filter(p => p.name.toLowerCase().includes(input) && !p.hidden);
+      if (matches.length === 0) { suggestionBox.style.display = "none"; return; }
 
       matches.forEach((page, index) => {
         const div = document.createElement("div");
         div.className = "suggestion";
         div.textContent = page.name;
         div.dataset.index = index;
-        div.onclick = () => {
-          loadPage(page.path);
-        };
+        div.onclick = () => { loadPage(page.path); };
         suggestionBox.appendChild(div);
       });
-
       suggestionBox.style.display = "block";
     }
 
@@ -372,51 +302,57 @@
         }
       }
     }
-
     function updateHighlight(suggestions) {
       suggestions.forEach((el, index) => {
         el.classList.toggle("selected", index === currentSelection);
       });
     }
-
-    document.addEventListener("click", function (e) {
+    document.addEventListener("click", e => {
       const suggestionsBox = document.getElementById("suggestions");
       if (!document.querySelector(".search-bar").contains(e.target)) {
         suggestionsBox.style.display = "none";
       }
     });
-  </script>
-
-  <!-- ---------- HIDE /index.html SCRIPT ---------- -->
-  <script>
-    // Redirect from /index.html to the clean root URL
     if (window.location.pathname.endsWith('/index.html')) {
       const cleanPath = window.location.pathname.replace('/index.html', '/');
       window.history.replaceState(null, '', cleanPath);
     }
   </script>
 
-  <!-- ---------- ANIMEJS TITLE ANIMATION ---------- -->
-  <script type="module">
-    import { animate, stagger, splitText } from 'https://esm.sh/animejs';
-
-    const title = document.querySelector('.animated-title');
-    const { chars } = splitText(title, { words: false, chars: true });
-
-    animate(chars, {
-      y: [
-        { to: '-2.75rem', ease: 'outExpo', duration: 600 },
-        { to: 0, ease: 'outBounce', duration: 800, delay: 100 }
-      ],
-      rotate: {
-        from: '-1turn',
-        delay: 0
-      },
-      delay: stagger(50),
-      ease: 'inOutCirc',
-      loopDelay: 1500,
-      loop: true
+  <!-- Animated Welcome Title -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+  <script>
+    const titleEl = document.getElementById('animatedTitle');
+    const text = titleEl.textContent;
+    titleEl.textContent = '';
+    [...text].forEach(char => {
+      const span = document.createElement('span');
+      span.textContent = char;
+      span.style.display = 'inline-block';
+      span.style.opacity = '0';
+      span.style.transform = 'translateY(30px)';
+      span.style.color = '#0f858e';
+      titleEl.appendChild(span);
     });
+    anime.timeline({ loop: true })
+      .add({
+        targets: '#animatedTitle span',
+        opacity: [0, 1],
+        translateY: [30, 0],
+        rotate: [-10, 0],
+        easing: 'easeOutElastic(1, .6)',
+        duration: 700,
+        delay: anime.stagger(80)
+      })
+      .add({
+        targets: '#animatedTitle span',
+        opacity: [1, 0],
+        translateY: [0, -20],
+        easing: 'easeInCubic',
+        duration: 800,
+        delay: anime.stagger(50),
+        endDelay: 500
+      });
   </script>
 </body>
 </html>
