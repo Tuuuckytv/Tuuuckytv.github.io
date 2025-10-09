@@ -147,10 +147,10 @@
       font-size: 16px;
     }
 
-    /* --- Container --- */
+    /* --- Main Container --- */
     #container {
       text-align: center;
-      background: rgba(255, 255, 255, 0.8);
+      background: rgba(255, 255, 255, 0.85);
       backdrop-filter: blur(8px);
       border: 1px solid rgba(15, 133, 142, 0.2);
       padding: 2rem 2.5rem;
@@ -159,17 +159,12 @@
       width: 90%;
       max-width: 500px;
       z-index: 1;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    #container:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
     }
 
     h2 {
       color: #0f858e;
       letter-spacing: 0.5px;
+      margin-bottom: 0.5rem;
     }
 
     /* --- Input --- */
@@ -183,10 +178,9 @@
       outline: none;
       text-align: center;
       color: #333;
-      background-color: rgba(255, 255, 255, 0.6);
+      background-color: #fff;
       transition: all 0.3s ease;
-      backdrop-filter: blur(6px);
-      caret-color: transparent; /* 👈 hides blinking caret */
+      caret-color: transparent; /* hides caret */
     }
 
     input[type="text"]:hover {
@@ -196,7 +190,6 @@
     input[type="text"]:focus {
       border-color: #0f858e;
       box-shadow: 0 0 0 3px rgba(15, 133, 142, 0.15);
-      background-color: #fff;
     }
 
     /* --- Output Box --- */
@@ -206,13 +199,12 @@
       font-weight: bold;
       color: #0f858e;
       line-height: 1.6;
-      background: rgba(255, 255, 255, 0.6);
+      background: #fff;
       padding: 0.8rem;
       border-radius: 8px;
       border: 1px solid rgba(15, 133, 142, 0.2);
-      backdrop-filter: blur(4px);
       min-height: 2.5rem;
-      display: none; /* Hidden by default */
+      display: none;
       opacity: 0;
       transition: opacity 0.3s ease;
     }
@@ -427,44 +419,31 @@
       }
     }
 
+    // Optional swipe toggle
     (() => {
-        let isDragging = false;
-        let hasDragged = false;
-        let startX = 0;
-
-        const onDown = (e) => {
-            isDragging = true;
-            hasDragged = false;
-            startX = e.pageX || e.touches[0].pageX;
-        };
-        const onMove = (e) => {
-            if (!isDragging) return;
-            const currentX = e.pageX || e.touches[0].pageX;
-            if (Math.abs(currentX - startX) > 5) hasDragged = true;
-        };
-        const onUp = (e) => {
-            if (!isDragging) return;
-            if (hasDragged) {
-                const rect = switchLabel.getBoundingClientRect();
-                const midpoint = rect.left + rect.width / 2;
-                const endX = e.pageX || e.changedTouches[0].pageX;
-                if ((endX > midpoint) !== orderToggle.checked) {
-                    orderToggle.click();
-                }
-            }
-            isDragging = false;
-            hasDragged = false;
-        };
-
-        switchLabel.addEventListener('mousedown', onDown);
-        document.addEventListener('mousemove', onMove);
-        document.addEventListener('mouseup', onUp);
-        switchLabel.addEventListener('touchstart', onDown, { passive: true });
-        document.addEventListener('touchmove', onMove, { passive: true });
-        document.addEventListener('touchend', onUp);
+      let isDragging = false;
+      let hasDragged = false;
+      let startX = 0;
+      const onDown = (e) => { isDragging = true; hasDragged = false; startX = e.pageX || e.touches[0].pageX; };
+      const onMove = (e) => { if (!isDragging) return; const currentX = e.pageX || e.touches[0].pageX; if (Math.abs(currentX - startX) > 5) hasDragged = true; };
+      const onUp = (e) => {
+        if (!isDragging) return;
+        if (hasDragged) {
+          const rect = switchLabel.getBoundingClientRect();
+          const midpoint = rect.left + rect.width / 2;
+          const endX = e.pageX || e.changedTouches[0].pageX;
+          if ((endX > midpoint) !== orderToggle.checked) orderToggle.click();
+        }
+        isDragging = false;
+        hasDragged = false;
+      };
+      switchLabel.addEventListener('mousedown', onDown);
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onUp);
+      switchLabel.addEventListener('touchstart', onDown, { passive: true });
+      document.addEventListener('touchmove', onMove, { passive: true });
+      document.addEventListener('touchend', onUp);
     })();
   </script>
 </body>
 </html>
-
-
