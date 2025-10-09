@@ -13,9 +13,8 @@
       --accent-light: #20a6b3;
       --bg: #eaf4f5;
       --text: #333;
-      --glass-bg: rgba(255, 255, 255, 0.8);
+      --glass-bg: #ffffff;
       --shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-      --blur: 12px;
     }
 
     * { box-sizing: border-box; }
@@ -31,12 +30,13 @@
       padding: 20px;
     }
 
-    /* Background pipes */
+    /* === RAINING PIPES === */
     .pipe-background {
       position: absolute;
       inset: 0;
       z-index: 0;
       pointer-events: none;
+      overflow: hidden;
     }
 
     .pipe {
@@ -44,16 +44,16 @@
       width: 30px;
       height: auto;
       animation: fall linear infinite;
-      opacity: 0.15;
+      opacity: 0.25;
     }
 
     @keyframes fall {
       0% { transform: translateY(-100px); opacity: 0; }
-      10% { opacity: 0.15; }
-      100% { transform: translateY(110vh); opacity: 0.15; }
+      10% { opacity: 0.25; }
+      100% { transform: translateY(110vh); opacity: 0.25; }
     }
 
-    /* Buttons */
+    /* === BUTTONS === */
     .button {
       padding: 0.75em 1.6em;
       border: none;
@@ -110,14 +110,39 @@
       z-index: 10;
     }
 
-    /* Main container */
+    /* === MOTIVATION SCROLLER === */
+    .headline-scroller {
+      position: fixed;
+      top: 120px;
+      left: 0;
+      right: 0;
+      width: 100%;
+      overflow: hidden;
+      z-index: 2;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      color: var(--accent);
+      font-weight: 600;
+      font-size: 16px;
+      white-space: nowrap;
+    }
+
+    .headline-text {
+      display: inline-block;
+      will-change: transform;
+      white-space: nowrap;
+    }
+
+    /* === MAIN CONTAINER === */
     .container {
       position: relative;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
       background: var(--glass-bg);
-      backdrop-filter: blur(var(--blur));
       border-radius: 16px;
       box-shadow: var(--shadow);
       padding: 30px 25px;
@@ -145,13 +170,13 @@
     p {
       margin-top: 0;
       font-size: 14px;
-      color: #666;
+      color: #333;
     }
 
     #qtyMarker {
       align-self: flex-start;
       font-size: 14px;
-      color: #444;
+      color: #333;
       margin-bottom: 5px;
     }
 
@@ -163,9 +188,8 @@
       border-radius: 8px;
       outline: none;
       text-align: center;
-      transition: 0.3s ease;
-      background: rgba(255,255,255,0.85);
-      caret-color: transparent;
+      background: #fff;
+      color: #000;
     }
 
     .output-container {
@@ -174,7 +198,7 @@
       overflow-y: auto;
       border: 1px solid #000;
       padding: 12px;
-      background: rgba(255,255,255,0.85);
+      background: #fff;
       text-align: center;
       font-weight: 600;
       font-size: 16px;
@@ -193,10 +217,9 @@
       justify-content: center;
     }
 
-    /* --- FIXED MODALS --- */
+    /* === MODALS === */
     .remove-modal, .duplicate-modal {
-      background: var(--glass-bg);
-      backdrop-filter: blur(var(--blur));
+      background: #fff;
       border-radius: 10px;
       box-shadow: var(--shadow);
       padding: 15px;
@@ -212,7 +235,6 @@
       visibility: visible;
     }
 
-    /* anchored above */
     .remove-modal {
       top: 0;
       left: 50%;
@@ -221,7 +243,6 @@
       text-align: center;
     }
 
-    /* anchored to right side */
     .duplicate-modal {
       top: 50%;
       right: -270px;
@@ -238,7 +259,7 @@
 
     #duplicateList {
       font-size: 13px;
-      color: #444;
+      color: #333;
       max-height: 120px;
       overflow-y: auto;
     }
@@ -290,13 +311,14 @@
       bottom: 10px;
       right: 15px;
       font-size: 12px;
-      color: #777;
+      color: #555;
       font-style: italic;
       z-index: 2;
     }
   </style>
 </head>
 <body>
+
   <div class="menu-buttons">
     <button class="button" onclick="location.href='/'">Home</button>
     <button class="button" onclick="location.href='date'">Dates</button>
@@ -306,6 +328,10 @@
   <button class="button export-btn" onclick="exportCSV()">Export CSV</button>
 
   <div class="pipe-background" id="pipeBackground"></div>
+
+  <div class="headline-scroller">
+    <div class="headline-text" id="headlineText">Loading motivation...</div>
+  </div>
 
   <div class="container">
     <div class="remove-modal" id="removeModal">
@@ -403,6 +429,52 @@ function formatText() {
 
   output.innerText = parts.join('|');
   qty.innerText = `Qty: ${parts.length}`;
+}
+
+/* === RAINING PIPES & FIXED EDGE-TO-EDGE MARQUEE === */
+window.onload = () => {
+  const container = document.getElementById('pipeBackground');
+  for (let i = 0; i < 50; i++) {
+    const pipe = document.createElement('img');
+    pipe.src = 'pipe.png';
+    pipe.className = 'pipe';
+    pipe.style.left = `${Math.random() * window.innerWidth}px`;
+    pipe.style.top = `${-Math.random() * 1000}px`;
+    pipe.style.animationDuration = `${8 + Math.random() * 4}s`;
+    pipe.style.animationDelay = `${Math.random() * 5}s`;
+    container.appendChild(pipe);
+  }
+
+  fetch('motivation.txt')
+    .then(r => r.text())
+    .then(data => {
+      const lines = data.split('\n').filter(l => l.trim());
+      const msg = lines.length ? lines[Math.floor(Math.random() * lines.length)] : 'Stay positive. Keep pushing forward!';
+      startMarquee(msg);
+    })
+    .catch(() => startMarquee('Stay positive. Keep pushing forward!'));
+};
+
+function startMarquee(text) {
+  const el = document.getElementById('headlineText');
+  el.textContent = text;
+
+  const scroller = document.querySelector('.headline-scroller');
+  const scrollWidth = scroller.offsetWidth;
+  const textWidth = el.offsetWidth;
+
+  const totalDistance = scrollWidth + textWidth; // full edge-to-edge travel
+  const speed = 90; // pixels per second
+  const duration = totalDistance / speed;
+
+  el.animate([
+    { transform: `translateX(${scrollWidth}px)` },
+    { transform: `translateX(-${textWidth + scrollWidth}px)` }
+  ], {
+    duration: duration * 500,
+    iterations: Infinity,
+    easing: 'linear'
+  });
 }
 
 async function pasteText() {
