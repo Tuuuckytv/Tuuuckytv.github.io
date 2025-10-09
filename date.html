@@ -72,7 +72,7 @@
       z-index: 11;
     }
 
-    /* --- Toggle Switch --- */
+    /* === VOXYBUNS SWITCH === */
     .toggle-container {
       position: fixed;
       top: 16px;
@@ -90,12 +90,19 @@
       transition: color 0.4s ease;
     }
 
+    /* The switch */
     .switch {
+      --switch_width: 2.4em;
+      --switch_height: 1.2em;
+      --thumb_color: #ffffff;
+      --track_color: #d0d0d0;
+      --track_active_color: #0f858e;
+      --outline_color: #000;
+      font-size: 18px;
       position: relative;
       display: inline-block;
-      width: 60px;
-      height: 34px;
-      user-select: none;
+      width: var(--switch_width);
+      height: var(--switch_height);
     }
 
     .switch input {
@@ -105,46 +112,55 @@
     }
 
     .slider {
+      box-sizing: border-box;
+      border: 2px solid var(--outline_color);
       position: absolute;
       cursor: pointer;
       top: 0;
       left: 0;
       right: 0;
       bottom: 0;
-      background-color: #cfd8d9;
-      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
-      transition: background-color 0.4s ease;
-      border-radius: 34px;
+      background-color: var(--track_color);
+      transition: 0.15s;
+      border-radius: var(--switch_height);
     }
 
     .slider:before {
+      box-sizing: border-box;
       position: absolute;
-      content: "✖";
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 26px;
-      width: 26px;
-      left: 4px;
-      bottom: 4px;
-      background-color: #fff;
-      color: #777;
-      font-size: 14px;
-      font-weight: bold;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-      transition: transform 0.4s ease, color 0.4s ease;
-      border-radius: 50%;
+      content: "";
+      height: var(--switch_height);
+      width: var(--switch_height);
+      border: 2px solid var(--outline_color);
+      border-radius: 100%;
+      left: -2px;
+      bottom: -2px;
+      background-color: var(--thumb_color);
+      transform: translateY(-0.2em);
+      box-shadow: 0 0.2em 0 var(--outline_color);
+      transition: 0.15s;
     }
 
     input:checked + .slider {
-      background-color: #0f858e;
+      background-color: var(--track_active_color);
+    }
+
+    input:focus-visible + .slider {
+      box-shadow: 0 0 0 2px var(--track_active_color);
+    }
+
+    input:hover + .slider:before {
+      transform: translateY(-0.3em);
+      box-shadow: 0 0.3em 0 var(--outline_color);
     }
 
     input:checked + .slider:before {
-      transform: translateX(26px);
-      content: "✔";
-      color: #0f858e;
-      font-size: 16px;
+      transform: translateX(calc(var(--switch_width) - var(--switch_height))) translateY(-0.2em);
+    }
+
+    input:hover:checked + .slider:before {
+      transform: translateX(calc(var(--switch_width) - var(--switch_height))) translateY(-0.3em);
+      box-shadow: 0 0.3em 0 var(--outline_color);
     }
 
     /* --- Main Container --- */
@@ -233,6 +249,7 @@
   
   <div class="toggle-container">
     <span>Doing returns</span>
+    <!-- Voxybuns Switch -->
     <label class="switch" for="orderToggle" tabindex="0">
       <input type="checkbox" id="orderToggle">
       <span class="slider"></span>
@@ -411,39 +428,12 @@
       const formattedFutureDate = `${dayOfMonth}${getDaySuffix(dayOfMonth)} ${monthName} ${fullYear}`;
       const output2Text = `Expiry: ${formattedFutureDate}`;
 
-      // ✅ Show expiry only when toggle is ON
       if (orderToggle.checked && output1Text !== "Today" && output1Text) {
         output.innerHTML = `${output1Text}<br>${output2Text}`;
       } else {
         output.innerHTML = output1Text;
       }
     }
-
-    // Optional swipe toggle
-    (() => {
-      let isDragging = false;
-      let hasDragged = false;
-      let startX = 0;
-      const onDown = (e) => { isDragging = true; hasDragged = false; startX = e.pageX || e.touches[0].pageX; };
-      const onMove = (e) => { if (!isDragging) return; const currentX = e.pageX || e.touches[0].pageX; if (Math.abs(currentX - startX) > 5) hasDragged = true; };
-      const onUp = (e) => {
-        if (!isDragging) return;
-        if (hasDragged) {
-          const rect = switchLabel.getBoundingClientRect();
-          const midpoint = rect.left + rect.width / 2;
-          const endX = e.pageX || e.changedTouches[0].pageX;
-          if ((endX > midpoint) !== orderToggle.checked) orderToggle.click();
-        }
-        isDragging = false;
-        hasDragged = false;
-      };
-      switchLabel.addEventListener('mousedown', onDown);
-      document.addEventListener('mousemove', onMove);
-      document.addEventListener('mouseup', onUp);
-      switchLabel.addEventListener('touchstart', onDown, { passive: true });
-      document.addEventListener('touchmove', onMove, { passive: true });
-      document.addEventListener('touchend', onUp);
-    })();
   </script>
 </body>
 </html>
