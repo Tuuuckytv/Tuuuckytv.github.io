@@ -6,6 +6,7 @@
   <title>Sale Pipe Formatter</title>
   <link rel="icon" href="pipe.png" type="image/png" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
   <style>
     :root {
       --accent: #0f858e;
@@ -17,9 +18,7 @@
       --blur: 12px;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -54,7 +53,7 @@
       100% { transform: translateY(110vh); opacity: 0.15; }
     }
 
-    /* === ORIGINAL BUTTON STYLE === */
+    /* Buttons */
     .button {
       padding: 0.75em 1.6em;
       border: none;
@@ -93,9 +92,7 @@
       transition: width 0.5s ease;
     }
 
-    .button:hover::before {
-      width: 250%;
-    }
+    .button:hover::before { width: 250%; }
 
     .menu-buttons {
       position: fixed;
@@ -113,35 +110,9 @@
       z-index: 10;
     }
 
-    /* Headline scroller */
-  .headline-scroller {
-  position: fixed;
-  top: 120px;
-  left: 0;
-  right: 0;
-  width: 100%;
-  color: var(--accent);
-  font-weight: 600;
-  font-size: 16px;
-  overflow: hidden;
-  white-space: nowrap;
-  z-index: 2;
-  height: 30px;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding-left: 0;
-
-  /* 👇 Remove box + background */
-  background: transparent;
-  backdrop-filter: none;
-  box-shadow: none;
-  border: none;
-}
-
-    /* Glass container */
+    /* Main container */
     .container {
-      position: fixed;
+      position: relative;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
@@ -222,30 +193,38 @@
       justify-content: center;
     }
 
-    /* Modals */
+    /* --- FIXED MODALS --- */
     .remove-modal, .duplicate-modal {
-      position: fixed;
       background: var(--glass-bg);
       backdrop-filter: blur(var(--blur));
       border-radius: 10px;
       box-shadow: var(--shadow);
       padding: 15px;
       z-index: 3;
-      display: none;
-      animation: fadeIn 0.3s ease;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+      position: absolute;
     }
 
+    .remove-modal.visible, .duplicate-modal.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* anchored above */
     .remove-modal {
+      top: 0;
       left: 50%;
-      transform: translateX(-50%);
-      bottom: calc(50% + 180px);
+      transform: translate(-50%, -120%);
       width: 260px;
       text-align: center;
     }
 
+    /* anchored to right side */
     .duplicate-modal {
-      right: 15px;
       top: 50%;
+      right: -270px;
       transform: translateY(-50%);
       width: 240px;
       text-align: left;
@@ -280,19 +259,12 @@
       height: 28px;
     }
 
-    .switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
+    .switch input { opacity: 0; width: 0; height: 0; }
 
     .slider {
       position: absolute;
       cursor: pointer;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
+      top: 0; left: 0; right: 0; bottom: 0;
       background-color: #ccc;
       transition: 0.4s;
       border-radius: 28px;
@@ -310,13 +282,8 @@
       border-radius: 50%;
     }
 
-    input:checked + .slider {
-      background-color: var(--accent);
-    }
-
-    input:checked + .slider:before {
-      transform: translateX(22px);
-    }
+    input:checked + .slider { background-color: var(--accent); }
+    input:checked + .slider:before { transform: translateX(22px); }
 
     footer {
       position: fixed;
@@ -327,23 +294,9 @@
       font-style: italic;
       z-index: 2;
     }
-
-    #prankBtn {
-      position: fixed;
-      bottom: 10px;
-      left: 15px;
-      opacity: 0%;
-      z-index: 999;
-      border: none;
-      background: transparent;
-      cursor: pointer;
-      width: 40px;
-      height: 40px;
-    }
   </style>
 </head>
 <body>
-
   <div class="menu-buttons">
     <button class="button" onclick="location.href='/'">Home</button>
     <button class="button" onclick="location.href='date'">Dates</button>
@@ -352,92 +305,48 @@
 
   <button class="button export-btn" onclick="exportCSV()">Export CSV</button>
 
-  <div class="headline-scroller" id="headlineScroller">
-    <div class="headline-text" id="headlineText"></div>
-  </div>
-
   <div class="pipe-background" id="pipeBackground"></div>
 
-  <div class="remove-modal" id="removeModal">
-    <label for="removeText" style="font-weight:600;">Remove Order Numbers:</label>
-    <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Don’t use | here</div>
-    <input type="text" id="removeText" placeholder="Type numbers to remove" oninput="formatText()" />
-  </div>
-
-  <div class="duplicate-modal" id="duplicateModal">
-    <h4>Removed Duplicates</h4>
-    <div class="toggle-container">
-      <span class="toggle-label">Keep Duplicates</span>
-      <label class="switch">
-        <input type="checkbox" id="keepDuplicatesToggle" onchange="formatText()">
-        <span class="slider"></span>
-      </label>
-    </div>
-    <div id="duplicateList">None</div>
-  </div>
-
   <div class="container">
+    <div class="remove-modal" id="removeModal">
+      <label for="removeText" style="font-weight:600;">Remove Order Numbers:</label>
+      <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Don’t use | here</div>
+      <input type="text" id="removeText" placeholder="Type numbers to remove" oninput="formatText()" />
+    </div>
+
     <h2>Paste sales number here</h2>
     <p>Ensure spaces between each sales number</p>
-
     <div id="qtyMarker">Qty: 0</div>
-
     <input type="text" id="inputText" placeholder="Enter text here" oninput="formatText()" />
-
     <div class="button-container">
       <button class="button" id="pasteButton" onclick="pasteText()">Paste</button>
-      <button class="button" id="copyButton" onclick="copyText()" style="display: none;">Copy</button>
-      <button class="button" id="clearButton" onclick="clearText()" style="display: none;">Clear</button>
+      <button class="button" id="copyButton" onclick="copyText()" style="display:none;">Copy</button>
+      <button class="button" id="clearButton" onclick="clearText()" style="display:none;">Clear</button>
     </div>
-
     <div class="output-container" id="outputText"></div>
+
+    <div class="duplicate-modal" id="duplicateModal">
+      <h4>Removed Duplicates</h4>
+      <div class="toggle-container">
+        <span class="toggle-label">Keep Duplicates</span>
+        <label class="switch">
+          <input type="checkbox" id="keepDuplicatesToggle" onchange="formatText()">
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div id="duplicateList">None</div>
+    </div>
   </div>
 
-  <button id="prankBtn" onclick="startPigeon()">Activate Sound</button>
-  <audio id="pigeonSound" src="pigeon.mp3" preload="auto"></audio>
   <footer>Please note qty may not reflect the actual number</footer>
 
 <script>
-(function() {
-  const textEl = document.getElementById('headlineText');
-  const scroller = document.getElementById('headlineScroller');
-  let styleTag = null;
-  let currentAnimationName = null;
-  function makeAnimationName() { return 'marq_' + Date.now() + '_' + Math.floor(Math.random() * 1000); }
-  async function setupMarquee() {
-    if (document.fonts && document.fonts.ready) { try { await document.fonts.ready; } catch(e) {} }
-    await new Promise(r => requestAnimationFrame(r));
-    const text = textEl.textContent || '';
-    if (!text.trim()) { textEl.style.animation = 'none'; return; }
-    const textRect = textEl.getBoundingClientRect();
-    const scrollerRect = scroller.getBoundingClientRect();
-    const textWidth = Math.ceil(textRect.width);
-    const scrollerWidth = Math.ceil(scrollerRect.width);
-    if (!textWidth || !scrollerWidth) { requestAnimationFrame(setupMarquee); return; }
-    const distance = textWidth + scrollerWidth;
-    const speed = 120;
-    const duration = Math.max(3, distance / speed);
-    if (styleTag) { styleTag.remove(); styleTag = null; }
-    currentAnimationName = makeAnimationName();
-    const keyframes = `@keyframes ${currentAnimationName} { 0% { transform: translateX(${scrollerWidth}px); } 100% { transform: translateX(-${textWidth}px); }}`;
-    styleTag = document.createElement('style');
-    styleTag.id = 'marquee-style-' + currentAnimationName;
-    styleTag.textContent = keyframes;
-    document.head.appendChild(styleTag);
-    textEl.style.animation = 'none';
-    textEl.style.transform = `translateX(${scrollerWidth}px)`;
-    void textEl.offsetWidth;
-    textEl.style.animation = `${currentAnimationName} ${duration}s linear infinite`;
-  }
-  function debounce(fn, wait = 150) { let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn.apply(this, args), wait); }; }
-  const debouncedSetup = debounce(setupMarquee, 150);
-  window.addEventListener('resize', debouncedSetup);
-  const mo = new MutationObserver(debouncedSetup);
-  mo.observe(textEl, { childList: true, characterData: true, subtree: true });
-  window.startMarqueeNow = setupMarquee;
-})();
-
 let itemCounts = {};
+
+function show(el, show) {
+  if (show) el.classList.add("visible");
+  else el.classList.remove("visible");
+}
 
 function formatText() {
   const input = document.getElementById('inputText').value;
@@ -450,7 +359,6 @@ function formatText() {
   const removeModal = document.getElementById('removeModal');
   const duplicateModal = document.getElementById('duplicateModal');
   const duplicateListDiv = document.getElementById('duplicateList');
-  
   const keepDuplicates = document.getElementById('keepDuplicatesToggle').checked;
 
   if (input.trim() === "") {
@@ -459,187 +367,80 @@ function formatText() {
     clearBtn.style.display = "none";
     pasteBtn.style.display = "inline-block";
     qty.innerText = "Qty: 0";
-    removeModal.style.display = "none";
-    duplicateModal.style.display = "none";
+    show(removeModal, false);
+    show(duplicateModal, false);
     return;
   }
-  
+
   pasteBtn.style.display = "none";
   copyBtn.style.display = "inline-block";
   clearBtn.style.display = "inline-block";
   output.style.display = "block";
-  removeModal.style.display = "block";
-  
+  show(removeModal, true);
+
   let allParts = input.trim().split(/\s+/).filter(p => p);
   const counts = {};
-  for (const p of allParts) { counts[p] = (counts[p] || 0) + 1; }
+  for (const p of allParts) counts[p] = (counts[p] || 0) + 1;
   itemCounts = counts;
-  
-  const duplicateDisplayBlocks = [];
-  for (const number in counts) {
-    if (counts[number] > 1) {
-      const removedCount = counts[number] - 1;
-      const capitalizedName = number.charAt(0).toUpperCase() + number.slice(1);
-      const block = `<div><strong>${capitalizedName}</strong><br>removed x${removedCount}<br>appears x${counts[number]}</div>`;
-      duplicateDisplayBlocks.push(block);
-    }
-  }
 
-  if (duplicateDisplayBlocks.length > 0) {
-    duplicateListDiv.innerHTML = duplicateDisplayBlocks.join('');
-    duplicateModal.style.display = "block";
+  const duplicateBlocks = [];
+  for (const n in counts) if (counts[n] > 1)
+    duplicateBlocks.push(`<div><strong>${n}</strong><br>removed x${counts[n]-1}<br>appears x${counts[n]}</div>`);
+
+  if (duplicateBlocks.length) {
+    duplicateListDiv.innerHTML = duplicateBlocks.join('');
+    show(duplicateModal, true);
   } else {
     duplicateListDiv.innerText = "None";
-    duplicateModal.style.display = "none";
-  }
-  
-  let parts;
-  if (keepDuplicates) {
-      parts = allParts;
-  } else {
-      parts = Object.keys(counts);
+    show(duplicateModal, false);
   }
 
-  // ✅ FIX: Allow spaces or commas as separators for removing numbers
-  if (removeInput !== "") {
-    const removeList = new Set(
-      removeInput.split(/[\s,]+/).map(s => s.trim()).filter(Boolean)
-    );
+  let parts = keepDuplicates ? allParts : Object.keys(counts);
+  if (removeInput) {
+    const removeList = new Set(removeInput.split(/[\s,]+/).filter(Boolean));
     parts = parts.filter(p => !removeList.has(p));
   }
 
-  const formatted = parts.join('|');
-  output.innerText = formatted;
+  output.innerText = parts.join('|');
   qty.innerText = `Qty: ${parts.length}`;
-
-  setTimeout(() => {
-    const containerHeight = document.querySelector('.container').offsetHeight;
-    const gap = 15;
-    const offset = (containerHeight / 2) + gap;
-    removeModal.style.bottom = `calc(50% + ${offset}px)`;
-  }, 0);
 }
 
 async function pasteText() {
   try {
     const text = await navigator.clipboard.readText();
-    const inputField = document.getElementById('inputText');
     if (text) {
-      const formattedText = text.replace(/[\n\t\r]/g, ' ').replace(/\s+/g, ' ').trim();
-      inputField.value = formattedText;
+      document.getElementById('inputText').value = text.replace(/[\n\t\r]/g, ' ').replace(/\s+/g, ' ').trim();
       formatText();
     }
-  } catch (err) {
-    console.error('Failed to read clipboard contents: ', err);
-    alert('Could not paste from clipboard. Please grant permission when prompted.');
-  }
+  } catch { alert('Clipboard access denied.'); }
 }
 
 function copyText() {
-  const text = document.getElementById('outputText').innerText;
-  if (!text) return;
-  navigator.clipboard.writeText(text).catch(err => console.error('Error copying text:', err));
+  const txt = document.getElementById('outputText').innerText;
+  if (txt) navigator.clipboard.writeText(txt);
 }
 
 function clearText() {
-  const input = document.getElementById('inputText');
-  const remove = document.getElementById('removeText');
-  input.value = "";
-  remove.value = "";
+  document.getElementById('inputText').value = "";
+  document.getElementById('removeText').value = "";
   document.getElementById('keepDuplicatesToggle').checked = false;
   formatText();
-  input.focus();
 }
 
 function exportCSV() {
-  const text = document.getElementById('outputText').innerText;
-  if (!text) return;
-  const headers = ["Sales number", "Duplicated", "Removed", "Appears"];
+  const headers = ["Sales number","Duplicated","Removed","Appears"];
   const rows = [headers];
-  
-  const uniqueNumbers = Object.keys(itemCounts);
-
-  for (const num of uniqueNumbers) {
-    if (!num) continue;
-    const totalCount = itemCounts[num] || 1;
-    const isDuplicate = totalCount > 1 ? 'Yes' : 'No';
-    const removedCount = totalCount > 1 ? totalCount - 1 : 0;
-    const appearsCount = totalCount;
-    rows.push([num, isDuplicate, removedCount, appearsCount]);
+  for (const [num,count] of Object.entries(itemCounts)) {
+    const dup = count>1?"Yes":"No";
+    rows.push([num,dup,count>1?count-1:0,count]);
   }
-  
-  const csvContent = rows.map(row => 
-      row.map(item => `"${String(item).replace(/"/g, '""')}"`).join(',')
-  ).join('\n');
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = "The_Kyle_File.csv";
-  document.body.appendChild(link);
+  const csv = rows.map(r=>r.map(c=>`"${c}"`).join(",")).join("\n");
+  const blob=new Blob([csv],{type:"text/csv;charset=utf-8"});
+  const link=document.createElement("a");
+  link.href=URL.createObjectURL(blob);
+  link.download="The_Kyle_File.csv";
   link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
 }
-
-window.onload = () => {
-  const container = document.getElementById('pipeBackground');
-  const numPipes = 50;
-  for (let i = 0; i < numPipes; i++) {
-    const pipe = document.createElement('img');
-    pipe.src = 'pipe.png';
-    pipe.className = 'pipe';
-    pipe.style.left = `${Math.random() * window.innerWidth}px`;
-    pipe.style.top = `${-Math.random() * 1000}px`;
-    pipe.style.animationDuration = `${8 + Math.random() * 4}s`;
-    pipe.style.animationDelay = `${Math.random() * 5}s`;
-    container.appendChild(pipe);
-  }
-  
-  const inputText = document.getElementById('inputText');
-  inputText.focus();
-
-  inputText.addEventListener('paste', (event) => {
-      event.preventDefault();
-      const pastedText = (event.clipboardData || window.clipboardData).getData('text');
-      const formattedText = pastedText.replace(/[\n\t\r]/g, ' ').replace(/\s+/g, ' ').trim();
-      
-      const start = inputText.selectionStart;
-      const end = inputText.selectionEnd;
-      const textBefore = inputText.value.substring(0, start);
-      const textAfter = inputText.value.substring(end, inputText.value.length);
-      
-      inputText.value = textBefore + formattedText + textAfter;
-      inputText.selectionStart = inputText.selectionEnd = start + formattedText.length;
-      
-      formatText();
-  });
-
-  fetch('motivation.txt')
-    .then(response => response.text())
-    .then(data => {
-      const lines = data.split('\n').filter(line => line.trim() !== '');
-      const randomLine = lines.length ? lines[Math.floor(Math.random() * lines.length)] : 'Stay positive. Keep pushing forward!';
-      document.getElementById('headlineText').textContent = randomLine;
-      document.getElementById('headlineScroller').style.display = 'flex';
-      if (window.startMarqueeNow) window.startMarqueeNow();
-    })
-    .catch(() => {
-      document.getElementById('headlineText').textContent = 'Stay positive. Keep pushing forward!';
-      document.getElementById('headlineScroller').style.display = 'flex';
-      if (window.startMarqueeNow) window.startMarqueeNow();
-    });
-};
-
-// ✅ Only refocus after button actions (Paste / Copy / Clear)
-['copyButton', 'clearButton', 'pasteButton'].forEach(id => {
-  const btn = document.getElementById(id);
-  if (btn) {
-    btn.addEventListener('click', () => {
-      setTimeout(() => document.getElementById('inputText').focus(), 100);
-    });
-  }
-});
 </script>
 </body>
 </html>
