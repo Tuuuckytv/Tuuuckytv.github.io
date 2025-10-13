@@ -180,7 +180,8 @@
       margin-bottom: 5px;
     }
 
-    input {
+    /* === HIDE CARET AND AUTOFOCUS === */
+    #inputText {
       width: 100%;
       padding: 12px;
       font-size: 16px;
@@ -190,6 +191,11 @@
       text-align: center;
       background: #fff;
       color: #000;
+      caret-color: transparent; /* hide blinking caret */
+    }
+
+    #inputText:focus {
+      outline: none; /* no focus outline */
     }
 
     .output-container {
@@ -453,6 +459,11 @@ window.onload = () => {
       startMarquee(msg);
     })
     .catch(() => startMarquee('Stay positive. Keep pushing forward!'));
+
+  // Auto focus input and hide caret
+  const input = document.getElementById('inputText');
+  input.focus();
+  input.style.caretColor = 'transparent';
 };
 
 function startMarquee(text) {
@@ -463,8 +474,8 @@ function startMarquee(text) {
   const scrollWidth = scroller.offsetWidth;
   const textWidth = el.offsetWidth;
 
-  const totalDistance = scrollWidth + textWidth; // full edge-to-edge travel
-  const speed = 90; // pixels per second
+  const totalDistance = scrollWidth + textWidth;
+  const speed = 90;
   const duration = totalDistance / speed;
 
   el.animate([
