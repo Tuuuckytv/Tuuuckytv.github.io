@@ -393,6 +393,7 @@ function formatText() {
   const duplicateListDiv = document.getElementById('duplicateList');
   const keepDuplicates = document.getElementById('keepDuplicatesToggle').checked;
 
+  // If nothing in the box, reset everything
   if (input.trim() === "") {
     output.style.display = "none";
     copyBtn.style.display = "none";
@@ -404,35 +405,59 @@ function formatText() {
     return;
   }
 
+  // Show controls + modals when there is input
   pasteBtn.style.display = "none";
   copyBtn.style.display = "inline-block";
   clearBtn.style.display = "inline-block";
   output.style.display = "block";
   show(removeModal, true);
+  show(duplicateModal, true); // 👈 always show duplicates feature when there is input
 
-  let allParts = input.trim().split(/\s+/).filter(p => p);
+  // 👇 IMPORTANT: treat pipes as separators too
+  let allParts = input
+    .replace(/\|/g, ' ')  // replace all pipes with spaces
+    .trim()
+    .split(/\s+/)         // split on any whitespace
+    .filter(p => p);
+
+  // Count each unique item
   const counts = {};
-  for (const p of allParts) counts[p] = (counts[p] || 0) + 1;
+  for (const p of allParts) {
+    counts[p] = (counts[p] || 0) + 1;
+  }
   itemCounts = counts;
 
+  // Build duplicates list
   const duplicateBlocks = [];
-  for (const n in counts) if (counts[n] > 1)
-    duplicateBlocks.push(`<div><strong>${n}</strong><br>removed x${counts[n]-1}<br>appears x${counts[n]}</div>`);
-
-  if (duplicateBlocks.length) {
-    duplicateListDiv.innerHTML = duplicateBlocks.join('');
-    show(duplicateModal, true);
-  } else {
-    duplicateListDiv.innerText = "None";
-    show(duplicateModal, false);
+  for (const n in counts) {
+    if (counts[n] > 1) {
+      duplicateBlocks.push(
+        `<div>
+           <strong>${n}</strong><br>
+           removed x${counts[n] - 1}<br>
+           appears x${counts[n]}
+         </div>`
+      );
+    }
   }
 
+  // Always keep the modal visible, just change its contents
+  if (duplicateBlocks.length) {
+    duplicateListDiv.innerHTML = duplicateBlocks.join('');
+  } else {
+    duplicateListDiv.innerText = "None";
+  }
+
+  // Decide what to actually output
   let parts = keepDuplicates ? allParts : Object.keys(counts);
+
+  // Apply "Remove Order Numbers" filter
   if (removeInput) {
     const removeList = new Set(removeInput.split(/[\s,]+/).filter(Boolean));
     parts = parts.filter(p => !removeList.has(p));
   }
 
+  // Join with pipes for the final output
   output.innerText = parts.join('|');
   qty.innerText = `Qty: ${parts.length}`;
 }
@@ -455,7 +480,9 @@ window.onload = () => {
     .then(r => r.text())
     .then(data => {
       const lines = data.split('\n').filter(l => l.trim());
-      const msg = lines.length ? lines[Math.floor(Math.random() * lines.length)] : 'Stay positive. Keep pushing forward!';
+      const msg = lines.length
+        ? lines[Math.floor(Math.random() * lines.length)]
+        : 'Stay positive. Keep pushing forward!';
       startMarquee(msg);
     })
     .catch(() => startMarquee('Stay positive. Keep pushing forward!'));
@@ -492,10 +519,15 @@ async function pasteText() {
   try {
     const text = await navigator.clipboard.readText();
     if (text) {
-      document.getElementById('inputText').value = text.replace(/[\n\t\r]/g, ' ').replace(/\s+/g, ' ').trim();
+      document.getElementById('inputText').value = text
+        .replace(/[\n\t\r]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
       formatText();
     }
-  } catch { alert('Clipboard access denied.'); }
+  } catch {
+    alert('Clipboard access denied.');
+  }
 }
 
 function copyText() {
@@ -511,19 +543,22 @@ function clearText() {
 }
 
 function exportCSV() {
-  const headers = ["Sales number","Duplicated","Removed","Appears"];
+  const headers = ["Sales number", "Duplicated", "Removed", "Appears"];
   const rows = [headers];
-  for (const [num,count] of Object.entries(itemCounts)) {
-    const dup = count>1?"Yes":"No";
-    rows.push([num,dup,count>1?count-1:0,count]);
+
+  for (const [num, count] of Object.entries(itemCounts)) {
+    const dup = count > 1 ? "Yes" : "No";
+    rows.push([num, dup, count > 1 ? count - 1 : 0, count]);
   }
-  const csv = rows.map(r=>r.map(c=>`"${c}"`).join(",")).join("\n");
-  const blob=new Blob([csv],{type:"text/csv;charset=utf-8"});
-  const link=document.createElement("a");
-  link.href=URL.createObjectURL(blob);
-  link.download="The_Kyle_File.csv";
+
+  const csv = rows
+    .map(r => r.map(c => `"${c}"`).join(","))
+    .join("\n");
+
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = "The_Kyle_File.csv";
   link.click();
 }
 </script>
-</body>
-</html>
