@@ -30,6 +30,11 @@
       padding: 20px;
     }
 
+    /* Hide element helper */
+    .hidden {
+      display: none !important;
+    }
+
     /* === RAINING PIPES === */
     .pipe-background {
       position: absolute;
@@ -191,11 +196,11 @@
       text-align: center;
       background: #fff;
       color: #000;
-      caret-color: transparent; /* hide blinking caret */
+      caret-color: transparent;
     }
 
     #inputText:focus {
-      outline: none; /* no focus outline */
+      outline: none;
     }
 
     .output-container {
@@ -253,8 +258,9 @@
       top: 50%;
       right: -270px;
       transform: translateY(-50%);
-      width: 240px;
+      width: 260px;
       text-align: left;
+      padding: 15px 15px 28px; /* extra bottom padding so button doesn't hug edge */
     }
 
     .duplicate-modal h4 {
@@ -321,6 +327,58 @@
       font-style: italic;
       z-index: 2;
     }
+
+    /* === CLICKABLE NUMBER TOKENS === */
+    .num-token,
+    .dup-token,
+    .dup-line-token {
+      cursor: pointer;
+      padding: 2px 4px;
+      border-radius: 4px;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .num-token:hover,
+    .dup-token:hover,
+    .dup-line-token:hover {
+      background-color: rgba(15,133,142,0.1);
+    }
+
+    .num-token.highlight,
+    .dup-token.highlight,
+    .dup-line-token.highlight {
+      background-color: var(--accent-light);
+      color: #fff;
+    }
+
+    /* === DUPLICATE NUMBERS LINE SCROLL AREA === */
+    #duplicateCopyWrapper {
+      max-width: 240px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px; /* space between label, list, and button */
+    }
+
+    #duplicateCopyText {
+      max-height: 200px;
+      max-width: 240px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      white-space: normal;
+      display: block;
+      padding: 6px 8px;
+      padding-right: 12px; /* room for scrollbar */
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      background: #fff;
+    }
+
+    /* Make each duplicate token wrap nicely */
+    .dup-line-token {
+      display: inline-block;
+      margin-right: 4px;
+    }
   </style>
 </head>
 <body>
@@ -367,6 +425,23 @@
         </label>
       </div>
       <div id="duplicateList">None</div>
+
+      <!-- Conditional duplicate copy box -->
+      <div id="duplicateCopyWrapper" class="hidden" style="margin-top:10px; font-size:12px;">
+        <div id="duplicateCopyLabel" style="font-weight:600;">
+          Duplicate numbers line:
+        </div>
+        <div id="duplicateCopyText">
+          None
+        </div>
+        <button
+          class="button"
+          type="button"
+          style="padding:4px 10px; font-size:11px;"
+          onclick="copyDuplicates()">
+          Copy duplicates
+        </button>
+      </div>
     </div>
   </div>
 
@@ -374,12 +449,16 @@
 
 <script>
 let itemCounts = {};
+let currentOutputParts = [];
+let duplicateLine = "";
 
-function show(el, show) {
-  if (show) el.classList.add("visible");
+/* Show / hide elements */
+function show(el, showFlag) {
+  if (showFlag) el.classList.add("visible");
   else el.classList.remove("visible");
 }
 
+/* Main formatter */
 function formatText() {
   const input = document.getElementById('inputText').value;
   const removeInput = document.getElementById('removeText').value.trim();
@@ -391,9 +470,7 @@ function formatText() {
   const removeModal = document.getElementById('removeModal');
   const duplicateModal = document.getElementById('duplicateModal');
   const duplicateListDiv = document.getElementById('duplicateList');
-  const keepDuplicates = document.getElementById('keepDuplicatesToggle').checked;
 
-  // If nothing in the box, reset everything
   if (input.trim() === "") {
     output.style.display = "none";
     copyBtn.style.display = "none";
@@ -402,77 +479,147 @@ function formatText() {
     qty.innerText = "Qty: 0";
     show(removeModal, false);
     show(duplicateModal, false);
+
+    duplicateListDiv.innerText = "None";
+    renderDuplicateLine([]);
+
+    currentOutputParts = [];
+    duplicateLine = "";
+
     return;
   }
 
-  // Show controls + modals when there is input
   pasteBtn.style.display = "none";
   copyBtn.style.display = "inline-block";
   clearBtn.style.display = "inline-block";
   output.style.display = "block";
   show(removeModal, true);
-  show(duplicateModal, true); // 👈 always show duplicates feature when there is input
+  show(duplicateModal, true);
 
-  // 👇 IMPORTANT: treat pipes as separators too
+  /* Pipes become spaces */
   let allParts = input
-    .replace(/\|/g, ' ')  // replace all pipes with spaces
+    .replace(/\|/g, ' ')
     .trim()
-    .split(/\s+/)         // split on any whitespace
+    .split(/\s+/)
     .filter(p => p);
 
-  // Count each unique item
+  /* Count occurrences */
   const counts = {};
-  for (const p of allParts) {
-    counts[p] = (counts[p] || 0) + 1;
-  }
+  allParts.forEach(p => counts[p] = (counts[p] || 0) + 1);
   itemCounts = counts;
 
-  // Build duplicates list
+  /* Build duplicate panel entries */
   const duplicateBlocks = [];
   for (const n in counts) {
     if (counts[n] > 1) {
-      duplicateBlocks.push(
-        `<div>
-           <strong>${n}</strong><br>
-           removed x${counts[n] - 1}<br>
-           appears x${counts[n]}
-         </div>`
-      );
+      duplicateBlocks.push(`
+        <div>
+          <span class="dup-token" data-num="${n}" onclick="highlightNumber('${n}')">
+            ${n}
+          </span><br>
+          removed x${counts[n]-1}<br>
+          appears x${counts[n]}
+        </div>
+      `);
     }
   }
 
-  // Always keep the modal visible, just change its contents
-  if (duplicateBlocks.length) {
-    duplicateListDiv.innerHTML = duplicateBlocks.join('');
-  } else {
-    duplicateListDiv.innerText = "None";
-  }
+  duplicateListDiv.innerHTML =
+    duplicateBlocks.length ? duplicateBlocks.join('') : "None";
 
-  // Decide what to actually output
+  /* Build duplicate line */
+  const duplicateNumbers = Object.keys(counts).filter(n => counts[n] > 1);
+  duplicateLine = duplicateNumbers.join('|');
+
+  /* Render duplicate line + hide if empty */
+  renderDuplicateLine(duplicateNumbers);
+
+  /* If keepDuplicates toggle is on */
+  const keepDuplicates = document.getElementById('keepDuplicatesToggle').checked;
   let parts = keepDuplicates ? allParts : Object.keys(counts);
 
-  // Apply "Remove Order Numbers" filter
+  /* Apply removals */
   if (removeInput) {
-    const removeList = new Set(removeInput.split(/[\s,]+/).filter(Boolean));
-    parts = parts.filter(p => !removeList.has(p));
+    const removeSet = new Set(removeInput.split(/[\s,]+/).filter(Boolean));
+    parts = parts.filter(p => !removeSet.has(p));
   }
 
-  // Join with pipes for the final output
-  output.innerText = parts.join('|');
+  currentOutputParts = [...parts];
+  renderOutput(parts);
+
   qty.innerText = `Qty: ${parts.length}`;
 }
 
-/* === RAINING PIPES & FIXED EDGE-TO-EDGE MARQUEE === */
+/* ========== RENDER OUTPUT TOKENS ========== */
+function renderOutput(parts) {
+  const outEl = document.getElementById('outputText');
+  outEl.innerHTML = "";
+  parts.forEach((p, idx) => {
+    const span = document.createElement('span');
+    span.className = 'num-token';
+    span.dataset.num = p;
+    span.textContent = p;
+    span.onclick = () => highlightNumber(p);
+    outEl.appendChild(span);
+    if (idx < parts.length-1)
+      outEl.appendChild(document.createTextNode('|'));
+  });
+}
+
+/* ========== RENDER DUPLICATE LINE (WITH HIDE OPTION) ========== */
+function renderDuplicateLine(dups) {
+  const wrapper = document.getElementById('duplicateCopyWrapper');
+  const container = document.getElementById('duplicateCopyText');
+  
+  /* If no duplicates → hide whole section */
+  if (!dups.length) {
+    wrapper.classList.add("hidden");
+    container.textContent = "None";
+    return;
+  }
+
+  /* Show section */
+  wrapper.classList.remove("hidden");
+
+  /* Render tokens */
+  container.innerHTML = "";
+  dups.forEach((n, idx) => {
+    const span = document.createElement('span');
+    span.className = 'dup-line-token';
+    span.dataset.num = n;
+    span.textContent = n;
+    span.onclick = () => highlightNumber(n);
+    container.appendChild(span);
+    if (idx < dups.length-1)
+      container.appendChild(document.createTextNode('|'));
+  });
+}
+
+/* ========== HIGHLIGHT ALL MATCHING NUMBERS ========== */
+function highlightNumber(value) {
+  const tokens = document.querySelectorAll('.num-token, .dup-token, .dup-line-token');
+  tokens.forEach(t => {
+    t.classList.toggle('highlight', t.dataset.num === value);
+  });
+}
+
+/* Copy duplicate line */
+function copyDuplicates() {
+  if (duplicateLine)
+    navigator.clipboard.writeText(duplicateLine);
+}
+
+/* === RAINING PIPES & MARQUEE === */
 window.onload = () => {
   const container = document.getElementById('pipeBackground');
   for (let i = 0; i < 50; i++) {
     const pipe = document.createElement('img');
     pipe.src = 'pipe.png';
     pipe.className = 'pipe';
-    pipe.style.left = `${Math.random() * window.innerWidth}px`;
-    pipe.style.top = `${-Math.random() * 1000}px`;
-    pipe.style.animationDuration = `${8 + Math.random() * 4}s`;
-    pipe.style.animationDelay = `${Math.random() * 5}s`;
+    pipe.style.left = `${Math.random()*window.innerWidth}px`;
+    pipe.style.top = `${-Math.random()*1000}px`;
+    pipe.style.animationDuration = `${8 + Math.random()*4}s`;
+    pipe.style.animationDelay = `${Math.random()*5}s`;
     container.appendChild(pipe);
   }
 
@@ -480,17 +627,14 @@ window.onload = () => {
     .then(r => r.text())
     .then(data => {
       const lines = data.split('\n').filter(l => l.trim());
-      const msg = lines.length
-        ? lines[Math.floor(Math.random() * lines.length)]
-        : 'Stay positive. Keep pushing forward!';
+      const msg = lines.length ? lines[Math.floor(Math.random()*lines.length)] : "Stay positive. Keep pushing forward!";
       startMarquee(msg);
     })
-    .catch(() => startMarquee('Stay positive. Keep pushing forward!'));
+    .catch(() => startMarquee("Stay positive. Keep pushing forward!"));
 
-  // Auto focus input and hide caret
   const input = document.getElementById('inputText');
   input.focus();
-  input.style.caretColor = 'transparent';
+  input.style.caretColor = "transparent";
 };
 
 function startMarquee(text) {
@@ -501,40 +645,39 @@ function startMarquee(text) {
   const scrollWidth = scroller.offsetWidth;
   const textWidth = el.offsetWidth;
 
-  const totalDistance = scrollWidth + textWidth;
-  const speed = 90;
-  const duration = totalDistance / speed;
-
   el.animate([
     { transform: `translateX(${scrollWidth}px)` },
-    { transform: `translateX(-${textWidth + scrollWidth}px)` }
+    { transform: `translateX(-${textWidth}px)` }
   ], {
-    duration: duration * 500,
+    duration: 18000,
     iterations: Infinity,
     easing: 'linear'
   });
 }
 
+/* Paste from clipboard */
 async function pasteText() {
   try {
     const text = await navigator.clipboard.readText();
     if (text) {
       document.getElementById('inputText').value = text
-        .replace(/[\n\t\r]/g, ' ')
+        .replace(/[\n\r\t]/g, ' ')
         .replace(/\s+/g, ' ')
         .trim();
       formatText();
     }
   } catch {
-    alert('Clipboard access denied.');
+    alert("Clipboard access denied.");
   }
 }
 
+/* Copy main output */
 function copyText() {
-  const txt = document.getElementById('outputText').innerText;
-  if (txt) navigator.clipboard.writeText(txt);
+  if (currentOutputParts.length)
+    navigator.clipboard.writeText(currentOutputParts.join('|'));
 }
 
+/* Clear input */
 function clearText() {
   document.getElementById('inputText').value = "";
   document.getElementById('removeText').value = "";
@@ -542,23 +685,24 @@ function clearText() {
   formatText();
 }
 
+/* Export CSV */
 function exportCSV() {
-  const headers = ["Sales number", "Duplicated", "Removed", "Appears"];
+  const headers = ["Sales number","Duplicated","Removed","Appears"];
   const rows = [headers];
 
-  for (const [num, count] of Object.entries(itemCounts)) {
+  for (const [num,count] of Object.entries(itemCounts)) {
     const dup = count > 1 ? "Yes" : "No";
-    rows.push([num, dup, count > 1 ? count - 1 : 0, count]);
+    rows.push([num, dup, count>1 ? count-1 : 0, count]);
   }
 
-  const csv = rows
-    .map(r => r.map(c => `"${c}"`).join(","))
-    .join("\n");
-
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+  const csv = rows.map(r => r.map(c => `"${c}"`).join(",")).join("\n");
+  const blob = new Blob([csv], { type:"text/csv;charset=utf-8" });
   const link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
   link.download = "The_Kyle_File.csv";
   link.click();
 }
 </script>
+
+</body>
+</html>
