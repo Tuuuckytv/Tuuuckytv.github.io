@@ -5,13 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Pace Calculator</title>
 
-<!-- ===== PWA SUPPORT ===== -->
 <link rel="manifest" href="./manifest.json">
 <link rel="icon" href="./iplogo.png">
 <link rel="apple-touch-icon" href="./iplogo.png">
 <meta name="theme-color" content="#c0c0c0">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
 
 <style>
 :root{
@@ -63,33 +61,7 @@ body{
   border-color:var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
 }
 
-.label{
-  font-size:13px;
-  font-weight:bold;
-  margin-bottom:8px;
-}
-
-small{
-  font-size:12px;
-  font-weight:bold;
-}
-
-input{
-  width:100%;
-  padding:12px;
-  font-size:16px;
-  border:2px solid;
-  border-color:var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
-  background:var(--field);
-  font-family:"MS Sans Serif", Tahoma, sans-serif;
-}
-
-input:focus{
-  outline:2px dotted #000;
-  outline-offset:-6px;
-}
-
-/* ===== SLIDING TOGGLES (SATISFYING SPACING) ===== */
+/* ===== TOGGLES ===== */
 .switchRow{
   display:flex;
   gap:14px;
@@ -103,31 +75,16 @@ input:focus{
   gap:6px;
   font-size:12px;
   font-weight:bold;
-  line-height:1;
 }
 
-/* Make labels hug the switch (left label right-aligned, right label left-aligned) */
-.switchLabel{
-  display:inline-block;
-  padding:0 2px;
-  white-space:nowrap;
-}
-.switchLabel.left{ text-align:right; }
-.switchLabel.right{ text-align:left; }
-
-/* specific widths so it looks balanced but tight */
-.switchLabelShort.left{ min-width:20px; }
-.switchLabelShort.right{ min-width:20px; }
-
-.switchLabelLong.left{  min-width:54px; }   /* Pace */
-.switchLabelLong.right{ min-width:74px; }   /* Treadmill */
+.switchLabelShort{min-width:20px;text-align:center}
+.switchLabelLong{min-width:64px;text-align:center}
 
 .switch{
   position:relative;
   width:50px;
   height:22px;
   cursor:pointer;
-  display:inline-block;
 }
 
 .switch input{
@@ -135,7 +92,6 @@ input:focus{
   inset:0;
   opacity:0;
   z-index:5;
-  cursor:pointer;
 }
 
 .track,.knob{pointer-events:none}
@@ -154,7 +110,7 @@ input:focus{
   left:2px;
   width:16px;
   height:16px;
-  background:var(--knob);
+  background:#d8d8d8;
   border:2px solid;
   border-color:var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
   transition:left .12s linear;
@@ -162,11 +118,39 @@ input:focus{
 
 .switch input:checked ~ .knob{ left:30px }
 
+/* ===== LABELS / INPUTS ===== */
+.label{
+  font-size:13px;
+  font-weight:bold;
+  margin-bottom:6px;
+}
+
+small{
+  font-size:12px;
+  font-weight:bold;
+}
+
+input{
+  width:100%;
+  padding:12px;
+  font-size:16px;
+  border:2px solid;
+  border-color:var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+  background:var(--field);
+  font-family:"MS Sans Serif", Tahoma, sans-serif;
+  text-align:center;
+}
+
+input:focus{
+  outline:2px dotted #000;
+  outline-offset:-6px;
+}
+
 /* ===== TIME ===== */
 .timeRow{
   display:flex;
+  gap:6px;
   align-items:center;
-  gap:8px;
 }
 
 .timeBox{flex:1}
@@ -177,6 +161,57 @@ input:focus{
   padding-top:4px;
   user-select:none;
 }
+
+/* ===== DISTANCE DROPDOWN ===== */
+.labelRow{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  margin-bottom:6px;
+}
+
+.arrowBtn{
+  width:18px;
+  height:18px;
+  background:var(--panel);
+  border:2px solid;
+  border-color:var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  font-size:9px;
+}
+.arrowBtn:active{
+  border-color:var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+}
+
+.dropdown{position:relative}
+
+.dropdownMenu{
+  position:absolute;
+  top:22px;
+  left:0;
+  background:var(--panel);
+  border:2px solid;
+  border-color:var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+  box-shadow:1px 1px 0 #000;
+  display:none;
+  z-index:10;
+  min-width:150px;
+}
+
+.dropdownMenu button{
+  width:100%;
+  padding:6px 10px;
+  font-size:12px;
+  font-weight:bold;
+  background:var(--panel);
+  border:none;
+  text-align:left;
+  cursor:pointer;
+}
+.dropdownMenu button:hover{background:#b0b0b0}
 
 /* ===== OUTPUT ===== */
 .output{
@@ -200,18 +235,18 @@ input:focus{
   text-align:center;
 }
 
-button{
+button.clear{
   width:100%;
   padding:12px;
+  margin-top:12px;
   font-weight:bold;
   background:var(--panel);
   border:2px solid;
   border-color:var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
   box-shadow:1px 1px 0 #000;
   cursor:pointer;
-  font-family:"MS Sans Serif", Tahoma, sans-serif;
 }
-button:active{transform:translate(1px,1px)}
+button.clear:active{transform:translate(1px,1px)}
 </style>
 </head>
 
@@ -224,27 +259,25 @@ button:active{transform:translate(1px,1px)}
     <div class="group">
       <div class="label">Options</div>
       <div class="switchRow">
-
-        <div class="switchWrap" aria-label="Units toggle">
-          <span class="switchLabel switchLabelShort left">km</span>
-          <label class="switch" aria-label="Units toggle (km/mi)">
+        <div class="switchWrap">
+          <span class="switchLabelShort">km</span>
+          <label class="switch">
             <input type="checkbox" id="unitToggle">
             <div class="track"></div>
             <div class="knob"></div>
           </label>
-          <span class="switchLabel switchLabelShort right">mi</span>
+          <span class="switchLabelShort">mi</span>
         </div>
 
-        <div class="switchWrap" aria-label="Mode toggle">
-          <span class="switchLabel switchLabelLong left">Pace</span>
-          <label class="switch" aria-label="Mode toggle (pace/treadmill)">
+        <div class="switchWrap">
+          <span class="switchLabelLong">Pace</span>
+          <label class="switch">
             <input type="checkbox" id="treadToggle">
             <div class="track"></div>
             <div class="knob"></div>
           </label>
-          <span class="switchLabel switchLabelLong right">Treadmill</span>
+          <span class="switchLabelLong">Treadmill</span>
         </div>
-
       </div>
     </div>
 
@@ -253,140 +286,131 @@ button:active{transform:translate(1px,1px)}
       <small>Hours : Minutes : Seconds</small>
 
       <div class="timeRow" style="margin-top:8px;">
-        <div class="timeBox">
-          <input type="number" id="hrs" min="0" inputmode="numeric">
-        </div>
+        <div class="timeBox"><input type="text" id="hrs" maxlength="2"></div>
         <div class="colon">:</div>
-        <div class="timeBox">
-          <input type="number" id="min" min="0" inputmode="numeric">
-        </div>
+        <div class="timeBox"><input type="text" id="min" maxlength="2"></div>
         <div class="colon">:</div>
-        <div class="timeBox">
-          <input type="number" id="sec" min="0" inputmode="numeric">
-        </div>
+        <div class="timeBox"><input type="text" id="sec" maxlength="2"></div>
       </div>
     </div>
 
     <div class="group">
-      <div class="label">Distance</div>
+      <div class="dropdown">
+        <div class="labelRow">
+          <div class="label">Distance</div>
+          <div class="arrowBtn" id="arrow">▼</div>
+        </div>
+
+        <div class="dropdownMenu" id="menu">
+          <button data-km="1">1 km</button>
+          <button data-km="5">5 km</button>
+          <button data-km="10">10 km</button>
+          <button data-km="21.0975">Half Marathon</button>
+          <button data-km="42.195">Marathon</button>
+        </div>
+      </div>
+
       <small id="distLabel">Kilometres</small>
-      <input type="number" id="dist" step="0.01" min="0" inputmode="decimal">
+      <input type="number" id="dist" step="0.01" min="0">
     </div>
 
-    <div class="output" aria-live="polite">
+    <div class="output">
       <div id="resultLabel">Pace</div>
       <div class="value" id="result">--</div>
     </div>
 
-    <button id="clear" style="margin-top:12px;">Clear</button>
+    <button class="clear" id="clear">Clear</button>
 
   </div>
 </div>
 
 <script>
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./service-worker.js").catch(()=>{});
+const hrs = document.getElementById("hrs");
+const min = document.getElementById("min");
+const sec = document.getElementById("sec");
+const dist = document.getElementById("dist");
+
+const unitToggle = document.getElementById("unitToggle");
+const treadToggle = document.getElementById("treadToggle");
+
+const result = document.getElementById("result");
+const resultLabel = document.getElementById("resultLabel");
+const distLabel = document.getElementById("distLabel");
+
+const arrow = document.getElementById("arrow");
+const menu = document.getElementById("menu");
+const clearBtn = document.getElementById("clear");
+
+/* ===== AUTO FORMAT TIME ===== */
+function formatTwo(el){
+  el.value = el.value.replace(/\D/g,"").slice(0,2);
+  if(el.value.length === 1) el.value = "0" + el.value;
+}
+
+[hrs,min,sec].forEach(el=>{
+  el.addEventListener("blur",()=>formatTwo(el));
+});
+
+/* ENTER -> NEXT */
+const order = [hrs, min, sec, dist];
+order.forEach((el,i)=>{
+  el.addEventListener("keydown",e=>{
+    if(e.key==="Enter"){
+      e.preventDefault();
+      formatTwo(el);
+      order[i+1]?.focus();
+    }
   });
-}
+});
 
-const hrs=document.getElementById("hrs");
-const min=document.getElementById("min");
-const sec=document.getElementById("sec");
-const dist=document.getElementById("dist");
-const unit=document.getElementById("unitToggle");
-const tread=document.getElementById("treadToggle");
-const result=document.getElementById("result");
-const resultLabel=document.getElementById("resultLabel");
-const distLabel=document.getElementById("distLabel");
-const clear=document.getElementById("clear");
+/* DROPDOWN */
+arrow.onclick = ()=> menu.style.display = menu.style.display==="block"?"none":"block";
+document.addEventListener("click",e=>{
+  if(!arrow.contains(e.target)&&!menu.contains(e.target)) menu.style.display="none";
+});
+menu.querySelectorAll("button").forEach(btn=>{
+  btn.onclick=()=>{
+    dist.value = btn.dataset.km;
+    menu.style.display="none";
+    calc();
+  };
+});
 
-function normalizeTime(h,m,s){
-  h = Number.isFinite(h) ? h : 0;
-  m = Number.isFinite(m) ? m : 0;
-  s = Number.isFinite(s) ? s : 0;
-
-  if(s>=60){ m += Math.floor(s/60); s%=60; }
-  if(m>=60){ h += Math.floor(m/60); m%=60; }
-
-  if(h<0) h=0;
-  if(m<0) m=0;
-  if(s<0) s=0;
-
-  return {h,m,s};
-}
-
-function formatPace(p){
-  const pm=Math.floor(p);
-  let ps=Math.round((p-pm)*60);
-  if(ps===60) return `${pm+1}:00`;
-  return `${pm}:${String(ps).padStart(2,"0")}`;
-}
-
+/* CALC */
 function calc(){
-  const rawH = hrs.value === "" ? NaN : +hrs.value;
-  const rawM = min.value === "" ? NaN : +min.value;
-  const rawS = sec.value === "" ? NaN : +sec.value;
-
-  const t = normalizeTime(
-    Number.isFinite(rawH) ? rawH : 0,
-    Number.isFinite(rawM) ? rawM : 0,
-    Number.isFinite(rawS) ? rawS : 0
-  );
-
-  // keep UI in sync if user overtyped mins/secs
-  if (sec.value !== "" && +sec.value >= 60) sec.value = t.s;
-  if (min.value !== "" && +min.value >= 60) min.value = t.m;
-  if (hrs.value !== "" && +min.value >= 60) hrs.value = t.h;
-
+  const h = parseInt(hrs.value)||0;
+  const m = parseInt(min.value)||0;
+  const s = parseInt(sec.value)||0;
   const d = +dist.value;
-  const miles = unit.checked;
-  const tm = tread.checked;
 
-  distLabel.textContent = miles ? "Miles" : "Kilometres";
+  distLabel.textContent = unitToggle.checked ? "Miles" : "Kilometres";
 
-  const totalSeconds = t.h*3600 + t.m*60 + t.s;
-
-  if(!d || d<=0 || totalSeconds<=0){
+  const totalSeconds = h*3600 + m*60 + s;
+  if(!d||!totalSeconds){
     result.textContent="--";
-    resultLabel.textContent = tm ? "Treadmill speed" : "Pace";
     return;
   }
 
   const pace = (totalSeconds/60)/d;
 
-  if(tm){
+  if(treadToggle.checked){
     resultLabel.textContent="Treadmill speed";
-    result.textContent = `${(60/pace).toFixed(1)} ${miles ? "mph" : "km/h"}`;
+    result.textContent=`${(60/pace).toFixed(1)} ${unitToggle.checked?"mph":"km/h"}`;
   }else{
     resultLabel.textContent="Pace";
-    result.textContent = `${formatPace(pace)} /${miles ? "mi" : "km"}`;
+    const pm=Math.floor(pace);
+    const ps=String(Math.round((pace-pm)*60)).padStart(2,"0");
+    result.textContent=`${pm}:${ps} /${unitToggle.checked?"mi":"km"}`;
   }
 }
 
-/* Enter moves focus: hours -> minutes -> seconds -> distance */
-const order = [hrs, min, sec, dist];
-order.forEach((el, i) => {
-  el.addEventListener("keydown", (e) => {
-    if (e.key === "Enter"){
-      e.preventDefault();
-      order[i + 1]?.focus();
-    }
-  });
-});
+[hrs,min,sec,dist,unitToggle,treadToggle].forEach(el=>el.addEventListener("input",calc));
 
-[hrs,min,sec,dist,unit,tread].forEach(el=>el.addEventListener("input",calc));
-unit.addEventListener("change",calc);
-tread.addEventListener("change",calc);
-
-clear.onclick=()=>{
+clearBtn.onclick=()=>{
   hrs.value=min.value=sec.value=dist.value="";
   result.textContent="--";
-  resultLabel.textContent = tread.checked ? "Treadmill speed" : "Pace";
   hrs.focus();
 };
-
-calc();
 </script>
 
 </body>
