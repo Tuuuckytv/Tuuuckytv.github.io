@@ -115,7 +115,6 @@ body{
   border-color:var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
   transition:left .12s linear;
 }
-
 .switch input:checked ~ .knob{ left:30px }
 
 /* ===== LABELS / INPUTS ===== */
@@ -244,10 +243,94 @@ button.clear{
   cursor:pointer;
 }
 button.clear:active{transform:translate(1px,1px)}
+
+/* ===== MODAL (Win95 style) ===== */
+.modalOverlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.25);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:16px;
+  z-index:9999;
+}
+
+.modal{
+  width:min(360px, 100%);
+  background:var(--panel);
+  border:2px solid;
+  border-color:var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+  box-shadow:1px 1px 0 #000;
+}
+
+.modalTitlebar{
+  padding:8px 10px;
+  background:#a0a0a0;
+  border-bottom:2px solid var(--border-mid);
+  font-weight:bold;
+  font-size:13px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.modalBody{
+  padding:12px;
+  font-size:13px;
+}
+
+.modalActions{
+  padding:12px;
+  padding-top:0;
+}
+
+.modalBtn{
+  width:100%;
+  padding:10px;
+  font-weight:bold;
+  background:var(--panel);
+  border:2px solid;
+  border-color:var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+  box-shadow:1px 1px 0 #000;
+  cursor:pointer;
+}
+.modalBtn:active{transform:translate(1px,1px)}
+
+.xBtn{
+  width:22px;
+  height:22px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:var(--panel);
+  border:2px solid;
+  border-color:var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+  cursor:pointer;
+  font-size:12px;
+  line-height:1;
+}
+.xBtn:active{
+  border-color:var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+}
 </style>
 </head>
 
 <body>
+
+<!-- ===== MODAL ===== -->
+<div class="modalOverlay" id="modalOverlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal">
+    <div class="modalTitlebar">
+      <span id="modalTitle">Error</span>
+      <button class="xBtn" id="modalX" aria-label="Close">×</button>
+    </div>
+    <div class="modalBody" id="modalMsg">Seconds and minutes must be 00–59.</div>
+    <div class="modalActions">
+      <button class="modalBtn" id="modalClose">Close</button>
+    </div>
+  </div>
+</div>
 
 <div class="win95">
   <div class="titlebar">Pace Calculator</div>
@@ -257,13 +340,13 @@ button.clear:active{transform:translate(1px,1px)}
       <div class="label">Options</div>
       <div class="switchRow">
         <div class="switchWrap">
-          <span class="switchLabelShort">km</span>
+          <span class="switchLabelShort">Km</span>
           <label class="switch">
             <input type="checkbox" id="unitToggle">
             <div class="track"></div>
             <div class="knob"></div>
           </label>
-          <span class="switchLabelShort">mi</span>
+          <span class="switchLabelShort">Mile</span>
         </div>
 
         <div class="switchWrap">
@@ -344,6 +427,32 @@ const arrow = document.getElementById("arrow");
 const menu = document.getElementById("menu");
 const clearBtn = document.getElementById("clear");
 
+/* ===== Modal ===== */
+const modalOverlay = document.getElementById("modalOverlay");
+const modalClose = document.getElementById("modalClose");
+const modalX = document.getElementById("modalX");
+const modalMsg = document.getElementById("modalMsg");
+
+function showError(msg){
+  modalMsg.textContent = msg;
+  modalOverlay.style.display = "flex";
+  if (navigator.vibrate) navigator.vibrate([20,40,20]);
+  modalClose.focus();
+}
+
+function closeModal(){
+  modalOverlay.style.display = "none";
+}
+
+modalClose.addEventListener("click", closeModal);
+modalX.addEventListener("click", closeModal);
+modalOverlay.addEventListener("click", (e)=>{
+  if(e.target === modalOverlay) closeModal();
+});
+document.addEventListener("keydown", (e)=>{
+  if(e.key === "Escape" && modalOverlay.style.display === "flex") closeModal();
+});
+
 /* ===== helpers ===== */
 function buzz(ms=10){
   if (navigator.vibrate) navigator.vibrate(ms);
@@ -353,56 +462,95 @@ function two(el){
   if (el.value.length === 1) el.value = "0" + el.value;
 }
 
+/* Lock minutes/seconds to 00–59 (hard lock + modal on overflow) */
+function lockTo59(el){
+  const raw = el.value;
+  el.value = el.value.replace(/\D/g,"").slice(0,2);
+
+  if (el.value === "") return;
+
+  let n = parseInt(el.value, 10);
+  if (!Number.isFinite(n)) { el.value = ""; return; }
+
+  if (n > 59){
+    el.value = "59";
+    showError("Minutes and seconds must be between 00 and 59.");
+    return;
+  }
+
+  // pad to 2 digits on blur / enter
+  if (raw.length >= 1) el.value = String(n).padStart(2,"0");
+}
+
 /* ===== ENTER → NEXT & CLEAR NEXT ===== */
 const order = [hrs, min, sec, dist];
 order.forEach((el,i)=>{
   el.addEventListener("keydown", e=>{
     if(e.key === "Enter"){
       e.preventDefault();
-      if(el !== dist) two(el);
+
+      if(el === min || el === sec){
+        lockTo59(el);
+      } else if (el === hrs){
+        two(el);
+      }
+
       const next = order[i+1];
       if(next){
-        next.value = "";          // 👈 clear the next box
+        next.value = "";
         next.focus();
         buzz();
       }
+      calc();
     }
   });
 });
 
-/* ===== calc ===== */
-function calc(){
-  const h = parseInt(hrs.value)||0;
-  const m = parseInt(min.value)||0;
-  const s = parseInt(sec.value)||0;
-  const d = parseFloat(dist.value);
+/* Live typing: hard lock mins/sec */
+[min, sec].forEach(el=>{
+  el.addEventListener("input", ()=>{
+    // keep only digits, max 2 chars
+    const before = el.value;
+    el.value = el.value.replace(/\D/g,"").slice(0,2);
+    if (el.value !== before) buzz(6);
 
-  distLabel.textContent = unitToggle.checked ? "Miles" : "Kilometres";
+    if(el.value.length === 2){
+      const n = parseInt(el.value,10);
+      if (Number.isFinite(n) && n > 59){
+        el.value = "59";
+        showError("Minutes and seconds must be between 00 and 59.");
+      }
+    }
+    calc();
+  });
 
-  const totalSeconds = h*3600 + m*60 + s;
-  if(!d || !totalSeconds){
-    result.textContent="--";
-    return;
-  }
+  el.addEventListener("blur", ()=>{
+    if(el.value === "") return;
+    lockTo59(el);
+    calc();
+  });
+});
 
-  if(treadToggle.checked){
-    const speed = (d / totalSeconds) * 3600;
-    resultLabel.textContent="Treadmill speed";
-    result.textContent = `${speed.toFixed(1)} ${unitToggle.checked?"mph":"km/h"}`;
-    return;
-  }
+/* Hours: only digits, pad on blur */
+hrs.addEventListener("input", ()=>{
+  const before = hrs.value;
+  hrs.value = hrs.value.replace(/\D/g,"").slice(0,2);
+  if (hrs.value !== before) buzz(6);
+  calc();
+});
+hrs.addEventListener("blur", ()=>{ if(hrs.value!=="") two(hrs); calc(); });
 
-  const paceSec = totalSeconds / d;
-  const pm = Math.floor(paceSec / 60);
-  const ps = Math.round(paceSec % 60);
-  resultLabel.textContent="Pace";
-  result.textContent = `${pm}:${String(ps).padStart(2,"0")} /${unitToggle.checked?"mi":"km"}`;
-}
+/* Distance: allow digits + one dot */
+dist.addEventListener("input", ()=>{
+  let v = dist.value.replace(/[^0-9.,]/g,"").replace(/,/g,".");
+  const parts = v.split(".");
+  if (parts.length > 2) v = parts[0] + "." + parts.slice(1).join("");
+  dist.value = v;
+  calc();
+});
 
-[hrs,min,sec,dist,unitToggle,treadToggle].forEach(el=>el.addEventListener("input",calc));
-
-/* ===== dropdown ===== */
-arrow.onclick = ()=> menu.style.display = menu.style.display==="block"?"none":"block";
+/* Dropdown */
+arrow.onclick = ()=> menu.style.display = menu.style.display==="block" ? "none" : "block";
 document.addEventListener("click",e=>{
   if(!arrow.contains(e.target)&&!menu.contains(e.target)) menu.style.display="none";
 });
@@ -410,16 +558,61 @@ menu.querySelectorAll("button").forEach(btn=>{
   btn.onclick=()=>{
     dist.value = btn.dataset.km;
     menu.style.display="none";
+    buzz(12);
     calc();
   };
 });
 
-/* ===== clear ===== */
+/* Toggles */
+unitToggle.addEventListener("change", ()=>{ buzz(12); calc(); });
+treadToggle.addEventListener("change", ()=>{ buzz(12); calc(); });
+
+/* Calc */
+function calc(){
+  distLabel.textContent = unitToggle.checked ? "Miles" : "Kilometres";
+
+  const h = parseInt(hrs.value,10);
+  const m = parseInt(min.value,10);
+  const s = parseInt(sec.value,10);
+
+  const hh = Number.isFinite(h) ? h : 0;
+  const mm = Number.isFinite(m) ? m : 0;
+  const ss = Number.isFinite(s) ? s : 0;
+
+  const d = parseFloat(String(dist.value).replace(/,/g,"."));
+  const totalSeconds = (hh * 3600) + (mm * 60) + ss;
+
+  if (!Number.isFinite(d) || d <= 0 || totalSeconds <= 0){
+    result.textContent="--";
+    resultLabel.textContent = treadToggle.checked ? "Treadmill speed" : "Pace";
+    return;
+  }
+
+  if (treadToggle.checked){
+    const speed = (d / totalSeconds) * 3600;
+    resultLabel.textContent="Treadmill speed";
+    result.textContent = `${speed.toFixed(1)} ${unitToggle.checked ? "mph" : "km/h"}`;
+    return;
+  }
+
+  const paceSeconds = totalSeconds / d;
+  let paceMin = Math.floor(paceSeconds / 60);
+  let paceSec = Math.round(paceSeconds - paceMin * 60);
+  if (paceSec === 60){ paceMin += 1; paceSec = 0; }
+
+  resultLabel.textContent="Pace";
+  result.textContent = `${paceMin}:${String(paceSec).padStart(2,"0")} /${unitToggle.checked ? "mi" : "km"}`;
+}
+
+/* Clear */
 clearBtn.onclick=()=>{
   hrs.value=min.value=sec.value=dist.value="";
   result.textContent="--";
   hrs.focus();
+  buzz(14);
 };
+
+calc();
 </script>
 
 </body>
