@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Pace Calculator</title>
+
+<!-- ===== PWA SUPPORT ===== -->
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" href="./iplogo.png">
+<link rel="apple-touch-icon" href="./iplogo.png">
+<meta name="theme-color" content="#c0c0c0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+<style>
+:root{
+  --bg:#c0c0c0;
+  --panel:#c0c0c0;
+  --border-dark:#404040;
+  --border-light:#ffffff;
+  --border-mid:#808080;
+  --field:#ffffff;
+  --track:#b0b0b0;
+  --knob:#d8d8d8;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  min-height:100vh;
+  background:var(--bg);
+  font-family:"MS Sans Serif", Tahoma, sans-serif;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:16px;
+}
+
+.win95{
+  width:min(520px,100%);
+  background:var(--panel);
+  border:2px solid;
+  border-color:var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+  box-shadow:1px 1px 0 #000;
+}
+
+.titlebar{
+  padding:10px 12px;
+  background:#a0a0a0;
+  border-bottom:2px solid var(--border-mid);
+  font-weight:bold;
+  font-size:14px;
+}
+
+.content{padding:14px}
+
+.group{
+  padding:12px;
+  margin-bottom:12px;
+  border:2px solid;
+  border-color:var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+}
+
+.label{
+  font-size:13px;
+  font-weight:bold;
+  margin-bottom:8px;
+}
+
+.row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+small{
+  font-size:12px;
+  font-weight:bold;
+}
+
+input{
+  width:100%;
+  padding:12px;
+  font-size:16px;
+  border:2px solid;
+  border-color:var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+  background:var(--field);
+}
+
+input:focus{
+  outline:2px dotted #000;
+  outline-offset:-6px;
+}
+
+/* ===== SLIDING TOGGLES ===== */
+.switchRow{
+  display:flex;
+  gap:16px;
+  flex-wrap:wrap;
+}
+
+.switchWrap{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:12px;
+  font-weight:bold;
+}
+
+.switch{
+  position:relative;
+  width:54px;
+  height:24px;
+  cursor:pointer;
+}
+
+.switch input{
+  position:absolute;
+  inset:0;
+  opacity:0;
+  z-index:5;
+}
+
+.track,.knob{pointer-events:none}
+
+.track{
+  width:100%;
+  height:100%;
+  background:var(--track);
+  border:2px solid;
+  border-color:var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+}
+
+.knob{
+  position:absolute;
+  top:3px;
+  left:3px;
+  width:18px;
+  height:18px;
+  background:var(--knob);
+  border:2px solid;
+  border-color:var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+  transition:left .12s linear;
+}
+
+.switch input:checked ~ .knob{left:31px}
+
+/* ===== OUTPUT ===== */
+.output{
+  padding:12px;
+  background:#b8b8b8;
+  border:2px solid;
+  border-color:var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.value{
+  font-size:22px;
+  font-weight:bold;
+  background:#d0d0d0;
+  padding:6px 10px;
+  border:2px solid;
+  border-color:var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+  min-width:150px;
+  text-align:center;
+}
+
+button{
+  width:100%;
+  padding:12px;
+  font-weight:bold;
+  background:var(--panel);
+  border:2px solid;
+  border-color:var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+  box-shadow:1px 1px 0 #000;
+}
+button:active{transform:translate(1px,1px)}
+</style>
+</head>
+
+<body>
+
+<div class="win95">
+  <div class="titlebar">Pace Calculator</div>
+  <div class="content">
+
+    <div class="group">
+      <div class="label">Options</div>
+      <div class="switchRow">
+
+        <div class="switchWrap">
+          <span>km</span>
+          <label class="switch">
+            <input type="checkbox" id="unitToggle">
+            <div class="track"></div>
+            <div class="knob"></div>
+          </label>
+          <span>mi</span>
+        </div>
+
+        <div class="switchWrap">
+          <span>Pace</span>
+          <label class="switch">
+            <input type="checkbox" id="treadToggle">
+            <div class="track"></div>
+            <div class="knob"></div>
+          </label>
+          <span>Treadmill</span>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="group">
+      <div class="label">Time</div>
+      <div class="row">
+        <div>
+          <small>Minutes</small>
+          <input type="number" id="min">
+        </div>
+        <div>
+          <small>Seconds</small>
+          <input type="number" id="sec">
+        </div>
+      </div>
+    </div>
+
+    <div class="group">
+      <div class="label">Distance</div>
+      <small id="distLabel">Kilometres</small>
+      <input type="number" id="dist" step="0.01">
+    </div>
+
+    <div class="output">
+      <div id="resultLabel">Pace</div>
+      <div class="value" id="result">--</div>
+    </div>
+
+    <button id="clear">Clear</button>
+
+  </div>
+</div>
+
+<script>
+/* ===== SERVICE WORKER REG ===== */
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./service-worker.js");
+  });
+}
+
+const min=document.getElementById("min");
+const sec=document.getElementById("sec");
+const dist=document.getElementById("dist");
+const unit=document.getElementById("unitToggle");
+const tread=document.getElementById("treadToggle");
+const result=document.getElementById("result");
+const resultLabel=document.getElementById("resultLabel");
+const distLabel=document.getElementById("distLabel");
+const clear=document.getElementById("clear");
+
+function calc(){
+  let m=+min.value||0;
+  let s=+sec.value||0;
+  const d=+dist.value;
+
+  if(s>=60){m+=Math.floor(s/60);s%=60;min.value=m;sec.value=s}
+
+  const miles=unit.checked;
+  const tm=tread.checked;
+  distLabel.textContent=miles?"Miles":"Kilometres";
+
+  if(!d||(m+s)<=0){result.textContent="--";return}
+
+  const pace=(m+s/60)/d;
+
+  if(tm){
+    resultLabel.textContent="Treadmill speed";
+    result.textContent=(60/pace).toFixed(1)+(miles?" mph":" km/h");
+  }else{
+    resultLabel.textContent="Pace";
+    const pm=Math.floor(pace);
+    const ps=String(Math.round((pace-pm)*60)).padStart(2,"0");
+    result.textContent=`${pm}:${ps} /${miles?"mi":"km"}`;
+  }
+}
+
+[min,sec,dist,unit,tread].forEach(el=>el.addEventListener("input",calc));
+clear.onclick=()=>{min.value=sec.value=dist.value="";result.textContent="--";min.focus()};
+</script>
+
+</body>
+</html>
