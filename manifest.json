@@ -1,0 +1,21 @@
+{
+  "name": "Pace Calculator",
+  "short_name": "PaceCalc",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#c0c0c0",
+  "theme_color": "#c0c0c0",
+  "icons": [
+    {
+      "src": "./iplogo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "./iplogo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
