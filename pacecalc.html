@@ -110,7 +110,7 @@ body{
   left:2px;
   width:16px;
   height:16px;
-  background:#d8d8d8;
+  background:var(--knob);
   border:2px solid;
   border-color:var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
   transition:left .12s linear;
@@ -182,9 +182,6 @@ input:focus{
   cursor:pointer;
   font-size:9px;
 }
-.arrowBtn:active{
-  border-color:var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
-}
 
 .dropdown{position:relative}
 
@@ -231,7 +228,7 @@ input:focus{
   padding:6px 10px;
   border:2px solid;
   border-color:var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
-  min-width:170px;
+  min-width:190px;
   text-align:center;
 }
 
@@ -286,11 +283,17 @@ button.clear:active{transform:translate(1px,1px)}
       <small>Hours : Minutes : Seconds</small>
 
       <div class="timeRow" style="margin-top:8px;">
-        <div class="timeBox"><input type="text" id="hrs" maxlength="2"></div>
+        <div class="timeBox">
+          <input type="text" id="hrs" maxlength="2" inputmode="numeric" pattern="[0-9]*">
+        </div>
         <div class="colon">:</div>
-        <div class="timeBox"><input type="text" id="min" maxlength="2"></div>
+        <div class="timeBox">
+          <input type="text" id="min" maxlength="2" inputmode="numeric" pattern="[0-9]*">
+        </div>
         <div class="colon">:</div>
-        <div class="timeBox"><input type="text" id="sec" maxlength="2"></div>
+        <div class="timeBox">
+          <input type="text" id="sec" maxlength="2" inputmode="numeric" pattern="[0-9]*">
+        </div>
       </div>
     </div>
 
@@ -311,7 +314,7 @@ button.clear:active{transform:translate(1px,1px)}
       </div>
 
       <small id="distLabel">Kilometres</small>
-      <input type="number" id="dist" step="0.01" min="0">
+      <input type="text" id="dist" inputmode="decimal">
     </div>
 
     <div class="output">
@@ -341,29 +344,64 @@ const arrow = document.getElementById("arrow");
 const menu = document.getElementById("menu");
 const clearBtn = document.getElementById("clear");
 
-/* ===== AUTO FORMAT TIME ===== */
-function formatTwo(el){
+/* ===== helpers ===== */
+function buzz(ms=10){
+  if (navigator.vibrate) navigator.vibrate(ms);
+}
+function two(el){
   el.value = el.value.replace(/\D/g,"").slice(0,2);
-  if(el.value.length === 1) el.value = "0" + el.value;
+  if (el.value.length === 1) el.value = "0" + el.value;
 }
 
-[hrs,min,sec].forEach(el=>{
-  el.addEventListener("blur",()=>formatTwo(el));
-});
-
-/* ENTER -> NEXT */
+/* ===== ENTER → NEXT & CLEAR NEXT ===== */
 const order = [hrs, min, sec, dist];
 order.forEach((el,i)=>{
-  el.addEventListener("keydown",e=>{
-    if(e.key==="Enter"){
+  el.addEventListener("keydown", e=>{
+    if(e.key === "Enter"){
       e.preventDefault();
-      formatTwo(el);
-      order[i+1]?.focus();
+      if(el !== dist) two(el);
+      const next = order[i+1];
+      if(next){
+        next.value = "";          // 👈 clear the next box
+        next.focus();
+        buzz();
+      }
     }
   });
 });
 
-/* DROPDOWN */
+/* ===== calc ===== */
+function calc(){
+  const h = parseInt(hrs.value)||0;
+  const m = parseInt(min.value)||0;
+  const s = parseInt(sec.value)||0;
+  const d = parseFloat(dist.value);
+
+  distLabel.textContent = unitToggle.checked ? "Miles" : "Kilometres";
+
+  const totalSeconds = h*3600 + m*60 + s;
+  if(!d || !totalSeconds){
+    result.textContent="--";
+    return;
+  }
+
+  if(treadToggle.checked){
+    const speed = (d / totalSeconds) * 3600;
+    resultLabel.textContent="Treadmill speed";
+    result.textContent = `${speed.toFixed(1)} ${unitToggle.checked?"mph":"km/h"}`;
+    return;
+  }
+
+  const paceSec = totalSeconds / d;
+  const pm = Math.floor(paceSec / 60);
+  const ps = Math.round(paceSec % 60);
+  resultLabel.textContent="Pace";
+  result.textContent = `${pm}:${String(ps).padStart(2,"0")} /${unitToggle.checked?"mi":"km"}`;
+}
+
+[hrs,min,sec,dist,unitToggle,treadToggle].forEach(el=>el.addEventListener("input",calc));
+
+/* ===== dropdown ===== */
 arrow.onclick = ()=> menu.style.display = menu.style.display==="block"?"none":"block";
 document.addEventListener("click",e=>{
   if(!arrow.contains(e.target)&&!menu.contains(e.target)) menu.style.display="none";
@@ -376,36 +414,7 @@ menu.querySelectorAll("button").forEach(btn=>{
   };
 });
 
-/* CALC */
-function calc(){
-  const h = parseInt(hrs.value)||0;
-  const m = parseInt(min.value)||0;
-  const s = parseInt(sec.value)||0;
-  const d = +dist.value;
-
-  distLabel.textContent = unitToggle.checked ? "Miles" : "Kilometres";
-
-  const totalSeconds = h*3600 + m*60 + s;
-  if(!d||!totalSeconds){
-    result.textContent="--";
-    return;
-  }
-
-  const pace = (totalSeconds/60)/d;
-
-  if(treadToggle.checked){
-    resultLabel.textContent="Treadmill speed";
-    result.textContent=`${(60/pace).toFixed(1)} ${unitToggle.checked?"mph":"km/h"}`;
-  }else{
-    resultLabel.textContent="Pace";
-    const pm=Math.floor(pace);
-    const ps=String(Math.round((pace-pm)*60)).padStart(2,"0");
-    result.textContent=`${pm}:${ps} /${unitToggle.checked?"mi":"km"}`;
-  }
-}
-
-[hrs,min,sec,dist,unitToggle,treadToggle].forEach(el=>el.addEventListener("input",calc));
-
+/* ===== clear ===== */
 clearBtn.onclick=()=>{
   hrs.value=min.value=sec.value=dist.value="";
   result.textContent="--";
