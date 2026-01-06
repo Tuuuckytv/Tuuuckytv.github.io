@@ -207,17 +207,35 @@
       margin-top: 20px;
       max-height: 150px;
       overflow-y: auto;
+      overflow-x: hidden;          /* ✅ stop horizontal spill */
       border: 1px solid #000;
       padding: 12px;
       background: #fff;
       text-align: center;
       font-weight: 600;
       font-size: 16px;
-      word-break: break-word;
       border-radius: 10px;
       display: none;
       width: 100%;
       color: var(--accent);
+
+      /* ✅ FIX: force long pipe text to wrap INSIDE the box */
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    /* ✅ scroll ONLY the split outputs area */
+    #splitOutputsMount {
+      width: 100%;
+      display: none;
+      max-height: 320px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      margin-top: 10px;
+      padding-right: 8px;
+
+      /* ✅ UI FIX: add breathing room so the LAST Copy box/button isn't clipped */
+      padding-bottom: 22px;
     }
 
     .button-container {
@@ -246,21 +264,23 @@
       visibility: visible;
     }
 
+    /* ✅ FIX: left panel anchored to container edge, centered vertically */
     .remove-modal {
-      top: 0;
-      left: 50%;
-      transform: translate(-50%, -120%);
+      top: 50%;
+      left: 0;
+      transform: translate(-115%, -50%);
       width: 260px;
       text-align: center;
     }
 
+    /* ✅ right panel anchored to container edge, centered vertically */
     .duplicate-modal {
       top: 50%;
-      right: -270px;
-      transform: translateY(-50%);
+      right: 0;
+      transform: translate(115%, -50%);
       width: 260px;
       text-align: left;
-      padding: 15px 15px 28px; /* extra bottom padding so button doesn't hug edge */
+      padding: 15px 15px 28px;
     }
 
     .duplicate-modal h4 {
@@ -357,7 +377,7 @@
       display: flex;
       flex-direction: column;
       align-items: flex-start;
-      gap: 10px; /* space between label, list, and button */
+      gap: 10px;
     }
 
     #duplicateCopyText {
@@ -368,16 +388,36 @@
       white-space: normal;
       display: block;
       padding: 6px 8px;
-      padding-right: 12px; /* room for scrollbar */
+      padding-right: 12px;
       border: 1px solid #ccc;
       border-radius: 6px;
       background: #fff;
     }
 
-    /* Make each duplicate token wrap nicely */
     .dup-line-token {
       display: inline-block;
       margin-right: 4px;
+    }
+
+    /* ✅ "disabled" look for Remove box while split is ON */
+    .disabled-box {
+      opacity: 0.55;
+      pointer-events: none;
+      filter: grayscale(10%);
+    }
+
+    /* ✅ OPTIONAL: on smaller screens, bring panels under the box */
+    @media (max-width: 980px) {
+      body { overflow: auto; }
+      .remove-modal, .duplicate-modal {
+        position: static;
+        transform: none;
+        width: 100%;
+        max-width: 520px;
+        margin: 10px 0 0 0;
+      }
+      .duplicate-modal { text-align: center; }
+      .container { top: 0; left: 0; transform: none; margin: 120px auto 40px; }
     }
   </style>
 </head>
@@ -413,10 +453,16 @@
       <button class="button" id="copyButton" onclick="copyText()" style="display:none;">Copy</button>
       <button class="button" id="clearButton" onclick="clearText()" style="display:none;">Clear</button>
     </div>
+
+    <!-- ORIGINAL single output -->
     <div class="output-container" id="outputText"></div>
+
+    <!-- Split outputs mount -->
+    <div id="splitOutputsMount"></div>
 
     <div class="duplicate-modal" id="duplicateModal">
       <h4>Removed Duplicates</h4>
+
       <div class="toggle-container">
         <span class="toggle-label">Keep Duplicates</span>
         <label class="switch">
@@ -424,9 +470,17 @@
           <span class="slider"></span>
         </label>
       </div>
+
+      <div class="toggle-container">
+        <span class="toggle-label">Split into 99s</span>
+        <label class="switch">
+          <input type="checkbox" id="split99Toggle" onchange="formatText()">
+          <span class="slider"></span>
+        </label>
+      </div>
+
       <div id="duplicateList">None</div>
 
-      <!-- Conditional duplicate copy box -->
       <div id="duplicateCopyWrapper" class="hidden" style="margin-top:10px; font-size:12px;">
         <div id="duplicateCopyLabel" style="font-weight:600;">
           Duplicate numbers line:
@@ -452,27 +506,55 @@ let itemCounts = {};
 let currentOutputParts = [];
 let duplicateLine = "";
 
-/* Show / hide elements */
 function show(el, showFlag) {
   if (showFlag) el.classList.add("visible");
   else el.classList.remove("visible");
 }
 
+/* Disable/enable Remove feature when Split into 99s is ON/OFF */
+function syncRemoveState(splitOn) {
+  const removeModal = document.getElementById('removeModal');
+  const removeText = document.getElementById('removeText');
+
+  if (splitOn) {
+    removeModal.classList.add('disabled-box');
+    removeText.value = "";
+    removeText.setAttribute("disabled", "disabled");
+  } else {
+    removeModal.classList.remove('disabled-box');
+    removeText.removeAttribute("disabled");
+  }
+}
+
 /* Main formatter */
 function formatText() {
   const input = document.getElementById('inputText').value;
-  const removeInput = document.getElementById('removeText').value.trim();
+
   const output = document.getElementById('outputText');
+  const splitMount = document.getElementById('splitOutputsMount');
+
   const copyBtn = document.getElementById('copyButton');
   const clearBtn = document.getElementById('clearButton');
   const pasteBtn = document.getElementById('pasteButton');
   const qty = document.getElementById('qtyMarker');
+
   const removeModal = document.getElementById('removeModal');
   const duplicateModal = document.getElementById('duplicateModal');
   const duplicateListDiv = document.getElementById('duplicateList');
 
+  const split99 = document.getElementById('split99Toggle').checked;
+
+  syncRemoveState(split99);
+
+  const removeInput = split99 ? "" : document.getElementById('removeText').value.trim();
+
   if (input.trim() === "") {
     output.style.display = "none";
+    output.innerHTML = "";
+
+    splitMount.style.display = "none";
+    splitMount.innerHTML = "";
+
     copyBtn.style.display = "none";
     clearBtn.style.display = "none";
     pasteBtn.style.display = "inline-block";
@@ -492,7 +574,7 @@ function formatText() {
   pasteBtn.style.display = "none";
   copyBtn.style.display = "inline-block";
   clearBtn.style.display = "inline-block";
-  output.style.display = "block";
+
   show(removeModal, true);
   show(duplicateModal, true);
 
@@ -531,26 +613,36 @@ function formatText() {
   const duplicateNumbers = Object.keys(counts).filter(n => counts[n] > 1);
   duplicateLine = duplicateNumbers.join('|');
 
-  /* Render duplicate line + hide if empty */
   renderDuplicateLine(duplicateNumbers);
 
   /* If keepDuplicates toggle is on */
   const keepDuplicates = document.getElementById('keepDuplicatesToggle').checked;
   let parts = keepDuplicates ? allParts : Object.keys(counts);
 
-  /* Apply removals */
+  /* Apply removals (ONLY when split99 is OFF) */
   if (removeInput) {
     const removeSet = new Set(removeInput.split(/[\s,]+/).filter(Boolean));
     parts = parts.filter(p => !removeSet.has(p));
   }
 
   currentOutputParts = [...parts];
-  renderOutput(parts);
-
   qty.innerText = `Qty: ${parts.length}`;
+
+  if (!split99) {
+    splitMount.style.display = "none";
+    splitMount.innerHTML = "";
+
+    output.style.display = "block";
+    renderOutput(parts);
+  } else {
+    output.style.display = "none";
+    output.innerHTML = "";
+
+    splitMount.style.display = "block";
+    renderSplitOutputs(parts);
+  }
 }
 
-/* ========== RENDER OUTPUT TOKENS ========== */
 function renderOutput(parts) {
   const outEl = document.getElementById('outputText');
   outEl.innerHTML = "";
@@ -566,22 +658,60 @@ function renderOutput(parts) {
   });
 }
 
-/* ========== RENDER DUPLICATE LINE (WITH HIDE OPTION) ========== */
+function renderSplitOutputs(parts) {
+  const mount = document.getElementById('splitOutputsMount');
+  mount.innerHTML = "";
+
+  const groupSize = 99;
+  const groups = [];
+  for (let i = 0; i < parts.length; i += groupSize) {
+    groups.push(parts.slice(i, i + groupSize));
+  }
+
+  groups.forEach((group, idx) => {
+    const outBox = document.createElement('div');
+    outBox.className = 'output-container';
+    outBox.style.display = "block";
+
+    group.forEach((p, j) => {
+      const span = document.createElement('span');
+      span.className = 'num-token';
+      span.dataset.num = p;
+      span.textContent = p;
+      span.onclick = () => highlightNumber(p);
+      outBox.appendChild(span);
+      if (j < group.length - 1) outBox.appendChild(document.createTextNode('|'));
+    });
+
+    const btnWrap = document.createElement('div');
+    btnWrap.className = 'button-container';
+    btnWrap.style.marginTop = "10px";
+
+    const copyOne = document.createElement('button');
+    copyOne.className = 'button';
+    copyOne.type = 'button';
+    copyOne.textContent = `Copy ${idx + 1}`;
+    copyOne.onclick = () => navigator.clipboard.writeText(group.join('|'));
+
+    btnWrap.appendChild(copyOne);
+
+    mount.appendChild(outBox);
+    mount.appendChild(btnWrap);
+  });
+}
+
 function renderDuplicateLine(dups) {
   const wrapper = document.getElementById('duplicateCopyWrapper');
   const container = document.getElementById('duplicateCopyText');
-  
-  /* If no duplicates → hide whole section */
+
   if (!dups.length) {
     wrapper.classList.add("hidden");
     container.textContent = "None";
     return;
   }
 
-  /* Show section */
   wrapper.classList.remove("hidden");
 
-  /* Render tokens */
   container.innerHTML = "";
   dups.forEach((n, idx) => {
     const span = document.createElement('span');
@@ -595,7 +725,6 @@ function renderDuplicateLine(dups) {
   });
 }
 
-/* ========== HIGHLIGHT ALL MATCHING NUMBERS ========== */
 function highlightNumber(value) {
   const tokens = document.querySelectorAll('.num-token, .dup-token, .dup-line-token');
   tokens.forEach(t => {
@@ -603,7 +732,6 @@ function highlightNumber(value) {
   });
 }
 
-/* Copy duplicate line */
 function copyDuplicates() {
   if (duplicateLine)
     navigator.clipboard.writeText(duplicateLine);
@@ -655,7 +783,6 @@ function startMarquee(text) {
   });
 }
 
-/* Paste from clipboard */
 async function pasteText() {
   try {
     const text = await navigator.clipboard.readText();
@@ -671,21 +798,22 @@ async function pasteText() {
   }
 }
 
-/* Copy main output */
 function copyText() {
   if (currentOutputParts.length)
     navigator.clipboard.writeText(currentOutputParts.join('|'));
 }
 
-/* Clear input */
 function clearText() {
   document.getElementById('inputText').value = "";
   document.getElementById('removeText').value = "";
   document.getElementById('keepDuplicatesToggle').checked = false;
+  document.getElementById('split99Toggle').checked = false;
+
+  syncRemoveState(false);
+
   formatText();
 }
 
-/* Export CSV */
 function exportCSV() {
   const headers = ["Sales number","Duplicated","Removed","Appears"];
   const rows = [headers];
