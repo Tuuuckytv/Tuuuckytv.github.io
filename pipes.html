@@ -219,7 +219,7 @@
       width: 100%;
       color: var(--accent);
 
-      /* ✅ FIX: force long pipe text to wrap INSIDE the box */
+      /* ✅ force long pipe text to wrap INSIDE the box */
       overflow-wrap: anywhere;
       word-break: break-word;
     }
@@ -234,7 +234,7 @@
       margin-top: 10px;
       padding-right: 8px;
 
-      /* ✅ UI FIX: add breathing room so the LAST Copy box/button isn't clipped */
+      /* ✅ FIX: prevents last box/button from being cut off */
       padding-bottom: 22px;
     }
 
@@ -264,7 +264,7 @@
       visibility: visible;
     }
 
-    /* ✅ FIX: left panel anchored to container edge, centered vertically */
+    /* left panel */
     .remove-modal {
       top: 50%;
       left: 0;
@@ -273,7 +273,7 @@
       text-align: center;
     }
 
-    /* ✅ right panel anchored to container edge, centered vertically */
+    /* right panel */
     .duplicate-modal {
       top: 50%;
       right: 0;
@@ -399,11 +399,105 @@
       margin-right: 4px;
     }
 
-    /* ✅ "disabled" look for Remove box while split is ON */
-    .disabled-box {
-      opacity: 0.55;
-      pointer-events: none;
-      filter: grayscale(10%);
+    /* ===== Windows 95 themed "Less than 99" modal ===== */
+    .w95-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.25);
+      z-index: 999;
+    }
+
+    .w95-modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: min(420px, 92vw);
+      z-index: 1000;
+
+      background: var(--glass-bg);
+      border: 2px solid #cfcfcf;
+      box-shadow:
+        0 0 0 1px #ffffff inset,
+        0 0 0 2px #9a9a9a inset,
+        0 10px 30px rgba(0,0,0,0.18);
+      border-radius: 4px;
+    }
+
+    .w95-titlebar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 8px;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      user-select: none;
+    }
+
+    .w95-title {
+      font-size: 13px;
+    }
+
+    .w95-x {
+      width: 26px;
+      height: 22px;
+      border: 2px solid #cfcfcf;
+      background: #fff;
+      color: var(--accent);
+      font-weight: 700;
+      line-height: 1;
+      cursor: pointer;
+      box-shadow:
+        0 0 0 1px #ffffff inset,
+        0 0 0 2px #9a9a9a inset;
+    }
+
+    .w95-x:active {
+      box-shadow:
+        0 0 0 1px #9a9a9a inset,
+        0 0 0 2px #ffffff inset;
+      transform: translateY(1px);
+    }
+
+    .w95-body {
+      padding: 18px 16px 16px;
+      text-align: center;
+      color: var(--text);
+    }
+
+    .w95-message {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 14px;
+    }
+
+    .w95-close-big {
+      width: 100%;
+      padding: 14px 12px;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+
+      cursor: pointer;
+      background: #fff;
+      color: var(--accent);
+
+      border: 2px solid #cfcfcf;
+      box-shadow:
+        0 0 0 1px #ffffff inset,
+        0 0 0 2px #9a9a9a inset;
+      border-radius: 4px;
+    }
+
+    .w95-close-big:active {
+      box-shadow:
+        0 0 0 1px #9a9a9a inset,
+        0 0 0 2px #ffffff inset;
+      transform: translateY(1px);
     }
 
     /* ✅ OPTIONAL: on smaller screens, bring panels under the box */
@@ -499,6 +593,36 @@
     </div>
   </div>
 
+  <!-- === Less than 99 modal (Win95 style) === -->
+  <div id="lt99Backdrop" class="w95-backdrop hidden" aria-hidden="true"></div>
+
+  <div
+    id="lt99Modal"
+    class="w95-modal hidden"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="lt99Title"
+    aria-describedby="lt99Msg"
+  >
+    <div class="w95-titlebar">
+      <div id="lt99Title" class="w95-title">Warning</div>
+      <button class="w95-x" type="button" onclick="hideLt99Modal()" aria-label="Close">✕</button>
+    </div>
+
+    <div class="w95-body">
+      <div id="lt99Msg" class="w95-message">Less than 99 dumb dumb</div>
+
+      <button
+        id="lt99CloseBtn"
+        class="w95-close-big"
+        type="button"
+        onclick="hideLt99Modal()"
+      >
+        CLOSE
+      </button>
+    </div>
+  </div>
+
   <footer>Please note qty may not reflect the actual number</footer>
 
 <script>
@@ -506,25 +630,60 @@ let itemCounts = {};
 let currentOutputParts = [];
 let duplicateLine = "";
 
+/* Less-than-99 modal state */
+let lt99ModalOpen = false;
+
 function show(el, showFlag) {
   if (showFlag) el.classList.add("visible");
   else el.classList.remove("visible");
 }
 
-/* Disable/enable Remove feature when Split into 99s is ON/OFF */
-function syncRemoveState(splitOn) {
+/* Keep remove box ALWAYS enabled (Split into 99s should not interrupt it) */
+function syncRemoveState() {
   const removeModal = document.getElementById('removeModal');
   const removeText = document.getElementById('removeText');
-
-  if (splitOn) {
-    removeModal.classList.add('disabled-box');
-    removeText.value = "";
-    removeText.setAttribute("disabled", "disabled");
-  } else {
-    removeModal.classList.remove('disabled-box');
-    removeText.removeAttribute("disabled");
-  }
+  removeModal.classList.remove('disabled-box');
+  removeText.removeAttribute("disabled");
 }
+
+/* Win95 modal show/hide */
+function showLt99Modal() {
+  const modal = document.getElementById('lt99Modal');
+  const backdrop = document.getElementById('lt99Backdrop');
+  const closeBtn = document.getElementById('lt99CloseBtn');
+
+  modal.classList.remove('hidden');
+  backdrop.classList.remove('hidden');
+  modal.setAttribute('aria-hidden', 'false');
+  backdrop.setAttribute('aria-hidden', 'false');
+
+  lt99ModalOpen = true;
+  setTimeout(() => closeBtn.focus(), 0);
+}
+
+function hideLt99Modal() {
+  const modal = document.getElementById('lt99Modal');
+  const backdrop = document.getElementById('lt99Backdrop');
+
+  modal.classList.add('hidden');
+  backdrop.classList.add('hidden');
+  modal.setAttribute('aria-hidden', 'true');
+  backdrop.setAttribute('aria-hidden', 'true');
+
+  lt99ModalOpen = false;
+
+  const input = document.getElementById('inputText');
+  if (input) input.focus();
+}
+
+/* Close modal with Enter */
+document.addEventListener('keydown', (e) => {
+  if (!lt99ModalOpen) return;
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    hideLt99Modal();
+  }
+});
 
 /* Main formatter */
 function formatText() {
@@ -544,9 +703,11 @@ function formatText() {
 
   const split99 = document.getElementById('split99Toggle').checked;
 
-  syncRemoveState(split99);
+  /* ✅ Always keep remove enabled */
+  syncRemoveState();
 
-  const removeInput = split99 ? "" : document.getElementById('removeText').value.trim();
+  /* ✅ Remove input always applies (even when split99 is ON) */
+  const removeInput = document.getElementById('removeText').value.trim();
 
   if (input.trim() === "") {
     output.style.display = "none";
@@ -567,6 +728,9 @@ function formatText() {
 
     currentOutputParts = [];
     duplicateLine = "";
+
+    /* hide lt99 modal if open */
+    if (lt99ModalOpen) hideLt99Modal();
 
     return;
   }
@@ -619,7 +783,7 @@ function formatText() {
   const keepDuplicates = document.getElementById('keepDuplicatesToggle').checked;
   let parts = keepDuplicates ? allParts : Object.keys(counts);
 
-  /* Apply removals (ONLY when split99 is OFF) */
+  /* Apply removals (now applies regardless of split99) */
   if (removeInput) {
     const removeSet = new Set(removeInput.split(/[\s,]+/).filter(Boolean));
     parts = parts.filter(p => !removeSet.has(p));
@@ -627,6 +791,21 @@ function formatText() {
 
   currentOutputParts = [...parts];
   qty.innerText = `Qty: ${parts.length}`;
+
+  /* ✅ NEW: if split into 99s is ON but less than 99, show modal */
+  if (split99 && parts.length < 99) {
+    showLt99Modal();
+
+    splitMount.style.display = "none";
+    splitMount.innerHTML = "";
+
+    output.style.display = "none";
+    output.innerHTML = "";
+    return;
+  } else {
+    /* if count is now OK, close modal if it was open */
+    if (lt99ModalOpen) hideLt99Modal();
+  }
 
   if (!split99) {
     splitMount.style.display = "none";
@@ -809,7 +988,10 @@ function clearText() {
   document.getElementById('keepDuplicatesToggle').checked = false;
   document.getElementById('split99Toggle').checked = false;
 
-  syncRemoveState(false);
+  syncRemoveState();
+
+  /* hide lt99 modal if open */
+  if (lt99ModalOpen) hideLt99Modal();
 
   formatText();
 }
