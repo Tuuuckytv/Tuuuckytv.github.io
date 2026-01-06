@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sale Pipe Formatter</title>
+  <link rel="icon" href="pipe.png" type="image/png" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --accent: #0f858e;
+      --accent-light: #20a6b3;
+      --bg: #eaf4f5;
+      --text: #333;
+      --glass-bg: #ffffff;
+      --shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Inter", sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+      padding: 20px;
+    }
+
+    /* Hide element helper */
+    .hidden {
+      display: none !important;
+    }
+
+    /* === RAINING PIPES === */
+    .pipe-background {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .pipe {
+      position: absolute;
+      width: 30px;
+      height: auto;
+      animation: fall linear infinite;
+      opacity: 0.25;
+    }
+
+    @keyframes fall {
+      0% { transform: translateY(-100px); opacity: 0; }
+      10% { opacity: 0.25; }
+      100% { transform: translateY(110vh); opacity: 0.25; }
+    }
+
+    /* === BUTTONS === */
+    .button {
+      padding: 0.75em 1.6em;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      color: var(--accent);
+      transition: all 0.4s ease;
+      font-size: 14px;
+      position: relative;
+      overflow: hidden;
+      outline: 2px solid var(--accent);
+      background: transparent;
+      display: inline-block;
+    }
+
+    .button:hover {
+      color: #fff;
+      transform: scale(1.05);
+      outline: 2px solid var(--accent-light);
+      box-shadow: 2px 4px 10px -2px #0d6c75;
+    }
+
+    .button::before {
+      content: "";
+      position: absolute;
+      left: -50px;
+      top: 0;
+      width: 0;
+      height: 100%;
+      background-color: var(--accent);
+      transform: skewX(45deg);
+      z-index: -1;
+      transition: width 0.5s ease;
+    }
+
+    .button:hover::before { width: 250%; }
+
+    .menu-buttons {
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      z-index: 10;
+      display: flex;
+      gap: 10px;
+    }
+
+    .export-btn {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      z-index: 10;
+    }
+
+    /* === MOTIVATION SCROLLER === */
+    .headline-scroller {
+      position: fixed;
+      top: 120px;
+      left: 0;
+      right: 0;
+      width: 100%;
+      overflow: hidden;
+      z-index: 2;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      color: var(--accent);
+      font-weight: 600;
+      font-size: 16px;
+      white-space: nowrap;
+    }
+
+    .headline-text {
+      display: inline-block;
+      will-change: transform;
+      white-space: nowrap;
+    }
+
+    /* === MAIN CONTAINER === */
+    .container {
+      position: relative;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--glass-bg);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 30px 25px;
+      width: 90%;
+      max-width: 520px;
+      text-align: center;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: fadeIn 0.6s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translate(-50%, -48%); }
+      to { opacity: 1; transform: translate(-50%, -50%); }
+    }
+
+    h2 {
+      margin-bottom: 8px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    p {
+      margin-top: 0;
+      font-size: 14px;
+      color: #333;
+    }
+
+    #qtyMarker {
+      align-self: flex-start;
+      font-size: 14px;
+      color: #333;
+      margin-bottom: 5px;
+    }
+
+    /* === HIDE CARET AND AUTOFOCUS === */
+    #inputText {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border: 1px solid #000;
+      border-radius: 8px;
+      outline: none;
+      text-align: center;
+      background: #fff;
+      color: #000;
+      caret-color: transparent;
+    }
+
+    #inputText:focus {
+      outline: none;
+    }
+
+    .output-container {
+      margin-top: 20px;
+      max-height: 150px;
+      overflow-y: auto;
+      border: 1px solid #000;
+      padding: 12px;
+      background: #fff;
+      text-align: center;
+      font-weight: 600;
+      font-size: 16px;
+      word-break: break-word;
+      border-radius: 10px;
+      display: none;
+      width: 100%;
+      color: var(--accent);
+    }
+
+    .button-container {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    /* === MODALS === */
+    .remove-modal, .duplicate-modal {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      padding: 15px;
+      z-index: 3;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+      position: absolute;
+    }
+
+    .remove-modal.visible, .duplicate-modal.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .remove-modal {
+      top: 0;
+      left: 50%;
+      transform: translate(-50%, -120%);
+      width: 260px;
+      text-align: center;
+    }
+
+    .duplicate-modal {
+      top: 50%;
+      right: -270px;
+      transform: translateY(-50%);
+      width: 260px;
+      text-align: left;
+      padding: 15px 15px 28px; /* extra bottom padding so button doesn't hug edge */
+    }
+
+    .duplicate-modal h4 {
+      margin: 0 0 8px;
+      font-size: 14px;
+      color: var(--accent);
+    }
+
+    #duplicateList {
+      font-size: 13px;
+      color: #333;
+      max-height: 120px;
+      overflow-y: auto;
+    }
+
+    .toggle-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 8px;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 28px;
+    }
+
+    .switch input { opacity: 0; width: 0; height: 0; }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #ccc;
+      transition: 0.4s;
+      border-radius: 28px;
+    }
+
+    .slider:before {
+      content: "";
+      position: absolute;
+      height: 20px;
+      width: 20px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: 0.4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider { background-color: var(--accent); }
+    input:checked + .slider:before { transform: translateX(22px); }
+
+    footer {
+      position: fixed;
+      bottom: 10px;
+      right: 15px;
+      font-size: 12px;
+      color: #555;
+      font-style: italic;
+      z-index: 2;
+    }
+
+    /* === CLICKABLE NUMBER TOKENS === */
+    .num-token,
+    .dup-token,
+    .dup-line-token {
+      cursor: pointer;
+      padding: 2px 4px;
+      border-radius: 4px;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .num-token:hover,
+    .dup-token:hover,
+    .dup-line-token:hover {
+      background-color: rgba(15,133,142,0.1);
+    }
+
+    .num-token.highlight,
+    .dup-token.highlight,
+    .dup-line-token.highlight {
+      background-color: var(--accent-light);
+      color: #fff;
+    }
+
+    /* === DUPLICATE NUMBERS LINE SCROLL AREA === */
+    #duplicateCopyWrapper {
+      max-width: 240px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px; /* space between label, list, and button */
+    }
+
+    #duplicateCopyText {
+      max-height: 200px;
+      max-width: 240px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      white-space: normal;
+      display: block;
+      padding: 6px 8px;
+      padding-right: 12px; /* room for scrollbar */
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      background: #fff;
+    }
+
+    /* Make each duplicate token wrap nicely */
+    .dup-line-token {
+      display: inline-block;
+      margin-right: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="menu-buttons">
+    <button class="button" onclick="location.href='/'">Home</button>
+    <button class="button" onclick="location.href='date'">Dates</button>
+    <button class="button" onclick="location.href='pipes'">Pipe Formatter</button>
+  </div>
+
+  <button class="button export-btn" onclick="exportCSV()">Export CSV</button>
+
+  <div class="pipe-background" id="pipeBackground"></div>
+
+  <div class="headline-scroller">
+    <div class="headline-text" id="headlineText">Loading motivation...</div>
+  </div>
+
+  <div class="container">
+    <div class="remove-modal" id="removeModal">
+      <label for="removeText" style="font-weight:600;">Remove Order Numbers:</label>
+      <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Don’t use | here</div>
+      <input type="text" id="removeText" placeholder="Type numbers to remove" oninput="formatText()" />
+    </div>
+
+    <h2>Paste sales number here</h2>
+    <p>Ensure spaces between each sales number</p>
+    <div id="qtyMarker">Qty: 0</div>
+    <input type="text" id="inputText" placeholder="Enter text here" oninput="formatText()" />
+    <div class="button-container">
+      <button class="button" id="pasteButton" onclick="pasteText()">Paste</button>
+      <button class="button" id="copyButton" onclick="copyText()" style="display:none;">Copy</button>
+      <button class="button" id="clearButton" onclick="clearText()" style="display:none;">Clear</button>
+    </div>
+    <div class="output-container" id="outputText"></div>
+
+    <div class="duplicate-modal" id="duplicateModal">
+      <h4>Removed Duplicates</h4>
+      <div class="toggle-container">
+        <span class="toggle-label">Keep Duplicates</span>
+        <label class="switch">
+          <input type="checkbox" id="keepDuplicatesToggle" onchange="formatText()">
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div id="duplicateList">None</div>
+
+      <!-- Conditional duplicate copy box -->
+      <div id="duplicateCopyWrapper" class="hidden" style="margin-top:10px; font-size:12px;">
+        <div id="duplicateCopyLabel" style="font-weight:600;">
+          Duplicate numbers line:
+        </div>
+        <div id="duplicateCopyText">
+          None
+        </div>
+        <button
+          class="button"
+          type="button"
+          style="padding:4px 10px; font-size:11px;"
+          onclick="copyDuplicates()">
+          Copy duplicates
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <footer>Please note qty may not reflect the actual number</footer>
+
+<script>
+let itemCounts = {};
+let currentOutputParts = [];
+let duplicateLine = "";
+
+/* Show / hide elements */
+function show(el, showFlag) {
+  if (showFlag) el.classList.add("visible");
+  else el.classList.remove("visible");
+}
+
+/* Main formatter */
+function formatText() {
+  const input = document.getElementById('inputText').value;
+  const removeInput = document.getElementById('removeText').value.trim();
+  const output = document.getElementById('outputText');
+  const copyBtn = document.getElementById('copyButton');
+  const clearBtn = document.getElementById('clearButton');
+  const pasteBtn = document.getElementById('pasteButton');
+  const qty = document.getElementById('qtyMarker');
+  const removeModal = document.getElementById('removeModal');
+  const duplicateModal = document.getElementById('duplicateModal');
+  const duplicateListDiv = document.getElementById('duplicateList');
+
+  if (input.trim() === "") {
+    output.style.display = "none";
+    copyBtn.style.display = "none";
+    clearBtn.style.display = "none";
+    pasteBtn.style.display = "inline-block";
+    qty.innerText = "Qty: 0";
+    show(removeModal, false);
+    show(duplicateModal, false);
+
+    duplicateListDiv.innerText = "None";
+    renderDuplicateLine([]);
+
+    currentOutputParts = [];
+    duplicateLine = "";
+
+    return;
+  }
+
+  pasteBtn.style.display = "none";
+  copyBtn.style.display = "inline-block";
+  clearBtn.style.display = "inline-block";
+  output.style.display = "block";
+  show(removeModal, true);
+  show(duplicateModal, true);
+
+  /* Pipes become spaces */
+  let allParts = input
+    .replace(/\|/g, ' ')
+    .trim()
+    .split(/\s+/)
+    .filter(p => p);
+
+  /* Count occurrences */
+  const counts = {};
+  allParts.forEach(p => counts[p] = (counts[p] || 0) + 1);
+  itemCounts = counts;
+
+  /* Build duplicate panel entries */
+  const duplicateBlocks = [];
+  for (const n in counts) {
+    if (counts[n] > 1) {
+      duplicateBlocks.push(`
+        <div>
+          <span class="dup-token" data-num="${n}" onclick="highlightNumber('${n}')">
+            ${n}
+          </span><br>
+          removed x${counts[n]-1}<br>
+          appears x${counts[n]}
+        </div>
+      `);
+    }
+  }
+
+  duplicateListDiv.innerHTML =
+    duplicateBlocks.length ? duplicateBlocks.join('') : "None";
+
+  /* Build duplicate line */
+  const duplicateNumbers = Object.keys(counts).filter(n => counts[n] > 1);
+  duplicateLine = duplicateNumbers.join('|');
+
+  /* Render duplicate line + hide if empty */
+  renderDuplicateLine(duplicateNumbers);
+
+  /* If keepDuplicates toggle is on */
+  const keepDuplicates = document.getElementById('keepDuplicatesToggle').checked;
+  let parts = keepDuplicates ? allParts : Object.keys(counts);
+
+  /* Apply removals */
+  if (removeInput) {
+    const removeSet = new Set(removeInput.split(/[\s,]+/).filter(Boolean));
+    parts = parts.filter(p => !removeSet.has(p));
+  }
+
+  currentOutputParts = [...parts];
+  renderOutput(parts);
+
+  qty.innerText = `Qty: ${parts.length}`;
+}
+
+/* ========== RENDER OUTPUT TOKENS ========== */
+function renderOutput(parts) {
+  const outEl = document.getElementById('outputText');
+  outEl.innerHTML = "";
+  parts.forEach((p, idx) => {
+    const span = document.createElement('span');
+    span.className = 'num-token';
+    span.dataset.num = p;
+    span.textContent = p;
+    span.onclick = () => highlightNumber(p);
+    outEl.appendChild(span);
+    if (idx < parts.length-1)
+      outEl.appendChild(document.createTextNode('|'));
+  });
+}
+
+/* ========== RENDER DUPLICATE LINE (WITH HIDE OPTION) ========== */
+function renderDuplicateLine(dups) {
+  const wrapper = document.getElementById('duplicateCopyWrapper');
+  const container = document.getElementById('duplicateCopyText');
+  
+  /* If no duplicates → hide whole section */
+  if (!dups.length) {
+    wrapper.classList.add("hidden");
+    container.textContent = "None";
+    return;
+  }
+
+  /* Show section */
+  wrapper.classList.remove("hidden");
+
+  /* Render tokens */
+  container.innerHTML = "";
+  dups.forEach((n, idx) => {
+    const span = document.createElement('span');
+    span.className = 'dup-line-token';
+    span.dataset.num = n;
+    span.textContent = n;
+    span.onclick = () => highlightNumber(n);
+    container.appendChild(span);
+    if (idx < dups.length-1)
+      container.appendChild(document.createTextNode('|'));
+  });
+}
+
+/* ========== HIGHLIGHT ALL MATCHING NUMBERS ========== */
+function highlightNumber(value) {
+  const tokens = document.querySelectorAll('.num-token, .dup-token, .dup-line-token');
+  tokens.forEach(t => {
+    t.classList.toggle('highlight', t.dataset.num === value);
+  });
+}
+
+/* Copy duplicate line */
+function copyDuplicates() {
+  if (duplicateLine)
+    navigator.clipboard.writeText(duplicateLine);
+}
+
+/* === RAINING PIPES & MARQUEE === */
+window.onload = () => {
+  const container = document.getElementById('pipeBackground');
+  for (let i = 0; i < 50; i++) {
+    const pipe = document.createElement('img');
+    pipe.src = 'pipe.png';
+    pipe.className = 'pipe';
+    pipe.style.left = `${Math.random()*window.innerWidth}px`;
+    pipe.style.top = `${-Math.random()*1000}px`;
+    pipe.style.animationDuration = `${8 + Math.random()*4}s`;
+    pipe.style.animationDelay = `${Math.random()*5}s`;
+    container.appendChild(pipe);
+  }
+
+  fetch('motivation.txt')
+    .then(r => r.text())
+    .then(data => {
+      const lines = data.split('\n').filter(l => l.trim());
+      const msg = lines.length ? lines[Math.floor(Math.random()*lines.length)] : "Stay positive. Keep pushing forward!";
+      startMarquee(msg);
+    })
+    .catch(() => startMarquee("Stay positive. Keep pushing forward!"));
+
+  const input = document.getElementById('inputText');
+  input.focus();
+  input.style.caretColor = "transparent";
+};
+
+function startMarquee(text) {
+  const el = document.getElementById('headlineText');
+  el.textContent = text;
+
+  const scroller = document.querySelector('.headline-scroller');
+  const scrollWidth = scroller.offsetWidth;
+  const textWidth = el.offsetWidth;
+
+  el.animate([
+    { transform: `translateX(${scrollWidth}px)` },
+    { transform: `translateX(-${textWidth}px)` }
+  ], {
+    duration: 18000,
+    iterations: Infinity,
+    easing: 'linear'
+  });
+}
+
+/* Paste from clipboard */
+async function pasteText() {
+  try {
+    const text = await navigator.clipboard.readText();
+    if (text) {
+      document.getElementById('inputText').value = text
+        .replace(/[\n\r\t]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+      formatText();
+    }
+  } catch {
+    alert("Clipboard access denied.");
+  }
+}
+
+/* Copy main output */
+function copyText() {
+  if (currentOutputParts.length)
+    navigator.clipboard.writeText(currentOutputParts.join('|'));
+}
+
+/* Clear input */
+function clearText() {
+  document.getElementById('inputText').value = "";
+  document.getElementById('removeText').value = "";
+  document.getElementById('keepDuplicatesToggle').checked = false;
+  formatText();
+}
+
+/* Export CSV */
+function exportCSV() {
+  const headers = ["Sales number","Duplicated","Removed","Appears"];
+  const rows = [headers];
+
+  for (const [num,count] of Object.entries(itemCounts)) {
+    const dup = count > 1 ? "Yes" : "No";
+    rows.push([num, dup, count>1 ? count-1 : 0, count]);
+  }
+
+  const csv = rows.map(r => r.map(c => `"${c}"`).join(",")).join("\n");
+  const blob = new Blob([csv], { type:"text/csv;charset=utf-8" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = "The_Kyle_File.csv";
+  link.click();
+}
+</script>
+
+</body>
+</html>
