@@ -661,6 +661,7 @@ function showLt99Modal() {
   setTimeout(() => closeBtn.focus(), 0);
 }
 
+/* ✅ UPDATED: when closing this modal, also turn OFF the split99 toggle */
 function hideLt99Modal() {
   const modal = document.getElementById('lt99Modal');
   const backdrop = document.getElementById('lt99Backdrop');
@@ -671,6 +672,13 @@ function hideLt99Modal() {
   backdrop.setAttribute('aria-hidden', 'true');
 
   lt99ModalOpen = false;
+
+  // ✅ Turn off Split into 99s when modal closes
+  const splitToggle = document.getElementById('split99Toggle');
+  if (splitToggle) splitToggle.checked = false;
+
+  // ✅ Re-render outputs immediately based on current state (now split99 is off)
+  formatText();
 
   const input = document.getElementById('inputText');
   if (input) input.focus();
@@ -763,8 +771,8 @@ function formatText() {
           <span class="dup-token" data-num="${n}" onclick="highlightNumber('${n}')">
             ${n}
           </span><br>
-          removed x${counts[n]-1}<br>
-          appears x${counts[n]}
+          Removed x${counts[n]-1}<br>
+          Appears x${counts[n]}
         </div>
       `);
     }
@@ -792,7 +800,7 @@ function formatText() {
   currentOutputParts = [...parts];
   qty.innerText = `Qty: ${parts.length}`;
 
-  /* ✅ NEW: if split into 99s is ON but less than 99, show modal */
+  /* ✅ if split into 99s is ON but less than 99, show modal */
   if (split99 && parts.length < 99) {
     showLt99Modal();
 
