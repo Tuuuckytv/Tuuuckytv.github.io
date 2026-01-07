@@ -86,14 +86,8 @@
     .hidden { display: none !important; }
 
     /* ✅ Clean scrollbars (Chrome/Edge/Safari) */
-    *::-webkit-scrollbar {
-      width: var(--sb-size);
-      height: var(--sb-size);
-    }
-    *::-webkit-scrollbar-track {
-      background: var(--sb-track);
-      border-radius: 999px;
-    }
+    *::-webkit-scrollbar { width: var(--sb-size); height: var(--sb-size); }
+    *::-webkit-scrollbar-track { background: var(--sb-track); border-radius: 999px; }
     *::-webkit-scrollbar-thumb {
       background: var(--sb-thumb);
       border-radius: 999px;
@@ -107,9 +101,104 @@
     }
 
     /* ✅ Clean scrollbars (Firefox) */
-    * {
-      scrollbar-width: thin;
-      scrollbar-color: var(--sb-thumb) var(--sb-track);
+    * { scrollbar-width: thin; scrollbar-color: var(--sb-thumb) var(--sb-track); }
+
+    /* ✅ FULLSCREEN "SPLIT TEXT" TOAST (your current one, unchanged) */
+    .toast {
+      position: fixed;
+      inset: 0;
+      z-index: 3000;
+      pointer-events: none;
+      display: grid;
+      place-items: center;
+      opacity: 0;
+      transition: opacity 120ms ease;
+    }
+
+    .toast .toast-inner {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background: color-mix(in srgb, var(--accent) 45%, transparent);
+      backdrop-filter: blur(2px);
+      -webkit-backdrop-filter: blur(2px);
+      opacity: 0;
+    }
+
+    .toast.play { opacity: 1; }
+    .toast.play .toast-inner { animation: toastOverlayFade 900ms ease forwards; }
+
+    @keyframes toastOverlayFade {
+      0%   { opacity: 0; }
+      12%  { opacity: 1; }
+      60%  { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    .toast-split {
+      position: relative;
+      z-index: 1;
+      font-weight: 900;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-size: clamp(28px, 5vw, 64px);
+      color: #fff;
+      text-shadow: 0 10px 30px rgba(0,0,0,0.35);
+      padding: 10px 16px;
+      text-align: center;
+      user-select: none;
+    }
+
+    .toast-half {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      opacity: 0;
+      transform: translateX(0);
+      will-change: transform, opacity;
+    }
+
+    .toast-half.left  { clip-path: inset(0 50% 0 0); }
+    .toast-half.right { clip-path: inset(0 0 0 50%); }
+
+    .toast-base {
+      position: relative;
+      opacity: 0;
+      transform: scale(0.98);
+      will-change: opacity, transform;
+    }
+
+    .toast.play .toast-base { animation: toastBasePop 260ms ease forwards; }
+    @keyframes toastBasePop {
+      0%   { opacity: 0; transform: scale(0.98); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    .toast.play .toast-half.left  { animation: toastSplitLeft 820ms ease forwards; }
+    .toast.play .toast-half.right { animation: toastSplitRight 820ms ease forwards; }
+
+    @keyframes toastSplitLeft {
+      0%   { opacity: 0; transform: translateX(0); }
+      22%  { opacity: 0; transform: translateX(0); }
+      28%  { opacity: 1; transform: translateX(0); }
+      100% { opacity: 0; transform: translateX(-260px); }
+    }
+
+    @keyframes toastSplitRight {
+      0%   { opacity: 0; transform: translateX(0); }
+      22%  { opacity: 0; transform: translateX(0); }
+      28%  { opacity: 1; transform: translateX(0); }
+      100% { opacity: 0; transform: translateX(260px); }
+    }
+
+    .toast.play .toast-base { animation: toastBaseHide 820ms ease forwards; }
+    @keyframes toastBaseHide {
+      0%   { opacity: 1; }
+      24%  { opacity: 1; }
+      30%  { opacity: 0; }
+      100% { opacity: 0; }
     }
 
     /* === RAINING PIPES === */
@@ -185,7 +274,6 @@
       gap: 10px;
     }
 
-    /* Right-side header controls (Export + Dark mode toggle) */
     .header-right {
       position: fixed;
       top: 15px;
@@ -216,11 +304,7 @@
       white-space: nowrap;
     }
 
-    .headline-text {
-      display: inline-block;
-      will-change: transform;
-      white-space: nowrap;
-    }
+    .headline-text { display: inline-block; will-change: transform; white-space: nowrap; }
 
     /* === MAIN CONTAINER === */
     .container {
@@ -248,27 +332,11 @@
       to { opacity: 1; transform: translate(-50%, -50%); }
     }
 
-    h2 {
-      margin-bottom: 8px;
-      font-weight: 700;
-      color: var(--accent);
-    }
+    h2 { margin-bottom: 8px; font-weight: 700; color: var(--accent); }
+    p { margin-top: 0; font-size: 14px; color: var(--text); opacity: 0.95; }
 
-    p {
-      margin-top: 0;
-      font-size: 14px;
-      color: var(--text);
-      opacity: 0.95;
-    }
+    #qtyMarker { align-self: flex-start; font-size: 14px; color: var(--text); margin-bottom: 5px; }
 
-    #qtyMarker {
-      align-self: flex-start;
-      font-size: 14px;
-      color: var(--text);
-      margin-bottom: 5px;
-    }
-
-    /* === HIDE CARET AND AUTOFOCUS === */
     #inputText {
       width: 100%;
       padding: 12px;
@@ -299,10 +367,8 @@
       display: none;
       width: 100%;
       color: var(--accent);
-
       overflow-wrap: anywhere;
       word-break: break-word;
-
       transition: background-color 0.25s ease, border-color 0.25s ease;
     }
 
@@ -326,6 +392,21 @@
       justify-content: center;
     }
 
+    /* ✅ Group label for split outputs */
+    .group-label {
+      width: 100%;
+      margin-top: 12px;
+      margin-bottom: 4px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-align: left;
+      padding: 0 2px;
+      user-select: none;
+    }
+
     /* === MODALS === */
     .remove-modal, .duplicate-modal {
       background: var(--glass-bg);
@@ -340,12 +421,8 @@
       border: 1px solid var(--panel-border);
     }
 
-    .remove-modal.visible, .duplicate-modal.visible {
-      opacity: 1;
-      visibility: visible;
-    }
+    .remove-modal.visible, .duplicate-modal.visible { opacity: 1; visibility: visible; }
 
-    /* left panel */
     .remove-modal {
       top: 50%;
       left: 0;
@@ -354,7 +431,6 @@
       text-align: center;
     }
 
-    /* right panel */
     .duplicate-modal {
       top: 50%;
       right: 0;
@@ -364,18 +440,9 @@
       padding: 15px 15px 28px;
     }
 
-    .duplicate-modal h4 {
-      margin: 0 0 8px;
-      font-size: 14px;
-      color: var(--accent);
-    }
+    .duplicate-modal h4 { margin: 0 0 8px; font-size: 14px; color: var(--accent); }
 
-    #duplicateList {
-      font-size: 13px;
-      color: var(--text);
-      max-height: 120px;
-      overflow-y: auto;
-    }
+    #duplicateList { font-size: 13px; color: var(--text); max-height: 120px; overflow-y: auto; }
 
     .toggle-container {
       display: flex;
@@ -386,12 +453,7 @@
       padding-bottom: 8px;
     }
 
-    .switch {
-      position: relative;
-      display: inline-block;
-      width: 50px;
-      height: 28px;
-    }
+    .switch { position: relative; display: inline-block; width: 50px; height: 28px; }
     .switch input { opacity: 0; width: 0; height: 0; }
 
     .slider {
@@ -429,24 +491,16 @@
     }
 
     /* === CLICKABLE NUMBER TOKENS === */
-    .num-token,
-    .dup-token,
-    .dup-line-token {
+    .num-token, .dup-token, .dup-line-token {
       cursor: pointer;
       padding: 2px 4px;
       border-radius: 4px;
       transition: background-color 0.2s ease, color 0.2s ease;
     }
 
-    .num-token:hover,
-    .dup-token:hover,
-    .dup-line-token:hover {
-      background-color: var(--token-hover);
-    }
+    .num-token:hover, .dup-token:hover, .dup-line-token:hover { background-color: var(--token-hover); }
 
-    .num-token.highlight,
-    .dup-token.highlight,
-    .dup-line-token.highlight {
+    .num-token.highlight, .dup-token.highlight, .dup-line-token.highlight {
       background-color: var(--accent-light);
       color: #fff;
     }
@@ -476,10 +530,7 @@
       transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
     }
 
-    .dup-line-token {
-      display: inline-block;
-      margin-right: 4px;
-    }
+    .dup-line-token { display: inline-block; margin-right: 4px; }
 
     /* ===== Windows 95 themed "Less than 99" modal ===== */
     .w95-backdrop {
@@ -521,26 +572,20 @@
 
     .w95-title { font-size: 13px; }
 
-    /* ✅ FIXED: Win95 close (X) button coloring */
     .w95-x {
       width: 26px;
       height: 22px;
       padding: 0;
       border: 2px solid var(--w95-border);
-
       background: #dcdcdc;
       color: #111;
-
       font-weight: 800;
       font-size: 14px;
       line-height: 1;
-
       cursor: pointer;
-
       display: inline-flex;
       align-items: center;
       justify-content: center;
-
       box-shadow:
         0 0 0 1px var(--w95-inset1) inset,
         0 0 0 2px var(--w95-inset2) inset;
@@ -555,20 +600,10 @@
       transform: translateY(1px);
     }
 
-    body.dark .w95-x {
-      background: var(--glass-bg);
-      color: var(--text);
-    }
+    body.dark .w95-x { background: var(--glass-bg); color: var(--text); }
+    body.dark .w95-x:hover { background: color-mix(in srgb, var(--glass-bg) 80%, #ffffff 20%); }
 
-    body.dark .w95-x:hover {
-      background: color-mix(in srgb, var(--glass-bg) 80%, #ffffff 20%);
-    }
-
-    .w95-body {
-      padding: 18px 16px 16px;
-      text-align: center;
-      color: var(--text);
-    }
+    .w95-body { padding: 18px 16px 16px; text-align: center; color: var(--text); }
 
     .w95-message {
       font-size: 16px;
@@ -584,8 +619,42 @@
       font-weight: 700;
       letter-spacing: 1px;
       text-transform: uppercase;
-
       cursor: pointer;
+      background: #fff;
+      color: var(--accent);
+      border: 2px solid var(--w95-border);
+      box-shadow:
+        0 0 0 1px var(--w95-inset1) inset,
+        0 0 0 2px var(--w95-inset2) inset;
+      border-radius: 4px;
+    }
+
+    body.dark .w95-close-big { background: var(--input-bg); color: var(--accent-light); }
+
+    .w95-close-big:active {
+      box-shadow:
+        0 0 0 1px var(--w95-inset2) inset,
+        0 0 0 2px var(--w95-inset1) inset;
+      transform: translateY(1px);
+    }
+
+    /* ✅ Confirm Clear modal buttons (Win95-ish) */
+    .w95-btn-row {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 10px;
+    }
+
+    .w95-btn {
+      min-width: 130px;
+      padding: 10px 12px;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+
       background: #fff;
       color: var(--accent);
 
@@ -596,12 +665,9 @@
       border-radius: 4px;
     }
 
-    body.dark .w95-close-big {
-      background: var(--input-bg);
-      color: var(--accent-light);
-    }
+    body.dark .w95-btn { background: var(--input-bg); color: var(--accent-light); }
 
-    .w95-close-big:active {
+    .w95-btn:active {
       box-shadow:
         0 0 0 1px var(--w95-inset2) inset,
         0 0 0 2px var(--w95-inset1) inset;
@@ -619,7 +685,7 @@
       transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
     }
 
-    /* ===== Dark mode toggle label ===== */
+    /* Dark mode toggle label */
     .toggle-pill {
       display: flex;
       align-items: center;
@@ -639,7 +705,6 @@
       white-space: nowrap;
     }
 
-    /* ✅ OPTIONAL: on smaller screens, bring panels under the box */
     @media (max-width: 980px) {
       body { overflow: auto; }
       .remove-modal, .duplicate-modal {
@@ -662,7 +727,6 @@
     <button class="button" onclick="location.href='pipes'">Pipe Formatter</button>
   </div>
 
-  <!-- ✅ Right side controls: Export + Dark mode toggle -->
   <div class="header-right">
     <button class="button" onclick="exportCSV()">Export CSV</button>
 
@@ -695,13 +759,11 @@
     <div class="button-container">
       <button class="button" id="pasteButton" onclick="pasteText()">Paste</button>
       <button class="button" id="copyButton" onclick="copyText()" style="display:none;">Copy</button>
-      <button class="button" id="clearButton" onclick="clearText()" style="display:none;">Clear</button>
+      <button class="button" id="clearButton" onclick="requestClear()" style="display:none;">Clear</button>
     </div>
 
-    <!-- ORIGINAL single output -->
     <div class="output-container" id="outputText"></div>
 
-    <!-- Split outputs mount -->
     <div id="splitOutputsMount"></div>
 
     <div class="duplicate-modal" id="duplicateModal">
@@ -729,9 +791,7 @@
         <div id="duplicateCopyLabel" style="font-weight:600;">
           Duplicate numbers line:
         </div>
-        <div id="duplicateCopyText">
-          None
-        </div>
+        <div id="duplicateCopyText">None</div>
         <button
           class="button"
           type="button"
@@ -745,7 +805,6 @@
 
   <!-- === Less than 99 modal (Win95 style) === -->
   <div id="lt99Backdrop" class="w95-backdrop hidden" aria-hidden="true"></div>
-
   <div
     id="lt99Modal"
     class="w95-modal hidden"
@@ -761,19 +820,47 @@
 
     <div class="w95-body">
       <div id="lt99Msg" class="w95-message">Less than 99 dumb dumb</div>
+      <button id="lt99CloseBtn" class="w95-close-big" type="button" onclick="hideLt99Modal()">CLOSE</button>
+    </div>
+  </div>
 
-      <button
-        id="lt99CloseBtn"
-        class="w95-close-big"
-        type="button"
-        onclick="hideLt99Modal()"
-      >
-        CLOSE
-      </button>
+  <!-- ✅ Confirm Clear modal (Win95 style) -->
+  <div id="clearBackdrop" class="w95-backdrop hidden" aria-hidden="true"></div>
+  <div
+    id="clearModal"
+    class="w95-modal hidden"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="clearTitle"
+    aria-describedby="clearMsg"
+  >
+    <div class="w95-titlebar">
+      <div id="clearTitle" class="w95-title">Confirm</div>
+      <button class="w95-x" type="button" onclick="hideClearModal()" aria-label="Close">✕</button>
+    </div>
+
+    <div class="w95-body">
+      <div id="clearMsg" class="w95-message">Clear everything?</div>
+
+      <div class="w95-btn-row">
+        <button class="w95-btn" type="button" onclick="confirmClear()">Yes, Clear</button>
+        <button class="w95-btn" type="button" onclick="hideClearModal()">Cancel</button>
+      </div>
     </div>
   </div>
 
   <footer>Please note qty may not reflect the actual number</footer>
+
+  <!-- ✅ FULLSCREEN SPLIT TOAST -->
+  <div id="toast" class="toast hidden" aria-hidden="true">
+    <div class="toast-inner"></div>
+
+    <div class="toast-split" aria-hidden="true">
+      <div id="toastBase" class="toast-base">Copied!</div>
+      <div id="toastLeft" class="toast-half left">Copied!</div>
+      <div id="toastRight" class="toast-half right">Copied!</div>
+    </div>
+  </div>
 
 <script>
 let itemCounts = {};
@@ -783,12 +870,42 @@ let duplicateLine = "";
 /* Less-than-99 modal state */
 let lt99ModalOpen = false;
 
+/* Clear confirm modal state */
+let clearModalOpen = false;
+
 function show(el, showFlag) {
   if (showFlag) el.classList.add("visible");
   else el.classList.remove("visible");
 }
 
-/* Keep remove box ALWAYS enabled (Split into 99s should not interrupt it) */
+/* ✅ Fullscreen split toast helper */
+function showToast(msg="Copied!") {
+  const toast = document.getElementById("toast");
+  const base = document.getElementById("toastBase");
+  const left = document.getElementById("toastLeft");
+  const right = document.getElementById("toastRight");
+  if (!toast || !base || !left || !right) return;
+
+  base.textContent = msg;
+  left.textContent = msg;
+  right.textContent = msg;
+
+  toast.classList.remove("hidden");
+  toast.setAttribute("aria-hidden", "false");
+
+  toast.classList.remove("play");
+  void toast.offsetWidth;
+  toast.classList.add("play");
+
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => {
+    toast.classList.add("hidden");
+    toast.setAttribute("aria-hidden", "true");
+    toast.classList.remove("play");
+  }, 1150);
+}
+
+/* Keep remove box ALWAYS enabled */
 function syncRemoveState() {
   const removeModal = document.getElementById('removeModal');
   const removeText = document.getElementById('removeText');
@@ -809,7 +926,7 @@ function toggleDarkMode() {
   try { localStorage.setItem('sp_darkmode', isDark ? '1' : '0'); } catch {}
 }
 
-/* Win95 modal show/hide */
+/* Win95 lt99 modal show/hide */
 function showLt99Modal() {
   const modal = document.getElementById('lt99Modal');
   const backdrop = document.getElementById('lt99Backdrop');
@@ -824,7 +941,6 @@ function showLt99Modal() {
   setTimeout(() => closeBtn.focus(), 0);
 }
 
-/* ✅ UPDATED: when closing this modal, also turn OFF the split99 toggle */
 function hideLt99Modal() {
   const modal = document.getElementById('lt99Modal');
   const backdrop = document.getElementById('lt99Backdrop');
@@ -836,23 +952,73 @@ function hideLt99Modal() {
 
   lt99ModalOpen = false;
 
-  // ✅ Turn off Split into 99s when modal closes
   const splitToggle = document.getElementById('split99Toggle');
   if (splitToggle) splitToggle.checked = false;
 
-  // ✅ Re-render outputs immediately based on current state (now split99 is off)
   formatText();
 
   const input = document.getElementById('inputText');
   if (input) input.focus();
 }
 
-/* Close modal with Enter */
+/* ✅ Confirm Clear modal show/hide */
+function showClearModal() {
+  const modal = document.getElementById('clearModal');
+  const backdrop = document.getElementById('clearBackdrop');
+
+  modal.classList.remove('hidden');
+  backdrop.classList.remove('hidden');
+  modal.setAttribute('aria-hidden', 'false');
+  backdrop.setAttribute('aria-hidden', 'false');
+
+  clearModalOpen = true;
+}
+
+function hideClearModal() {
+  const modal = document.getElementById('clearModal');
+  const backdrop = document.getElementById('clearBackdrop');
+
+  modal.classList.add('hidden');
+  backdrop.classList.add('hidden');
+  modal.setAttribute('aria-hidden', 'true');
+  backdrop.setAttribute('aria-hidden', 'true');
+
+  clearModalOpen = false;
+
+  const input = document.getElementById('inputText');
+  if (input) input.focus();
+}
+
+/* ✅ Clear button now asks first */
+function requestClear() {
+  // if everything is already empty, just do nothing
+  const hasInput = document.getElementById('inputText').value.trim().length > 0;
+  const hasRemove = document.getElementById('removeText').value.trim().length > 0;
+  const hasAny = hasInput || hasRemove ||
+    document.getElementById('keepDuplicatesToggle').checked ||
+    document.getElementById('split99Toggle').checked;
+
+  if (!hasAny) return;
+
+  showClearModal();
+}
+
+function confirmClear() {
+  hideClearModal();
+  clearText(true);
+}
+
+/* Close lt99 modal or clear modal with Enter, close with Escape */
 document.addEventListener('keydown', (e) => {
-  if (!lt99ModalOpen) return;
-  if (e.key === 'Enter') {
-    e.preventDefault();
-    hideLt99Modal();
+  if (lt99ModalOpen) {
+    if (e.key === 'Enter') { e.preventDefault(); hideLt99Modal(); }
+    if (e.key === 'Escape') { e.preventDefault(); hideLt99Modal(); }
+    return;
+  }
+
+  if (clearModalOpen) {
+    if (e.key === 'Enter') { e.preventDefault(); confirmClear(); }
+    if (e.key === 'Escape') { e.preventDefault(); hideClearModal(); }
   }
 });
 
@@ -874,10 +1040,8 @@ function formatText() {
 
   const split99 = document.getElementById('split99Toggle').checked;
 
-  /* ✅ Always keep remove enabled */
   syncRemoveState();
 
-  /* ✅ Remove input always applies (even when split99 is ON) */
   const removeInput = document.getElementById('removeText').value.trim();
 
   if (input.trim() === "") {
@@ -900,9 +1064,7 @@ function formatText() {
     currentOutputParts = [];
     duplicateLine = "";
 
-    /* hide lt99 modal if open */
     if (lt99ModalOpen) hideLt99Modal();
-
     return;
   }
 
@@ -913,19 +1075,16 @@ function formatText() {
   show(removeModal, true);
   show(duplicateModal, true);
 
-  /* Pipes become spaces */
   let allParts = input
     .replace(/\|/g, ' ')
     .trim()
     .split(/\s+/)
     .filter(p => p);
 
-  /* Count occurrences */
   const counts = {};
   allParts.forEach(p => counts[p] = (counts[p] || 0) + 1);
   itemCounts = counts;
 
-  /* Build duplicate panel entries */
   const duplicateBlocks = [];
   for (const n in counts) {
     if (counts[n] > 1) {
@@ -944,26 +1103,21 @@ function formatText() {
   duplicateListDiv.innerHTML =
     duplicateBlocks.length ? duplicateBlocks.join('') : "None";
 
-  /* Build duplicate line */
   const duplicateNumbers = Object.keys(counts).filter(n => counts[n] > 1);
   duplicateLine = duplicateNumbers.join('|');
-
   renderDuplicateLine(duplicateNumbers);
 
-  /* If keepDuplicates toggle is on */
   const keepDuplicates = document.getElementById('keepDuplicatesToggle').checked;
   let parts = keepDuplicates ? allParts : Object.keys(counts);
 
-  /* Apply removals (now applies regardless of split99) */
   if (removeInput) {
-    const removeSet = new Set(removeInput.split(/[\s,]+/).filter(Boolean));
+    const removeSet = new Set(removeInput.split(/[\s,|]+/).filter(Boolean));
     parts = parts.filter(p => !removeSet.has(p));
   }
 
   currentOutputParts = [...parts];
   qty.innerText = `Qty: ${parts.length}`;
 
-  /* ✅ if split into 99s is ON but less than 99, show modal */
   if (split99 && parts.length < 99) {
     showLt99Modal();
 
@@ -974,7 +1128,6 @@ function formatText() {
     output.innerHTML = "";
     return;
   } else {
-    /* if count is now OK, close modal if it was open */
     if (lt99ModalOpen) hideLt99Modal();
   }
 
@@ -989,7 +1142,7 @@ function formatText() {
     output.innerHTML = "";
 
     splitMount.style.display = "block";
-    renderSplitOutputs(parts);
+    renderSplitOutputs(parts); // ✅ includes grouping labels now
   }
 }
 
@@ -1008,6 +1161,7 @@ function renderOutput(parts) {
   });
 }
 
+/* ✅ UPDATED: add Group label + group size indicator */
 function renderSplitOutputs(parts) {
   const mount = document.getElementById('splitOutputsMount');
   mount.innerHTML = "";
@@ -1019,6 +1173,12 @@ function renderSplitOutputs(parts) {
   }
 
   groups.forEach((group, idx) => {
+    // ✅ label
+    const label = document.createElement('div');
+    label.className = 'group-label';
+    label.textContent = `Group ${idx + 1} (${group.length})`;
+    mount.appendChild(label);
+
     const outBox = document.createElement('div');
     outBox.className = 'output-container';
     outBox.style.display = "block";
@@ -1041,7 +1201,10 @@ function renderSplitOutputs(parts) {
     copyOne.className = 'button';
     copyOne.type = 'button';
     copyOne.textContent = `Copy ${idx + 1}`;
-    copyOne.onclick = () => navigator.clipboard.writeText(group.join('|'));
+    copyOne.onclick = () => {
+      navigator.clipboard.writeText(group.join('|'));
+      showToast(`Copied ${idx + 1}!`);
+    };
 
     btnWrap.appendChild(copyOne);
 
@@ -1083,19 +1246,18 @@ function highlightNumber(value) {
 }
 
 function copyDuplicates() {
-  if (duplicateLine)
+  if (duplicateLine) {
     navigator.clipboard.writeText(duplicateLine);
+    showToast("Copied duplicates!");
+  }
 }
 
 /* === RAINING PIPES & MARQUEE === */
 window.onload = () => {
-  /* Restore dark mode pref */
   try {
     const saved = localStorage.getItem('sp_darkmode');
     applyDarkMode(saved === '1');
-  } catch {
-    applyDarkMode(false);
-  }
+  } catch { applyDarkMode(false); }
 
   const container = document.getElementById('pipeBackground');
   for (let i = 0; i < 50; i++) {
@@ -1157,11 +1319,19 @@ async function pasteText() {
 }
 
 function copyText() {
-  if (currentOutputParts.length)
+  if (currentOutputParts.length) {
     navigator.clipboard.writeText(currentOutputParts.join('|'));
+    showToast("Copied output!");
+  }
 }
 
-function clearText() {
+/* ✅ Clear now supports being called internally (skipConfirm=true) */
+function clearText(skipConfirm=false) {
+  if (!skipConfirm) {
+    requestClear();
+    return;
+  }
+
   document.getElementById('inputText').value = "";
   document.getElementById('removeText').value = "";
   document.getElementById('keepDuplicatesToggle').checked = false;
@@ -1169,7 +1339,6 @@ function clearText() {
 
   syncRemoveState();
 
-  /* hide lt99 modal if open */
   if (lt99ModalOpen) hideLt99Modal();
 
   formatText();
