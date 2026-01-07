@@ -11,10 +11,61 @@
     :root {
       --accent: #0f858e;
       --accent-light: #20a6b3;
+
+      /* Light theme */
       --bg: #eaf4f5;
       --text: #333;
       --glass-bg: #ffffff;
       --shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+
+      --border: #000;
+      --muted: #666;
+      --panel-border: #eee;
+      --input-bg: #fff;
+      --input-text: #000;
+      --token-hover: rgba(15,133,142,0.1);
+      --footer: #555;
+      --pipe-opacity: 0.25;
+
+      /* Win95 modal */
+      --w95-border: #cfcfcf;
+      --w95-inset1: #ffffff;
+      --w95-inset2: #9a9a9a;
+      --backdrop: rgba(0,0,0,0.25);
+
+      /* ✅ Scrollbar theme (light) */
+      --sb-track: rgba(0,0,0,0.06);
+      --sb-thumb: rgba(15,133,142,0.45);
+      --sb-thumb-hover: rgba(15,133,142,0.65);
+      --sb-size: 10px;
+    }
+
+    /* Dark theme overrides (slightly brighter but still dark) */
+    body.dark {
+      --bg: #151c21;
+      --text: #eef4f7;
+      --glass-bg: #1c252b;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.42);
+
+      --border: #3a4a54;
+      --muted: #b4c2cb;
+      --panel-border: #2d3b44;
+      --input-bg: #151c21;
+      --input-text: #eef4f7;
+
+      --token-hover: rgba(32,166,179,0.20);
+      --footer: #b4c2cb;
+      --pipe-opacity: 0.17;
+
+      --w95-border: #3a4a54;
+      --w95-inset1: #26323a;
+      --w95-inset2: #0f1418;
+      --backdrop: rgba(0,0,0,0.50);
+
+      /* ✅ Scrollbar theme (dark) */
+      --sb-track: rgba(255,255,255,0.06);
+      --sb-thumb: rgba(32,166,179,0.35);
+      --sb-thumb-hover: rgba(32,166,179,0.55);
     }
 
     * { box-sizing: border-box; }
@@ -28,11 +79,37 @@
       overflow: hidden;
       position: relative;
       padding: 20px;
+      transition: background-color 0.25s ease, color 0.25s ease;
     }
 
     /* Hide element helper */
-    .hidden {
-      display: none !important;
+    .hidden { display: none !important; }
+
+    /* ✅ Clean scrollbars (Chrome/Edge/Safari) */
+    *::-webkit-scrollbar {
+      width: var(--sb-size);
+      height: var(--sb-size);
+    }
+    *::-webkit-scrollbar-track {
+      background: var(--sb-track);
+      border-radius: 999px;
+    }
+    *::-webkit-scrollbar-thumb {
+      background: var(--sb-thumb);
+      border-radius: 999px;
+      border: 2px solid transparent;
+      background-clip: padding-box;
+    }
+    *::-webkit-scrollbar-thumb:hover {
+      background: var(--sb-thumb-hover);
+      border: 2px solid transparent;
+      background-clip: padding-box;
+    }
+
+    /* ✅ Clean scrollbars (Firefox) */
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: var(--sb-thumb) var(--sb-track);
     }
 
     /* === RAINING PIPES === */
@@ -49,13 +126,14 @@
       width: 30px;
       height: auto;
       animation: fall linear infinite;
-      opacity: 0.25;
+      opacity: var(--pipe-opacity);
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
     }
 
     @keyframes fall {
       0% { transform: translateY(-100px); opacity: 0; }
-      10% { opacity: 0.25; }
-      100% { transform: translateY(110vh); opacity: 0.25; }
+      10% { opacity: var(--pipe-opacity); }
+      100% { transform: translateY(110vh); opacity: var(--pipe-opacity); }
     }
 
     /* === BUTTONS === */
@@ -96,7 +174,6 @@
       z-index: -1;
       transition: width 0.5s ease;
     }
-
     .button:hover::before { width: 250%; }
 
     .menu-buttons {
@@ -108,11 +185,15 @@
       gap: 10px;
     }
 
-    .export-btn {
+    /* Right-side header controls (Export + Dark mode toggle) */
+    .header-right {
       position: fixed;
       top: 15px;
       right: 15px;
       z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
 
     /* === MOTIVATION SCROLLER === */
@@ -159,6 +240,7 @@
       flex-direction: column;
       align-items: center;
       animation: fadeIn 0.6s ease;
+      transition: background-color 0.25s ease, box-shadow 0.25s ease;
     }
 
     @keyframes fadeIn {
@@ -175,13 +257,14 @@
     p {
       margin-top: 0;
       font-size: 14px;
-      color: #333;
+      color: var(--text);
+      opacity: 0.95;
     }
 
     #qtyMarker {
       align-self: flex-start;
       font-size: 14px;
-      color: #333;
+      color: var(--text);
       margin-bottom: 5px;
     }
 
@@ -190,27 +273,25 @@
       width: 100%;
       padding: 12px;
       font-size: 16px;
-      border: 1px solid #000;
+      border: 1px solid var(--border);
       border-radius: 8px;
       outline: none;
       text-align: center;
-      background: #fff;
-      color: #000;
+      background: var(--input-bg);
+      color: var(--input-text);
       caret-color: transparent;
+      transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
     }
-
-    #inputText:focus {
-      outline: none;
-    }
+    #inputText:focus { outline: none; }
 
     .output-container {
       margin-top: 20px;
       max-height: 150px;
       overflow-y: auto;
-      overflow-x: hidden;          /* ✅ stop horizontal spill */
-      border: 1px solid #000;
+      overflow-x: hidden;
+      border: 1px solid var(--border);
       padding: 12px;
-      background: #fff;
+      background: var(--input-bg);
       text-align: center;
       font-weight: 600;
       font-size: 16px;
@@ -219,9 +300,10 @@
       width: 100%;
       color: var(--accent);
 
-      /* ✅ force long pipe text to wrap INSIDE the box */
       overflow-wrap: anywhere;
       word-break: break-word;
+
+      transition: background-color 0.25s ease, border-color 0.25s ease;
     }
 
     /* ✅ scroll ONLY the split outputs area */
@@ -233,8 +315,6 @@
       overflow-x: hidden;
       margin-top: 10px;
       padding-right: 8px;
-
-      /* ✅ FIX: prevents last box/button from being cut off */
       padding-bottom: 22px;
     }
 
@@ -248,15 +328,16 @@
 
     /* === MODALS === */
     .remove-modal, .duplicate-modal {
-      background: #fff;
+      background: var(--glass-bg);
       border-radius: 10px;
       box-shadow: var(--shadow);
       padding: 15px;
       z-index: 3;
       opacity: 0;
       visibility: hidden;
-      transition: opacity 0.3s ease, visibility 0.3s ease;
+      transition: opacity 0.3s ease, visibility 0.3s ease, background-color 0.25s ease;
       position: absolute;
+      border: 1px solid var(--panel-border);
     }
 
     .remove-modal.visible, .duplicate-modal.visible {
@@ -291,7 +372,7 @@
 
     #duplicateList {
       font-size: 13px;
-      color: #333;
+      color: var(--text);
       max-height: 120px;
       overflow-y: auto;
     }
@@ -301,7 +382,7 @@
       align-items: center;
       justify-content: space-between;
       margin-bottom: 10px;
-      border-bottom: 1px solid #eee;
+      border-bottom: 1px solid var(--panel-border);
       padding-bottom: 8px;
     }
 
@@ -311,7 +392,6 @@
       width: 50px;
       height: 28px;
     }
-
     .switch input { opacity: 0; width: 0; height: 0; }
 
     .slider {
@@ -343,7 +423,7 @@
       bottom: 10px;
       right: 15px;
       font-size: 12px;
-      color: #555;
+      color: var(--footer);
       font-style: italic;
       z-index: 2;
     }
@@ -361,7 +441,7 @@
     .num-token:hover,
     .dup-token:hover,
     .dup-line-token:hover {
-      background-color: rgba(15,133,142,0.1);
+      background-color: var(--token-hover);
     }
 
     .num-token.highlight,
@@ -389,9 +469,11 @@
       display: block;
       padding: 6px 8px;
       padding-right: 12px;
-      border: 1px solid #ccc;
+      border: 1px solid var(--panel-border);
       border-radius: 6px;
-      background: #fff;
+      background: var(--input-bg);
+      color: var(--text);
+      transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
     }
 
     .dup-line-token {
@@ -403,7 +485,7 @@
     .w95-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.25);
+      background: var(--backdrop);
       z-index: 999;
     }
 
@@ -416,12 +498,13 @@
       z-index: 1000;
 
       background: var(--glass-bg);
-      border: 2px solid #cfcfcf;
+      border: 2px solid var(--w95-border);
       box-shadow:
-        0 0 0 1px #ffffff inset,
-        0 0 0 2px #9a9a9a inset,
+        0 0 0 1px var(--w95-inset1) inset,
+        0 0 0 2px var(--w95-inset2) inset,
         0 10px 30px rgba(0,0,0,0.18);
       border-radius: 4px;
+      transition: background-color 0.25s ease, border-color 0.25s ease;
     }
 
     .w95-titlebar {
@@ -436,29 +519,49 @@
       user-select: none;
     }
 
-    .w95-title {
-      font-size: 13px;
-    }
+    .w95-title { font-size: 13px; }
 
+    /* ✅ FIXED: Win95 close (X) button coloring */
     .w95-x {
       width: 26px;
       height: 22px;
-      border: 2px solid #cfcfcf;
-      background: #fff;
-      color: var(--accent);
-      font-weight: 700;
+      padding: 0;
+      border: 2px solid var(--w95-border);
+
+      background: #dcdcdc;
+      color: #111;
+
+      font-weight: 800;
+      font-size: 14px;
       line-height: 1;
+
       cursor: pointer;
+
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
       box-shadow:
-        0 0 0 1px #ffffff inset,
-        0 0 0 2px #9a9a9a inset;
+        0 0 0 1px var(--w95-inset1) inset,
+        0 0 0 2px var(--w95-inset2) inset;
     }
+
+    .w95-x:hover { background: #efefef; }
 
     .w95-x:active {
       box-shadow:
-        0 0 0 1px #9a9a9a inset,
-        0 0 0 2px #ffffff inset;
+        0 0 0 1px var(--w95-inset2) inset,
+        0 0 0 2px var(--w95-inset1) inset;
       transform: translateY(1px);
+    }
+
+    body.dark .w95-x {
+      background: var(--glass-bg);
+      color: var(--text);
+    }
+
+    body.dark .w95-x:hover {
+      background: color-mix(in srgb, var(--glass-bg) 80%, #ffffff 20%);
     }
 
     .w95-body {
@@ -486,18 +589,54 @@
       background: #fff;
       color: var(--accent);
 
-      border: 2px solid #cfcfcf;
+      border: 2px solid var(--w95-border);
       box-shadow:
-        0 0 0 1px #ffffff inset,
-        0 0 0 2px #9a9a9a inset;
+        0 0 0 1px var(--w95-inset1) inset,
+        0 0 0 2px var(--w95-inset2) inset;
       border-radius: 4px;
+    }
+
+    body.dark .w95-close-big {
+      background: var(--input-bg);
+      color: var(--accent-light);
     }
 
     .w95-close-big:active {
       box-shadow:
-        0 0 0 1px #9a9a9a inset,
-        0 0 0 2px #ffffff inset;
+        0 0 0 1px var(--w95-inset2) inset,
+        0 0 0 2px var(--w95-inset1) inset;
       transform: translateY(1px);
+    }
+
+    /* Remove panel input */
+    #removeText {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--input-bg);
+      color: var(--input-text);
+      transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+    }
+
+    /* ===== Dark mode toggle label ===== */
+    .toggle-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 10px;
+      border: 1px solid var(--panel-border);
+      background: color-mix(in srgb, var(--glass-bg) 70%, transparent);
+      box-shadow: var(--shadow);
+    }
+    .toggle-pill span {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      opacity: 0.9;
+      user-select: none;
+      white-space: nowrap;
     }
 
     /* ✅ OPTIONAL: on smaller screens, bring panels under the box */
@@ -523,7 +662,18 @@
     <button class="button" onclick="location.href='pipes'">Pipe Formatter</button>
   </div>
 
-  <button class="button export-btn" onclick="exportCSV()">Export CSV</button>
+  <!-- ✅ Right side controls: Export + Dark mode toggle -->
+  <div class="header-right">
+    <button class="button" onclick="exportCSV()">Export CSV</button>
+
+    <div class="toggle-pill" title="Toggle dark mode">
+      <span>Dark Mode</span>
+      <label class="switch">
+        <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()">
+        <span class="slider"></span>
+      </label>
+    </div>
+  </div>
 
   <div class="pipe-background" id="pipeBackground"></div>
 
@@ -534,7 +684,7 @@
   <div class="container">
     <div class="remove-modal" id="removeModal">
       <label for="removeText" style="font-weight:600;">Remove Order Numbers:</label>
-      <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Don’t use | here</div>
+      <div style="font-size: 12px; color: var(--muted); margin-bottom: 5px;">Don’t use | here</div>
       <input type="text" id="removeText" placeholder="Type numbers to remove" oninput="formatText()" />
     </div>
 
@@ -644,6 +794,19 @@ function syncRemoveState() {
   const removeText = document.getElementById('removeText');
   removeModal.classList.remove('disabled-box');
   removeText.removeAttribute("disabled");
+}
+
+/* ===== Dark mode (persisted) ===== */
+function applyDarkMode(isDark) {
+  document.body.classList.toggle('dark', !!isDark);
+  const t = document.getElementById('darkModeToggle');
+  if (t) t.checked = !!isDark;
+}
+
+function toggleDarkMode() {
+  const isDark = document.getElementById('darkModeToggle').checked;
+  applyDarkMode(isDark);
+  try { localStorage.setItem('sp_darkmode', isDark ? '1' : '0'); } catch {}
 }
 
 /* Win95 modal show/hide */
@@ -926,6 +1089,14 @@ function copyDuplicates() {
 
 /* === RAINING PIPES & MARQUEE === */
 window.onload = () => {
+  /* Restore dark mode pref */
+  try {
+    const saved = localStorage.getItem('sp_darkmode');
+    applyDarkMode(saved === '1');
+  } catch {
+    applyDarkMode(false);
+  }
+
   const container = document.getElementById('pipeBackground');
   for (let i = 0; i < 50; i++) {
     const pipe = document.createElement('img');
