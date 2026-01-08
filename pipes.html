@@ -297,13 +297,10 @@
       right: 0;
       width: 100%;
       overflow: hidden;
-
-      /* ✅ FIX: raise above header buttons so it doesn't get "cut off" under them */
       z-index: 12;
       pointer-events: none;
-
       height: 30px;
-      display: block;   /* ✅ FIX: avoid flex-centering affecting translate */
+      display: block;
       background: transparent;
       color: var(--accent);
       font-weight: 600;
@@ -1292,12 +1289,7 @@ window.onload = () => {
   input.addEventListener('paste', () => setTimeout(formatText, 0));
 };
 
-/* ✅ FIXED marquee:
-   - cancels prior animation so it never "starts in the middle"
-   - measures AFTER layout using requestAnimationFrame
-   - uses scrollWidth so long text scrolls fully
-   - goes from offscreen right -> offscreen left (true edge-to-edge)
-*/
+/* ✅ FIXED marquee */
 function startMarquee(text) {
   const scroller = document.querySelector('.headline-scroller');
   const el = document.getElementById('headlineText');
@@ -1313,11 +1305,11 @@ function startMarquee(text) {
     const scrollWidth = scroller.clientWidth;
     const textWidth = el.scrollWidth;
 
-    const fromX = scrollWidth;    // offscreen right
-    const toX = -textWidth;       // offscreen left
+    const fromX = scrollWidth;
+    const toX = -textWidth;
 
     const distance = fromX - toX;
-    const pxPerSec = 140;         // speed
+    const pxPerSec = 140;
     const duration = Math.max(9000, (distance / pxPerSec) * 1000);
 
     el._marqueeAnim = el.animate(
@@ -1370,7 +1362,9 @@ async function pasteText() {
     }
   } catch (e) {}
 
-  alert("Paste didn’t work. Click the input and press Ctrl+V (Windows) or Cmd+V (Mac). Also: clipboard read usually requires HTTPS (or localhost) and permission.");
+  // ✅ REMOVED the alert notification.
+  // If paste fails, just keep focus on the input and do nothing.
+  input.focus();
 }
 
 function copyText() {
