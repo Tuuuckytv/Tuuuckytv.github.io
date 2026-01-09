@@ -41,6 +41,11 @@
 
       /* ✅ Split separator line */
       --split-line: rgba(0,0,0,0.14);
+
+      /* ✅ Settings card (smaller to avoid overlap) */
+      --settings-width: 180px;
+      --settings-pad: 8px;
+      --settings-row-gap: 6px;
     }
 
     body.dark {
@@ -247,6 +252,7 @@
       outline: 2px solid var(--accent);
       background: transparent;
       display: inline-block;
+      white-space: nowrap;
     }
 
     .button:hover {
@@ -279,14 +285,46 @@
       gap: 10px;
     }
 
+    /* ✅ wrap instead of overlapping on narrow widths */
     .header-right {
       position: fixed;
       top: 15px;
       right: 15px;
       z-index: 10;
       display: flex;
-      align-items: center;
-      gap: 12px;
+      align-items: flex-start;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      max-width: calc(100vw - 30px);
+    }
+
+    /* ✅ Settings card (smaller + tighter) */
+    .settings-card{
+      width: var(--settings-width);
+      padding: var(--settings-pad);
+      border-radius: 12px;
+      border: 1px solid var(--panel-border);
+      background: color-mix(in srgb, var(--glass-bg) 85%, transparent);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      transition: background-color 0.25s ease, border-color 0.25s ease;
+      text-align: left;
+    }
+    .settings-title {
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 5px 0 5px 2px;
+      user-select: none;
+    }
+    .settings-divider {
+      height: 0;
+      border-top: 1px solid var(--panel-border);
+      margin: 8px 0 8px;
     }
 
     /* === MOTIVATION SCROLLER === */
@@ -297,7 +335,7 @@
       right: 0;
       width: 100%;
       overflow: hidden;
-      z-index: 12;
+      z-index: 1;
       pointer-events: none;
       height: 30px;
       display: block;
@@ -465,6 +503,7 @@
     .duplicate-modal h4 { margin: 0 0 8px; font-size: 14px; color: var(--accent); }
     #duplicateList { font-size: 13px; color: var(--text); max-height: 120px; overflow-y: auto; }
 
+    /* ✅ switches (slightly smaller to match settings) */
     .toggle-container {
       display: flex;
       align-items: center;
@@ -474,7 +513,7 @@
       padding-bottom: 8px;
     }
 
-    .switch { position: relative; display: inline-block; width: 50px; height: 28px; }
+    .switch { position: relative; display: inline-block; width: 38px; height: 20px; }
     .switch input { opacity: 0; width: 0; height: 0; }
 
     .slider {
@@ -482,24 +521,24 @@
       cursor: pointer;
       top: 0; left: 0; right: 0; bottom: 0;
       background-color: #ccc;
-      transition: 0.4s;
-      border-radius: 28px;
+      transition: 0.3s;
+      border-radius: 999px;
     }
 
     .slider:before {
       content: "";
       position: absolute;
-      height: 20px;
-      width: 20px;
-      left: 4px;
-      bottom: 4px;
+      height: 14px;
+      width: 14px;
+      left: 3px;
+      bottom: 3px;
       background-color: white;
-      transition: 0.4s;
+      transition: 0.3s;
       border-radius: 50%;
     }
 
     input:checked + .slider { background-color: var(--accent); }
-    input:checked + .slider:before { transform: translateX(22px); }
+    input:checked + .slider:before { transform: translateX(18px); }
 
     footer {
       position: fixed;
@@ -668,25 +707,13 @@
       transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
     }
 
-    .toggle-pill {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 10px;
-      border-radius: 10px;
-      border: 1px solid var(--panel-border);
-      background: color-mix(in srgb, var(--glass-bg) 70%, transparent);
-      box-shadow: var(--shadow);
-    }
-    .toggle-pill span {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text);
-      opacity: 0.9;
-      user-select: none;
-      white-space: nowrap;
+    @media (max-width: 520px) {
+      .header-right { flex-direction: column; align-items: flex-end; }
+      .settings-card { width: min(170px, 92vw); }
+      .container { margin-top: 170px; }
     }
 
+    /* ✅ Responsive */
     @media (max-width: 980px) {
       body { overflow: auto; }
       .remove-modal, .duplicate-modal {
@@ -697,10 +724,14 @@
         margin: 10px 0 0 0;
       }
       .duplicate-modal { text-align: center; }
-      .container { top: 0; left: 0; transform: none; margin: 120px auto 40px; }
+      .container { top: 0; left: 0; transform: none; margin: 160px auto 40px; }
+
+      .header-right { flex-direction: column; align-items: flex-end; }
+      .settings-card { width: min(var(--settings-width), 92vw); }
     }
   </style>
 </head>
+
 <body>
 
   <div class="menu-buttons">
@@ -712,12 +743,47 @@
   <div class="header-right">
     <button class="button" onclick="exportCSV()">Export CSV</button>
 
-    <div class="toggle-pill" title="Toggle dark mode">
-      <span>Dark Mode</span>
-      <label class="switch">
-        <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()">
-        <span class="slider"></span>
-      </label>
+    <!-- ✅ Settings -->
+    <div class="settings-card" aria-label="Settings">
+      <div class="toggle-container" style="border-bottom:none; padding-bottom:0; margin-bottom:6px;">
+        <span style="font-size:11px; font-weight:700; color:var(--muted); letter-spacing:1px; text-transform:uppercase;">
+          Options
+        </span>
+      </div>
+
+      <div class="toggle-container" style="margin-bottom: var(--settings-row-gap); border-bottom:none; padding-bottom:0;">
+        <span>Dark Mode</span>
+        <label class="switch">
+          <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="settings-divider"></div>
+
+      <div class="toggle-container" style="margin-bottom: var(--settings-row-gap); border-bottom:none; padding-bottom:0;">
+        <span class="toggle-label">Keep Duplicates</span>
+        <label class="switch">
+          <input type="checkbox" id="keepDuplicatesToggle" onchange="formatText()">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="toggle-container" style="margin-bottom: var(--settings-row-gap); border-bottom:none; padding-bottom:0;">
+        <span class="toggle-label">Split into 99s</span>
+        <label class="switch">
+          <input type="checkbox" id="split99Toggle" onchange="formatText()">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="toggle-container" style="margin-bottom: 0; border-bottom:none; padding-bottom:0;">
+        <span class="toggle-label">SL-O</span>
+        <label class="switch">
+          <input type="checkbox" id="sloToggle" onchange="formatText()">
+          <span class="slider"></span>
+        </label>
+      </div>
     </div>
   </div>
 
@@ -752,22 +818,6 @@
 
     <div class="duplicate-modal" id="duplicateModal">
       <h4>Removed Duplicates</h4>
-
-      <div class="toggle-container">
-        <span class="toggle-label">Keep Duplicates</span>
-        <label class="switch">
-          <input type="checkbox" id="keepDuplicatesToggle" onchange="formatText()">
-          <span class="slider"></span>
-        </label>
-      </div>
-
-      <div class="toggle-container">
-        <span class="toggle-label">Split into 99s</span>
-        <label class="switch">
-          <input type="checkbox" id="split99Toggle" onchange="formatText()">
-          <span class="slider"></span>
-        </label>
-      </div>
 
       <div id="duplicateList">None</div>
 
@@ -830,13 +880,13 @@
     </div>
   </div>
 
-  <!-- ✅ PASTE FALLBACK (fixes "Paste" sometimes not working) -->
+  <!-- ✅ PASTE FALLBACK -->
   <textarea id="pasteFallback" aria-hidden="true"
     style="position:fixed; left:-9999px; top:-9999px; width:1px; height:1px; opacity:0;"></textarea>
 
 <script>
 let itemCounts = {};
-let currentOutputParts = [];
+let currentOutputParts = [];   // raw tokens (no prefix)
 let duplicateLine = "";
 
 let lt99ModalOpen = false;
@@ -979,7 +1029,8 @@ function requestClear() {
   const hasRemove = document.getElementById('removeText').value.trim().length > 0;
   const hasAny = hasInput || hasRemove ||
     document.getElementById('keepDuplicatesToggle').checked ||
-    document.getElementById('split99Toggle').checked;
+    document.getElementById('split99Toggle').checked ||
+    document.getElementById('sloToggle').checked;
 
   if (!hasAny) return;
   showClearModal();
@@ -1010,6 +1061,17 @@ function csvCell(v) {
     return `"=""${s.replaceAll('"','""')}"""`;
   }
   return `"${s.replaceAll('"','""')}"`;
+}
+
+/* ✅ SL-O helpers */
+function isSloOn() {
+  return !!document.getElementById('sloToggle')?.checked;
+}
+function withSloPrefix(v) {
+  return isSloOn() ? `OVIUK-${v}` : String(v);
+}
+function joinWithPrefix(arr, sep='|') {
+  return arr.map(withSloPrefix).join(sep);
 }
 
 /* Main formatter */
@@ -1152,7 +1214,7 @@ function renderOutput(parts) {
     const span = document.createElement('span');
     span.className = 'num-token';
     span.dataset.num = p;
-    span.textContent = p;
+    span.textContent = withSloPrefix(p);
     span.onclick = () => highlightNumber(p);
     outEl.appendChild(span);
     if (idx < parts.length-1)
@@ -1190,7 +1252,7 @@ function renderSplitOutputs(parts) {
       const span = document.createElement('span');
       span.className = 'num-token';
       span.dataset.num = p;
-      span.textContent = p;
+      span.textContent = withSloPrefix(p);
       span.onclick = () => highlightNumber(p);
       outBox.appendChild(span);
       if (j < group.length - 1) outBox.appendChild(document.createTextNode('|'));
@@ -1205,7 +1267,7 @@ function renderSplitOutputs(parts) {
     copyOne.type = 'button';
     copyOne.textContent = `Copy Batch ${idx + 1}`;
     copyOne.onclick = () => {
-      navigator.clipboard.writeText(group.join('|'));
+      navigator.clipboard.writeText(joinWithPrefix(group, '|'));
       showToast(`Copied Batch ${idx + 1}!`);
     };
 
@@ -1289,7 +1351,7 @@ window.onload = () => {
   input.addEventListener('paste', () => setTimeout(formatText, 0));
 };
 
-/* ✅ FIXED marquee */
+/* marquee */
 function startMarquee(text) {
   const scroller = document.querySelector('.headline-scroller');
   const el = document.getElementById('headlineText');
@@ -1313,10 +1375,7 @@ function startMarquee(text) {
     const duration = Math.max(9000, (distance / pxPerSec) * 1000);
 
     el._marqueeAnim = el.animate(
-      [
-        { transform: `translateX(${fromX}px)` },
-        { transform: `translateX(${toX}px)` }
-      ],
+      [{ transform: `translateX(${fromX}px)` }, { transform: `translateX(${toX}px)` }],
       { duration, iterations: Infinity, easing: 'linear' }
     );
   });
@@ -1362,14 +1421,12 @@ async function pasteText() {
     }
   } catch (e) {}
 
-  // ✅ REMOVED the alert notification.
-  // If paste fails, just keep focus on the input and do nothing.
   input.focus();
 }
 
 function copyText() {
   if (currentOutputParts.length) {
-    navigator.clipboard.writeText(currentOutputParts.join('|'));
+    navigator.clipboard.writeText(joinWithPrefix(currentOutputParts, '|'));
     showToast("Copied");
   }
 }
@@ -1381,6 +1438,7 @@ function clearText(skipConfirm=false) {
   document.getElementById('removeText').value = "";
   document.getElementById('keepDuplicatesToggle').checked = false;
   document.getElementById('split99Toggle').checked = false;
+  document.getElementById('sloToggle').checked = false;
 
   syncRemoveState();
 
@@ -1411,7 +1469,8 @@ function exportCSV() {
     for (let r = 0; r < maxLen; r++) {
       const row = [];
       for (let c = 0; c < groupCount; c++) {
-        row.push(groups[c][r] ?? "");
+        const val = groups[c][r] ?? "";
+        row.push(val ? withSloPrefix(val) : "");
       }
       rows.push(row);
     }
@@ -1431,7 +1490,7 @@ function exportCSV() {
 
   for (const [num,count] of Object.entries(itemCounts)) {
     const dup = count > 1 ? "Yes" : "No";
-    rows.push([num, dup, count>1 ? count-1 : 0, count]);
+    rows.push([withSloPrefix(num), dup, count>1 ? count-1 : 0, count]);
   }
 
   const csv = rows.map(r => r.map(csvCell).join(",")).join("\n");
