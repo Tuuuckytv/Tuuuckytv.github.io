@@ -42,10 +42,14 @@
       /* ✅ Split separator line */
       --split-line: rgba(0,0,0,0.14);
 
-      /* ✅ Settings card (smaller to avoid overlap) */
+      /* ✅ Settings card */
       --settings-width: 180px;
       --settings-pad: 8px;
       --settings-row-gap: 6px;
+
+      /* ✅ NEW: Copied overlay color (edit this ONE line) */
+      --copied-overlay-color: color-mix(in srgb, #000000 35%, transparent);
+     
     }
 
     body.dark {
@@ -109,107 +113,8 @@
       border: 2px solid transparent;
       background-clip: padding-box;
     }
-
     /* ✅ Clean scrollbars (Firefox) */
     * { scrollbar-width: thin; scrollbar-color: var(--sb-thumb) var(--sb-track); }
-
-    /* ✅ FULLSCREEN "SPLIT TEXT" TOAST */
-    .toast {
-      position: fixed;
-      inset: 0;
-      z-index: 3000;
-      pointer-events: none;
-      display: grid;
-      place-items: center;
-      opacity: 0;
-      transition: opacity 120ms ease;
-    }
-
-    .toast .toast-inner {
-      position: absolute;
-      inset: 0;
-      display: grid;
-      place-items: center;
-      background: color-mix(in srgb, var(--accent) 45%, transparent);
-      backdrop-filter: blur(2px);
-      -webkit-backdrop-filter: blur(2px);
-      opacity: 0;
-    }
-
-    .toast.play { opacity: 1; }
-    .toast.play .toast-inner { animation: toastOverlayFade 900ms ease forwards; }
-
-    @keyframes toastOverlayFade {
-      0%   { opacity: 0; }
-      12%  { opacity: 1; }
-      60%  { opacity: 1; }
-      100% { opacity: 0; }
-    }
-
-    .toast-split {
-      position: relative;
-      z-index: 1;
-      font-weight: 900;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      font-size: clamp(28px, 5vw, 64px);
-      color: #fff;
-      text-shadow: 0 10px 30px rgba(0,0,0,0.35);
-      padding: 10px 16px;
-      text-align: center;
-      user-select: none;
-    }
-
-    .toast-half {
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 100%;
-      opacity: 0;
-      transform: translateX(0);
-      will-change: transform, opacity;
-    }
-
-    .toast-half.left  { clip-path: inset(0 50% 0 0); }
-    .toast-half.right { clip-path: inset(0 0 0 50%); }
-
-    .toast-base {
-      position: relative;
-      opacity: 0;
-      transform: scale(0.98);
-      will-change: opacity, transform;
-    }
-
-    .toast.play .toast-base { animation: toastBasePop 260ms ease forwards; }
-    @keyframes toastBasePop {
-      0%   { opacity: 0; transform: scale(0.98); }
-      100% { opacity: 1; transform: scale(1); }
-    }
-
-    .toast.play .toast-half.left  { animation: toastSplitLeft 820ms ease forwards; }
-    .toast.play .toast-half.right { animation: toastSplitRight 820ms ease forwards; }
-
-    @keyframes toastSplitLeft {
-      0%   { opacity: 0; transform: translateX(0); }
-      22%  { opacity: 0; transform: translateX(0); }
-      28%  { opacity: 1; transform: translateX(0); }
-      100% { opacity: 0; transform: translateX(-260px); }
-    }
-
-    @keyframes toastSplitRight {
-      0%   { opacity: 0; transform: translateX(0); }
-      22%  { opacity: 0; transform: translateX(0); }
-      28%  { opacity: 1; transform: translateX(0); }
-      100% { opacity: 0; transform: translateX(260px); }
-    }
-
-    .toast.play .toast-base { animation: toastBaseHide 820ms ease forwards; }
-    @keyframes toastBaseHide {
-      0%   { opacity: 1; }
-      24%  { opacity: 1; }
-      30%  { opacity: 0; }
-      100% { opacity: 0; }
-    }
 
     /* === RAINING PIPES === */
     .pipe-background {
@@ -276,6 +181,47 @@
     }
     .button:hover::before { width: 250%; }
 
+    /* ✅ Batch buttons: identical styling (explicit class for safety) */
+    .batch-copy-btn {
+      padding: 0.75em 1.6em;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      color: var(--accent);
+      transition: all 0.4s ease;
+      font-size: 14px;
+      position: relative;
+      overflow: hidden;
+      outline: 2px solid var(--accent);
+      background: transparent;
+      display: inline-block;
+      white-space: nowrap;
+    }
+
+    .batch-copy-btn:hover {
+      color: #fff;
+      transform: scale(1.05);
+      outline: 2px solid var(--accent-light);
+      box-shadow: 2px 4px 10px -2px #0d6c75;
+    }
+
+    .batch-copy-btn::before {
+      content: "";
+      position: absolute;
+      left: -50px;
+      top: 0;
+      width: 0;
+      height: 100%;
+      background-color: var(--accent);
+      transform: skewX(45deg);
+      z-index: -1;
+      transition: width 0.5s ease;
+    }
+    .batch-copy-btn:hover::before { width: 250%; }
+
     .menu-buttons {
       position: fixed;
       top: 15px;
@@ -285,42 +231,31 @@
       gap: 10px;
     }
 
-    /* ✅ wrap instead of overlapping on narrow widths */
-.header-right {
-  position: fixed;
-  top: 15px;
-  right: 15px;
-  z-index: 10;
-  display: flex;
-  align-items: flex-start;   /* ✅ keep button position unchanged */
-  gap: 8px;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  max-width: calc(100vw - 30px);
-}
+    .header-right {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      z-index: 10;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      max-width: calc(100vw - 30px);
+    }
 
-.settings-card{
-  width: var(--settings-width);
-  padding: var(--settings-pad);
-  border-radius: 12px;
-  border: 1px solid var(--panel-border);
-  background: color-mix(in srgb, var(--glass-bg) 85%, transparent);
-  box-shadow: var(--shadow);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  transition: background-color 0.25s ease, border-color 0.25s ease;
-  text-align: left;
-
-  margin-top: -3px;          /* ✅ raise Options panel slightly to match buttons */
-}
-     .settings-title {
-      font-size: 9px;
-      font-weight: 800;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin: 5px 0 5px 2px;
-      user-select: none;
+    .settings-card{
+      width: var(--settings-width);
+      padding: var(--settings-pad);
+      border-radius: 12px;
+      border: 1px solid var(--panel-border);
+      background: color-mix(in srgb, var(--glass-bg) 85%, transparent);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      transition: background-color 0.25s ease, border-color 0.25s ease;
+      text-align: left;
+      margin-top: -3px;
     }
     .settings-divider {
       height: 0;
@@ -504,7 +439,7 @@
     .duplicate-modal h4 { margin: 0 0 8px; font-size: 14px; color: var(--accent); }
     #duplicateList { font-size: 13px; color: var(--text); max-height: 120px; overflow-y: auto; }
 
-    /* ✅ switches (slightly smaller to match settings) */
+    /* ✅ switches */
     .toggle-container {
       display: flex;
       align-items: center;
@@ -710,7 +645,7 @@
 
     @media (max-width: 520px) {
       .header-right { flex-direction: column; align-items: flex-end; }
-      .settings-card { width: min(170px, 92vw); }
+      .settings-card { width: min(170px, 92vw); margin-top: 0; }
       .container { margin-top: 170px; }
     }
 
@@ -728,7 +663,114 @@
       .container { top: 0; left: 0; transform: none; margin: 160px auto 40px; }
 
       .header-right { flex-direction: column; align-items: flex-end; }
-      .settings-card { width: min(var(--settings-width), 92vw); }
+      .settings-card { width: min(var(--settings-width), 92vw); margin-top: 0; }
+    }
+
+    /* =======================================================================
+       ✅ SMOOTH COPIED TOAST (no pop-back / smooth restart)
+       ======================================================================= */
+    .copied-toast {
+      position: fixed;
+      inset: 0;
+      z-index: 3000;
+      pointer-events: none;
+      display: grid;
+      place-items: center;
+
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 140ms ease, visibility 0s linear 140ms;
+    }
+
+    .copied-toast.show {
+      opacity: 1;
+      visibility: visible;
+      transition: opacity 120ms ease, visibility 0s linear 0s;
+    }
+
+    .copied-toast .overlay {
+      position: absolute;
+      inset: 0;
+      /* ✅ CHANGED: use variable so you can set to blue/red/etc */
+      background: var(--copied-overlay-color);
+      backdrop-filter: blur(2px);
+      -webkit-backdrop-filter: blur(2px);
+      opacity: 0;
+    }
+
+    .word-container {
+      position: relative;
+      height: 120px;
+      width: min(520px, 92vw);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 1;
+      transform: translate3d(0,0,0);
+      will-change: transform, opacity;
+    }
+
+    .half {
+      position: absolute;
+      font-size: clamp(34px, 6vw, 72px);
+      color: #20a6b3;
+      white-space: nowrap;
+      text-shadow: 0 10px 30px rgba(0,0,0,0.30);
+      letter-spacing: 2px;
+      font-weight: 900;
+      text-transform: uppercase;
+      backface-visibility: hidden;
+      transform: translate3d(0,0,0);
+      will-change: clip-path, transform, opacity;
+
+      opacity: 0;
+    }
+
+    .left  { clip-path: inset(0 50% 0 0); }
+    .right { clip-path: inset(0 0 0 50%); }
+
+    .copied-toast.play .overlay {
+      animation: overlayFade 650ms ease forwards;
+    }
+
+    .copied-toast.play .left {
+      animation:
+        popIn 0.14s ease-out forwards,
+        wipeLeft 0.55s cubic-bezier(0.45, 0, 0.55, 1) 0.22s forwards;
+    }
+
+    .copied-toast.play .right {
+      animation:
+        popIn 0.14s ease-out forwards,
+        wipeRight 0.55s cubic-bezier(0.45, 0, 0.55, 1) 0.22s forwards;
+    }
+
+    @keyframes popIn {
+      0%   { transform: translate3d(0,0,0) scale(0.92); opacity: 0; }
+      100% { transform: translate3d(0,0,0) scale(1); opacity: 1; }
+    }
+
+    @keyframes wipeLeft {
+      0%   { clip-path: inset(0 50% 0 0); opacity: 1; }
+      100% { clip-path: inset(0 100% 0 0); opacity: 0; }
+    }
+
+    @keyframes wipeRight {
+      0%   { clip-path: inset(0 0 0 50%); opacity: 1; }
+      100% { clip-path: inset(0 0 0 100%); opacity: 0; }
+    }
+
+    @keyframes overlayFade {
+      0%   { opacity: 0; }
+      10%  { opacity: 1; }
+      75%  { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .copied-toast.play .overlay { animation: none; opacity: 0.65; }
+      .copied-toast.play .left,
+      .copied-toast.play .right { animation: none; opacity: 1; }
     }
   </style>
 </head>
@@ -744,7 +786,6 @@
   <div class="header-right">
     <button class="button" onclick="exportCSV()">Export CSV</button>
 
-    <!-- ✅ Settings -->
     <div class="settings-card" aria-label="Settings">
       <div class="toggle-container" style="border-bottom:none; padding-bottom:0; margin-bottom:6px;">
         <span style="font-size:11px; font-weight:700; color:var(--muted); letter-spacing:1px; text-transform:uppercase;">
@@ -773,7 +814,7 @@
       <div class="toggle-container" style="margin-bottom: var(--settings-row-gap); border-bottom:none; padding-bottom:0;">
         <span class="toggle-label">Split into 99s</span>
         <label class="switch">
-          <input type="checkbox" id="split99Toggle" onchange="formatText()">
+          <input type="checkbox" id="split99Toggle" onchange="onSplit99Toggle()">
           <span class="slider"></span>
         </label>
       </div>
@@ -832,7 +873,7 @@
     </div>
   </div>
 
-  <!-- === Less than 99 modal (Win95 style) === -->
+  <!-- === Less than/equal 99 modal (Win95 style) === -->
   <div id="lt99Backdrop" class="w95-backdrop hidden" aria-hidden="true"></div>
   <div id="lt99Modal" class="w95-modal hidden" role="dialog" aria-modal="true"
        aria-labelledby="lt99Title" aria-describedby="lt99Msg">
@@ -871,13 +912,12 @@
 
   <footer>Please note qty may not reflect the actual number</footer>
 
-  <!-- ✅ FULLSCREEN SPLIT TOAST -->
-  <div id="toast" class="toast hidden" aria-hidden="true">
-    <div class="toast-inner"></div>
-    <div class="toast-split" aria-hidden="true">
-      <div id="toastBase" class="toast-base">Copied!</div>
-      <div id="toastLeft" class="toast-half left">Copied!</div>
-      <div id="toastRight" class="toast-half right">Copied!</div>
+  <!-- ✅ Pop + Wipe Copied toast -->
+  <div id="copiedToast" class="copied-toast" aria-hidden="true">
+    <div class="overlay" aria-hidden="true"></div>
+    <div class="word-container" aria-hidden="true">
+      <div id="copiedLeft" class="half left">COPIED</div>
+      <div id="copiedRight" class="half right">COPIED</div>
     </div>
   </div>
 
@@ -887,7 +927,7 @@
 
 <script>
 let itemCounts = {};
-let currentOutputParts = [];   // raw tokens (no prefix)
+let currentOutputParts = [];
 let duplicateLine = "";
 
 let lt99ModalOpen = false;
@@ -902,32 +942,6 @@ function setSplitUnderLineVisible(isVisible) {
   const line = document.getElementById('splitUnderLine');
   if (!line) return;
   line.style.display = isVisible ? "block" : "none";
-}
-
-function showToast(msg="Copied!") {
-  const toast = document.getElementById("toast");
-  const base = document.getElementById("toastBase");
-  const left = document.getElementById("toastLeft");
-  const right = document.getElementById("toastRight");
-  if (!toast || !base || !left || !right) return;
-
-  base.textContent = msg;
-  left.textContent = msg;
-  right.textContent = msg;
-
-  toast.classList.remove("hidden");
-  toast.setAttribute("aria-hidden", "false");
-
-  toast.classList.remove("play");
-  void toast.offsetWidth;
-  toast.classList.add("play");
-
-  clearTimeout(showToast._t);
-  showToast._t = setTimeout(() => {
-    toast.classList.add("hidden");
-    toast.setAttribute("aria-hidden", "true");
-    toast.classList.remove("play");
-  }, 1150);
 }
 
 function syncRemoveState() {
@@ -949,9 +963,41 @@ function toggleDarkMode() {
   try { localStorage.setItem('sp_darkmode', isDark ? '1' : '0'); } catch {}
 }
 
-/* ✅ helper: hide footer while modal is open */
 function setModalOpen(open) {
   document.body.classList.toggle("modal-open", !!open);
+}
+
+/* ✅ Smooth toast */
+function showCopiedToast(text = "Copied!") {
+  const toast = document.getElementById("copiedToast");
+  const left = document.getElementById("copiedLeft");
+  const right = document.getElementById("copiedRight");
+  if (!toast || !left || !right) return;
+
+  left.textContent = text;
+  right.textContent = text;
+
+  toast.classList.add("show");
+  toast.setAttribute("aria-hidden", "false");
+
+  clearTimeout(showCopiedToast._hideT);
+
+  toast.classList.remove("play");
+
+  left.style.animation = "none";
+  right.style.animation = "none";
+
+  requestAnimationFrame(() => {
+    left.style.animation = "";
+    right.style.animation = "";
+    toast.classList.add("play");
+  });
+
+  showCopiedToast._hideT = setTimeout(() => {
+    toast.classList.remove("play");
+    toast.classList.remove("show");
+    toast.setAttribute("aria-hidden", "true");
+  }, 820);
 }
 
 /* lt99 modal */
@@ -991,6 +1037,44 @@ function hideLt99Modal() {
 
   const input = document.getElementById('inputText');
   if (input) input.focus();
+}
+
+/* split99 toggle */
+function onSplit99Toggle() {
+  const splitToggle = document.getElementById('split99Toggle');
+  if (!splitToggle || !splitToggle.checked) {
+    formatText();
+    return;
+  }
+
+  const input = document.getElementById('inputText')?.value ?? "";
+  const removeInput = document.getElementById('removeText')?.value.trim() ?? "";
+  const keepDuplicates = !!document.getElementById('keepDuplicatesToggle')?.checked;
+
+  let allParts = input
+    .replace(/\|/g, ' ')
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  const counts = {};
+  allParts.forEach(p => counts[p] = (counts[p] || 0) + 1);
+
+  let parts = keepDuplicates ? allParts : Object.keys(counts);
+
+  if (removeInput) {
+    const removeSet = new Set(removeInput.split(/[\s,|]+/).filter(Boolean));
+    parts = parts.filter(p => !removeSet.has(p));
+  }
+
+  if (parts.length <= 99) {
+    showLt99Modal();
+    splitToggle.checked = false;
+    formatText();
+    return;
+  }
+
+  formatText();
 }
 
 /* Clear confirm modal */
@@ -1054,7 +1138,6 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-/* ✅ NEW: Force "Sales number" values to stay as TEXT in CSV (prevents 6.8E+10) */
 function csvCell(v) {
   const s = String(v ?? "");
   const looksNumeric = /^[0-9]+$/.test(s);
@@ -1064,7 +1147,6 @@ function csvCell(v) {
   return `"${s.replaceAll('"','""')}"`;
 }
 
-/* ✅ SL-O helpers */
 function isSloOn() {
   return !!document.getElementById('sloToggle')?.checked;
 }
@@ -1119,8 +1201,12 @@ function formatText() {
     currentOutputParts = [];
     duplicateLine = "";
 
-    if (lt99ModalOpen) hideLt99Modal();
+    if (split99) {
+      showLt99Modal();
+      document.getElementById('split99Toggle').checked = false;
+    }
 
+    if (lt99ModalOpen && !split99) hideLt99Modal();
     return;
   }
 
@@ -1146,9 +1232,7 @@ function formatText() {
     if (counts[n] > 1) {
       duplicateBlocks.push(`
         <div>
-          <span class="dup-token" data-num="${n}" onclick="highlightNumber('${n}')">
-            ${n}
-          </span><br>
+          <span class="dup-token" data-num="${n}" onclick="highlightNumber('${n}')">${n}</span><br>
           Removed x${counts[n]-1}<br>
           Appears x${counts[n]}
         </div>
@@ -1156,8 +1240,7 @@ function formatText() {
     }
   }
 
-  duplicateListDiv.innerHTML =
-    duplicateBlocks.length ? duplicateBlocks.join('') : "None";
+  duplicateListDiv.innerHTML = duplicateBlocks.length ? duplicateBlocks.join('') : "None";
 
   const duplicateNumbers = Object.keys(counts).filter(n => counts[n] > 1);
   duplicateLine = duplicateNumbers.join('|');
@@ -1174,16 +1257,16 @@ function formatText() {
   currentOutputParts = [...parts];
   qty.innerText = `Qty: ${parts.length}`;
 
-  if (split99 && parts.length < 99) {
+  if (split99 && parts.length <= 99) {
     showLt99Modal();
+    document.getElementById('split99Toggle').checked = false;
 
     splitMount.style.display = "none";
     splitMount.innerHTML = "";
-
     setSplitUnderLineVisible(false);
 
-    output.style.display = "none";
-    output.innerHTML = "";
+    output.style.display = "block";
+    renderOutput(parts);
     return;
   } else {
     if (lt99ModalOpen) hideLt99Modal();
@@ -1218,8 +1301,7 @@ function renderOutput(parts) {
     span.textContent = withSloPrefix(p);
     span.onclick = () => highlightNumber(p);
     outEl.appendChild(span);
-    if (idx < parts.length-1)
-      outEl.appendChild(document.createTextNode('|'));
+    if (idx < parts.length-1) outEl.appendChild(document.createTextNode('|'));
   });
 }
 
@@ -1264,12 +1346,12 @@ function renderSplitOutputs(parts) {
     btnWrap.style.marginTop = "10px";
 
     const copyOne = document.createElement('button');
-    copyOne.className = 'button';
+    copyOne.className = 'batch-copy-btn';
     copyOne.type = 'button';
     copyOne.textContent = `Copy Batch ${idx + 1}`;
     copyOne.onclick = () => {
       navigator.clipboard.writeText(joinWithPrefix(group, '|'));
-      showToast(`Copied Batch ${idx + 1}!`);
+      showCopiedToast(`Copied Batch ${idx + 1}!`);
     };
 
     btnWrap.appendChild(copyOne);
@@ -1299,22 +1381,19 @@ function renderDuplicateLine(dups) {
     span.textContent = n;
     span.onclick = () => highlightNumber(n);
     container.appendChild(span);
-    if (idx < dups.length-1)
-      container.appendChild(document.createTextNode('|'));
+    if (idx < dups.length-1) container.appendChild(document.createTextNode('|'));
   });
 }
 
 function highlightNumber(value) {
   const tokens = document.querySelectorAll('.num-token, .dup-token, .dup-line-token');
-  tokens.forEach(t => {
-    t.classList.toggle('highlight', t.dataset.num === value);
-  });
+  tokens.forEach(t => t.classList.toggle('highlight', t.dataset.num === value));
 }
 
 function copyDuplicates() {
   if (duplicateLine) {
     navigator.clipboard.writeText(duplicateLine);
-    showToast("Copied duplicates!");
+    showCopiedToast("Copied duplicates!");
   }
 }
 
@@ -1352,7 +1431,6 @@ window.onload = () => {
   input.addEventListener('paste', () => setTimeout(formatText, 0));
 };
 
-/* marquee */
 function startMarquee(text) {
   const scroller = document.querySelector('.headline-scroller');
   const el = document.getElementById('headlineText');
@@ -1428,7 +1506,7 @@ async function pasteText() {
 function copyText() {
   if (currentOutputParts.length) {
     navigator.clipboard.writeText(joinWithPrefix(currentOutputParts, '|'));
-    showToast("Copied");
+    showCopiedToast("Copied!");
   }
 }
 
