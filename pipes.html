@@ -47,9 +47,12 @@
       --settings-pad: 8px;
       --settings-row-gap: 6px;
 
-      /* ✅ NEW: Copied overlay color (edit this ONE line) */
-      --copied-overlay-color: color-mix(in srgb, #000000 35%, transparent);
-     
+      /* ✅ CHANGE THIS ONE LINE to set the copied overlay color */
+      /* Examples:
+         --copied-overlay-color: rgba(0, 120, 255, 0.35);
+         --copied-overlay-color: rgba(255, 0, 0, 0.28);
+      */
+      --copied-overlay-color: rgba(15,133,142,0.35);
     }
 
     body.dark {
@@ -78,6 +81,10 @@
       --sb-thumb-hover: rgba(32,166,179,0.55);
 
       --split-line: rgba(255,255,255,0.14);
+
+      /* Optional: tweak overlay in dark mode if you want
+         --copied-overlay-color: rgba(32,166,179,0.28);
+      */
     }
 
     * { box-sizing: border-box; }
@@ -181,8 +188,8 @@
     }
     .button:hover::before { width: 250%; }
 
-    /* ✅ Batch buttons: identical styling (explicit class for safety) */
-    .batch-copy-btn {
+    /* ✅ Batch copy buttons same styling */
+    .batch-copy-btn { /* kept for clarity; same look as .button */
       padding: 0.75em 1.6em;
       border: none;
       border-radius: 6px;
@@ -200,14 +207,12 @@
       display: inline-block;
       white-space: nowrap;
     }
-
     .batch-copy-btn:hover {
       color: #fff;
       transform: scale(1.05);
       outline: 2px solid var(--accent-light);
       box-shadow: 2px 4px 10px -2px #0d6c75;
     }
-
     .batch-copy-btn::before {
       content: "";
       position: absolute;
@@ -271,7 +276,7 @@
       right: 0;
       width: 100%;
       overflow: hidden;
-      z-index: 1;
+      z-index: 12;
       pointer-events: none;
       height: 30px;
       display: block;
@@ -403,7 +408,7 @@
       user-select: none;
     }
 
-    /* === MODALS === */
+    /* === MODALS (side panels) === */
     .remove-modal, .duplicate-modal {
       background: var(--glass-bg);
       border-radius: 10px;
@@ -667,7 +672,7 @@
     }
 
     /* =======================================================================
-       ✅ SMOOTH COPIED TOAST (no pop-back / smooth restart)
+       ✅ SMOOTH COPIED TOAST
        ======================================================================= */
     .copied-toast {
       position: fixed;
@@ -691,7 +696,6 @@
     .copied-toast .overlay {
       position: absolute;
       inset: 0;
-      /* ✅ CHANGED: use variable so you can set to blue/red/etc */
       background: var(--copied-overlay-color);
       backdrop-filter: blur(2px);
       -webkit-backdrop-filter: blur(2px);
@@ -713,7 +717,7 @@
     .half {
       position: absolute;
       font-size: clamp(34px, 6vw, 72px);
-      color: #20a6b3;
+      color: var(--accent-light);
       white-space: nowrap;
       text-shadow: 0 10px 30px rgba(0,0,0,0.30);
       letter-spacing: 2px;
@@ -722,7 +726,6 @@
       backface-visibility: hidden;
       transform: translate3d(0,0,0);
       will-change: clip-path, transform, opacity;
-
       opacity: 0;
     }
 
@@ -844,6 +847,7 @@
 
     <h2>Paste sales number here</h2>
     <p>Ensure spaces between each sales number</p>
+
     <div id="qtyMarker">Qty: 0</div>
     <input type="text" id="inputText" placeholder="Enter text here" oninput="formatText()" />
 
@@ -860,7 +864,6 @@
 
     <div class="duplicate-modal" id="duplicateModal">
       <h4>Removed Duplicates</h4>
-
       <div id="duplicateList">None</div>
 
       <div id="duplicateCopyWrapper" class="hidden" style="margin-top:10px; font-size:12px;">
@@ -873,7 +876,7 @@
     </div>
   </div>
 
-  <!-- === Less than/equal 99 modal (Win95 style) === -->
+  <!-- ✅ Less than/equal 99 modal (Win95 style) -->
   <div id="lt99Backdrop" class="w95-backdrop hidden" aria-hidden="true"></div>
   <div id="lt99Modal" class="w95-modal hidden" role="dialog" aria-modal="true"
        aria-labelledby="lt99Title" aria-describedby="lt99Msg">
@@ -881,10 +884,8 @@
       <div id="lt99Title" class="w95-title">Warning</div>
       <button class="w95-x" type="button" onclick="hideLt99Modal()" aria-label="Close">✕</button>
     </div>
-
     <div class="w95-body">
-      <div id="lt99Msg" class="w95-message">Less than 99 dumb dumb</div>
-
+      <div id="lt99Msg" class="w95-message">Less than 99</div>
       <div class="w95-btn-row">
         <button id="lt99CloseBtn" class="w95-btn" type="button" onclick="hideLt99Modal()">Close</button>
       </div>
@@ -899,10 +900,8 @@
       <div id="clearTitle" class="w95-title">Confirm</div>
       <button class="w95-x" type="button" onclick="hideClearModal()" aria-label="Close">✕</button>
     </div>
-
     <div class="w95-body">
       <div id="clearMsg" class="w95-message">Clear everything?</div>
-
       <div class="w95-btn-row">
         <button class="w95-btn" type="button" onclick="confirmClear()">Yes, Clear</button>
         <button class="w95-btn" type="button" onclick="hideClearModal()">Cancel</button>
@@ -927,7 +926,7 @@
 
 <script>
 let itemCounts = {};
-let currentOutputParts = [];
+let currentOutputParts = [];   // raw tokens (no prefix)
 let duplicateLine = "";
 
 let lt99ModalOpen = false;
@@ -963,11 +962,14 @@ function toggleDarkMode() {
   try { localStorage.setItem('sp_darkmode', isDark ? '1' : '0'); } catch {}
 }
 
+/* ✅ helper: hide footer while modal is open */
 function setModalOpen(open) {
   document.body.classList.toggle("modal-open", !!open);
 }
 
-/* ✅ Smooth toast */
+/* =========================
+   ✅ SMOOTH Copied Toast
+   ========================= */
 function showCopiedToast(text = "Copied!") {
   const toast = document.getElementById("copiedToast");
   const left = document.getElementById("copiedLeft");
@@ -982,8 +984,8 @@ function showCopiedToast(text = "Copied!") {
 
   clearTimeout(showCopiedToast._hideT);
 
+  // restart cleanly without flashing
   toast.classList.remove("play");
-
   left.style.animation = "none";
   right.style.animation = "none";
 
@@ -1000,11 +1002,17 @@ function showCopiedToast(text = "Copied!") {
   }, 820);
 }
 
-/* lt99 modal */
-function showLt99Modal() {
+/* =========================
+   ✅ Less than 99 modal
+   (shows ONLY when split toggle is pressed and count <= 99)
+   ========================= */
+function showLt99Modal(msg = "Less than 99") {
   const modal = document.getElementById('lt99Modal');
   const backdrop = document.getElementById('lt99Backdrop');
   const closeBtn = document.getElementById('lt99CloseBtn');
+  const msgEl = document.getElementById('lt99Msg');
+
+  if (msgEl) msgEl.textContent = msg;
 
   setModalOpen(true);
 
@@ -1014,7 +1022,7 @@ function showLt99Modal() {
   backdrop.setAttribute('aria-hidden', 'false');
 
   lt99ModalOpen = true;
-  setTimeout(() => closeBtn.focus(), 0);
+  setTimeout(() => closeBtn?.focus(), 0);
 }
 
 function hideLt99Modal() {
@@ -1030,23 +1038,23 @@ function hideLt99Modal() {
 
   if (!clearModalOpen) setModalOpen(false);
 
-  const splitToggle = document.getElementById('split99Toggle');
-  if (splitToggle) splitToggle.checked = false;
-
-  formatText();
-
   const input = document.getElementById('inputText');
   if (input) input.focus();
 }
 
-/* split99 toggle */
+/* ✅ split99 toggle handler */
 function onSplit99Toggle() {
   const splitToggle = document.getElementById('split99Toggle');
-  if (!splitToggle || !splitToggle.checked) {
+  if (!splitToggle) return;
+
+  // turning OFF
+  if (!splitToggle.checked) {
+    if (lt99ModalOpen) hideLt99Modal();
     formatText();
     return;
   }
 
+  // turning ON: compute what would be used
   const input = document.getElementById('inputText')?.value ?? "";
   const removeInput = document.getElementById('removeText')?.value.trim() ?? "";
   const keepDuplicates = !!document.getElementById('keepDuplicatesToggle')?.checked;
@@ -1067,17 +1075,22 @@ function onSplit99Toggle() {
     parts = parts.filter(p => !removeSet.has(p));
   }
 
+  // ✅ if <= 99, show Win95 warning modal and auto turn split back off
   if (parts.length <= 99) {
-    showLt99Modal();
+    showLt99Modal("Less than 99");
     splitToggle.checked = false;
     formatText();
     return;
   }
 
+  // otherwise proceed
+  if (lt99ModalOpen) hideLt99Modal();
   formatText();
 }
 
-/* Clear confirm modal */
+/* =========================
+   ✅ Clear confirm modal
+   ========================= */
 function showClearModal() {
   const modal = document.getElementById('clearModal');
   const backdrop = document.getElementById('clearBackdrop');
@@ -1105,14 +1118,14 @@ function hideClearModal() {
 
   if (!lt99ModalOpen) setModalOpen(false);
 
-  const input = document.getElementById('inputText');
-  if (input) input.focus();
+  document.getElementById('inputText')?.focus();
 }
 
 function requestClear() {
   const hasInput = document.getElementById('inputText').value.trim().length > 0;
   const hasRemove = document.getElementById('removeText').value.trim().length > 0;
-  const hasAny = hasInput || hasRemove ||
+  const hasAny =
+    hasInput || hasRemove ||
     document.getElementById('keepDuplicatesToggle').checked ||
     document.getElementById('split99Toggle').checked ||
     document.getElementById('sloToggle').checked;
@@ -1138,6 +1151,7 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
+/* ✅ CSV cell (keeps long numbers safe in Excel) */
 function csvCell(v) {
   const s = String(v ?? "");
   const looksNumeric = /^[0-9]+$/.test(s);
@@ -1147,6 +1161,7 @@ function csvCell(v) {
   return `"${s.replaceAll('"','""')}"`;
 }
 
+/* ✅ SL-O helpers */
 function isSloOn() {
   return !!document.getElementById('sloToggle')?.checked;
 }
@@ -1176,7 +1191,6 @@ function formatText() {
   const split99 = document.getElementById('split99Toggle').checked;
 
   syncRemoveState();
-
   const removeInput = document.getElementById('removeText').value.trim();
 
   if (input.trim() === "") {
@@ -1192,6 +1206,7 @@ function formatText() {
     clearBtn.style.display = "none";
     pasteBtn.style.display = "inline-block";
     qty.innerText = "Qty: 0";
+
     show(removeModal, false);
     show(duplicateModal, false);
 
@@ -1200,13 +1215,6 @@ function formatText() {
 
     currentOutputParts = [];
     duplicateLine = "";
-
-    if (split99) {
-      showLt99Modal();
-      document.getElementById('split99Toggle').checked = false;
-    }
-
-    if (lt99ModalOpen && !split99) hideLt99Modal();
     return;
   }
 
@@ -1221,12 +1229,13 @@ function formatText() {
     .replace(/\|/g, ' ')
     .trim()
     .split(/\s+/)
-    .filter(p => p);
+    .filter(Boolean);
 
   const counts = {};
   allParts.forEach(p => counts[p] = (counts[p] || 0) + 1);
   itemCounts = counts;
 
+  // build duplicates list
   const duplicateBlocks = [];
   for (const n in counts) {
     if (counts[n] > 1) {
@@ -1239,7 +1248,6 @@ function formatText() {
       `);
     }
   }
-
   duplicateListDiv.innerHTML = duplicateBlocks.length ? duplicateBlocks.join('') : "None";
 
   const duplicateNumbers = Object.keys(counts).filter(n => counts[n] > 1);
@@ -1257,25 +1265,9 @@ function formatText() {
   currentOutputParts = [...parts];
   qty.innerText = `Qty: ${parts.length}`;
 
-  if (split99 && parts.length <= 99) {
-    showLt99Modal();
-    document.getElementById('split99Toggle').checked = false;
-
-    splitMount.style.display = "none";
-    splitMount.innerHTML = "";
-    setSplitUnderLineVisible(false);
-
-    output.style.display = "block";
-    renderOutput(parts);
-    return;
-  } else {
-    if (lt99ModalOpen) hideLt99Modal();
-  }
-
   if (!split99) {
     splitMount.style.display = "none";
     splitMount.innerHTML = "";
-
     setSplitUnderLineVisible(false);
 
     output.style.display = "block";
@@ -1301,7 +1293,7 @@ function renderOutput(parts) {
     span.textContent = withSloPrefix(p);
     span.onclick = () => highlightNumber(p);
     outEl.appendChild(span);
-    if (idx < parts.length-1) outEl.appendChild(document.createTextNode('|'));
+    if (idx < parts.length - 1) outEl.appendChild(document.createTextNode('|'));
   });
 }
 
@@ -1372,8 +1364,8 @@ function renderDuplicateLine(dups) {
   }
 
   wrapper.classList.remove("hidden");
-
   container.innerHTML = "";
+
   dups.forEach((n, idx) => {
     const span = document.createElement('span');
     span.className = 'dup-line-token';
@@ -1381,7 +1373,7 @@ function renderDuplicateLine(dups) {
     span.textContent = n;
     span.onclick = () => highlightNumber(n);
     container.appendChild(span);
-    if (idx < dups.length-1) container.appendChild(document.createTextNode('|'));
+    if (idx < dups.length - 1) container.appendChild(document.createTextNode('|'));
   });
 }
 
@@ -1408,10 +1400,10 @@ window.onload = () => {
     const pipe = document.createElement('img');
     pipe.src = 'pipe.png';
     pipe.className = 'pipe';
-    pipe.style.left = `${Math.random()*window.innerWidth}px`;
-    pipe.style.top = `${-Math.random()*1000}px`;
-    pipe.style.animationDuration = `${8 + Math.random()*4}s`;
-    pipe.style.animationDelay = `${Math.random()*5}s`;
+    pipe.style.left = `${Math.random() * window.innerWidth}px`;
+    pipe.style.top = `${-Math.random() * 1000}px`;
+    pipe.style.animationDuration = `${8 + Math.random() * 4}s`;
+    pipe.style.animationDelay = `${Math.random() * 5}s`;
     container.appendChild(pipe);
   }
 
@@ -1419,7 +1411,7 @@ window.onload = () => {
     .then(r => r.text())
     .then(data => {
       const lines = data.split('\n').filter(l => l.trim());
-      const msg = lines.length ? lines[Math.floor(Math.random()*lines.length)] : "Stay positive. Keep pushing forward!";
+      const msg = lines.length ? lines[Math.floor(Math.random() * lines.length)] : "Stay positive. Keep pushing forward!";
       startMarquee(msg);
     })
     .catch(() => startMarquee("Stay positive. Keep pushing forward!"));
@@ -1427,10 +1419,10 @@ window.onload = () => {
   const input = document.getElementById('inputText');
   input.focus();
   input.style.caretColor = "transparent";
-
   input.addEventListener('paste', () => setTimeout(formatText, 0));
 };
 
+/* marquee */
 function startMarquee(text) {
   const scroller = document.querySelector('.headline-scroller');
   const el = document.getElementById('headlineText');
@@ -1465,14 +1457,12 @@ async function pasteText() {
   const pasteBtn = document.getElementById('pasteButton');
 
   input.focus();
-
   if (pasteBtn) { pasteBtn.disabled = true; setTimeout(() => pasteBtn.disabled = false, 250); }
 
   try {
     if (navigator.permissions?.query) {
       try { await navigator.permissions.query({ name: "clipboard-read" }); } catch {}
     }
-
     const text = await navigator.clipboard.readText();
     if (text && text.trim()) {
       input.value = text.replace(/[\n\r\t]/g, ' ').replace(/\s+/g, ' ').trim();
@@ -1510,7 +1500,7 @@ function copyText() {
   }
 }
 
-function clearText(skipConfirm=false) {
+function clearText(skipConfirm = false) {
   if (!skipConfirm) { requestClear(); return; }
 
   document.getElementById('inputText').value = "";
@@ -1520,9 +1510,6 @@ function clearText(skipConfirm=false) {
   document.getElementById('sloToggle').checked = false;
 
   syncRemoveState();
-
-  if (lt99ModalOpen) hideLt99Modal();
-
   formatText();
 }
 
@@ -1569,7 +1556,7 @@ function exportCSV() {
 
   for (const [num,count] of Object.entries(itemCounts)) {
     const dup = count > 1 ? "Yes" : "No";
-    rows.push([withSloPrefix(num), dup, count>1 ? count-1 : 0, count]);
+    rows.push([withSloPrefix(num), dup, count > 1 ? count - 1 : 0, count]);
   }
 
   const csv = rows.map(r => r.map(csvCell).join(",")).join("\n");
