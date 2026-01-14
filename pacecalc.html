@@ -36,6 +36,26 @@ body{
   padding:16px;
 }
 
+/* ✅ Home nav button (Win95 theme) */
+.menu-buttons{
+  position:fixed;
+  top:12px;
+  left:12px;
+  z-index:9998; /* under modal (9999), above UI */
+}
+.navBtn{
+  padding:8px 14px;
+  font-weight:bold;
+  background:var(--panel);
+  border:2px solid;
+  border-color:var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+  box-shadow:1px 1px 0 #000;
+  cursor:pointer;
+  font-family:"MS Sans Serif", Tahoma, sans-serif;
+  font-size:12px;
+}
+.navBtn:active{ transform:translate(1px,1px); }
+
 .win95{
   width:min(520px,100%);
   background:var(--panel);
@@ -317,6 +337,11 @@ button.clear:active{transform:translate(1px,1px)}
 </head>
 
 <body>
+
+<!-- ✅ HOME NAV -->
+<div class="menu-buttons">
+  <button class="navBtn" onclick="location.href='/'">Home</button>
+</div>
 
 <!-- ===== MODAL ===== -->
 <div class="modalOverlay" id="modalOverlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
