@@ -96,6 +96,28 @@ button{
   z-index:10;
 }
 
+/* ✅ HOME BUTTON (theme-matched) */
+#homeBtn{
+  position:fixed;
+  top:12px;
+  left:12px;
+  padding:10px 14px;
+  border-radius:999px;
+  z-index:11; /* above edit */
+  background:rgba(255,255,255,.12);
+  color:#28ed00;
+  border:1px solid rgba(40,237,0,.35);
+  backdrop-filter: blur(6px);
+}
+#homeBtn:hover{
+  background:rgba(255,255,255,.18);
+}
+
+/* when result stage is visible, move Home to avoid overlap with Edit */
+body.result-on #homeBtn{
+  left:110px;
+}
+
 /* WIPE ANIMATION */
 .word-container{
   position:relative;
@@ -140,6 +162,9 @@ button{
 </style>
 </head>
 <body>
+
+<!-- ✅ HOME NAV -->
+<button id="homeBtn" type="button" onclick="location.href='index'">Home</button>
 
 <div class="wrap">
 
@@ -215,6 +240,10 @@ function reveal(text){
   wrapper.classList.add("animate");
 }
 
+function setResultMode(on){
+  document.body.classList.toggle("result-on", !!on);
+}
+
 function submitList(){
   options = parseOptions(optionsEl.value);
   if (!options.length) return alert("Add at least one option.");
@@ -223,6 +252,7 @@ function submitList(){
   resultStage.classList.remove("hidden");
   clearResult();
   optionsEl.blur();
+  setResultMode(true);
 }
 
 submitBtn.onclick = submitList;
@@ -241,9 +271,13 @@ editBtn.onclick = ()=>{
   inputStage.classList.remove("hidden");
   clearResult();
   optionsEl.focus();
+  setResultMode(false);
 };
 
-window.onload = ()=> optionsEl.focus();
+window.onload = ()=>{
+  optionsEl.focus();
+  setResultMode(false);
+};
 </script>
 
 </body>
