@@ -931,6 +931,85 @@ let clearModalOpen = false;
 
 let split99JustPressed = false; // ✅ NEW: used to decide whether to show modal or silently untoggle
 
+/* =======================================================================
+   ✅ NEW: Auto-clear after 5 minutes of inactivity OR 5 minutes in background tab
+   ======================================================================= */
+const AUTO_CLEAR_MS = 5 * 60 * 1000;
+
+let _autoClearTimer = null;
+let _lastUserActivityAt = Date.now();
+let _hiddenSinceAt = document.hidden ? Date.now() : null;
+
+function _setUserActivityNow() {
+  _lastUserActivityAt = Date.now();
+  _scheduleAutoClearCheck();
+}
+
+function _scheduleAutoClearCheck() {
+  clearTimeout(_autoClearTimer);
+
+  const now = Date.now();
+
+  const idleRemaining = Math.max(0, AUTO_CLEAR_MS - (now - _lastUserActivityAt));
+  const hiddenRemaining = (_hiddenSinceAt == null)
+    ? Infinity
+    : Math.max(0, AUTO_CLEAR_MS - (now - _hiddenSinceAt));
+
+  const nextIn = Math.min(idleRemaining, hiddenRemaining);
+
+  // If already due, run right away (next tick) so we don't drift.
+  _autoClearTimer = setTimeout(_autoClearCheck, Math.max(25, nextIn));
+}
+
+function _autoClearCheck() {
+  const now = Date.now();
+  const idleTooLong = (now - _lastUserActivityAt) >= AUTO_CLEAR_MS;
+  const hiddenTooLong = (document.hidden && _hiddenSinceAt != null && (now - _hiddenSinceAt) >= AUTO_CLEAR_MS);
+
+  if (idleTooLong || hiddenTooLong) {
+    _clearInputsDueToInactivity();
+    // After clearing, reschedule so it doesn't repeatedly re-clear.
+    _lastUserActivityAt = Date.now();
+    if (document.hidden) _hiddenSinceAt = Date.now();
+    _scheduleAutoClearCheck();
+    return;
+  }
+
+  // Not due yet: reschedule based on remaining time.
+  _scheduleAutoClearCheck();
+}
+
+function _clearInputsDueToInactivity() {
+  // Close any open modals to avoid weird stuck UI states
+  if (lt99ModalOpen) hideLt99Modal();
+  if (clearModalOpen) hideClearModal();
+
+  const input = document.getElementById('inputText');
+  const remove = document.getElementById('removeText');
+
+  // Clear the main input (and remove field for a clean state)
+  if (input) input.value = "";
+  if (remove) remove.value = "";
+
+  formatText();
+}
+
+// Track meaningful user activity (not mousemove, so it won't stay alive from accidental wiggles)
+['pointerdown','keydown','wheel','touchstart','scroll'].forEach(evt => {
+  window.addEventListener(evt, _setUserActivityNow, { passive: true });
+});
+
+// Tab visibility: if hidden for 5 minutes -> clear
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    _hiddenSinceAt = Date.now();
+  } else {
+    _hiddenSinceAt = null;
+  }
+  _scheduleAutoClearCheck();
+});
+/* ======================================================================= */
+
 function show(el, showFlag) {
   if (showFlag) el.classList.add("visible");
   else el.classList.remove("visible");
@@ -1473,6 +1552,9 @@ window.onload = () => {
   input.style.caretColor = "transparent";
 
   input.addEventListener('paste', () => setTimeout(formatText, 0));
+
+  // ✅ NEW: start the auto-clear scheduler once the page is ready
+  _scheduleAutoClearCheck();
 };
 
 /* marquee */
