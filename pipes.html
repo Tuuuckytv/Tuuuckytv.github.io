@@ -33,21 +33,21 @@
       --w95-inset2: #9a9a9a;
       --backdrop: rgba(0,0,0,0.25);
 
-      /* ✅ Scrollbar theme (light) */
+      /* Scrollbar theme (light) */
       --sb-track: rgba(0,0,0,0.06);
       --sb-thumb: rgba(15,133,142,0.45);
       --sb-thumb-hover: rgba(15,133,142,0.65);
       --sb-size: 10px;
 
-      /* ✅ Split separator line */
+      /* Split separator line */
       --split-line: rgba(0,0,0,0.14);
 
-      /* ✅ Settings card */
+      /* Settings card */
       --settings-width: 180px;
       --settings-pad: 8px;
       --settings-row-gap: 6px;
 
-      /* ✅ NEW: Copied overlay color (change this to whatever you want) */
+      /* Copied overlay color */
       --copied-overlay-color: rgba(0,0,0,0.35);
     }
 
@@ -95,10 +95,10 @@
 
     .hidden { display: none !important; }
 
-    /* ✅ Hide footer while any Win95 modal is open */
+    /* Hide footer while any Win95 modal is open */
     body.modal-open footer { display: none; }
 
-    /* ✅ Clean scrollbars (Chrome/Edge/Safari) */
+    /* Clean scrollbars (Chrome/Edge/Safari) */
     *::-webkit-scrollbar { width: var(--sb-size); height: var(--sb-size); }
     *::-webkit-scrollbar-track { background: var(--sb-track); border-radius: 999px; }
     *::-webkit-scrollbar-thumb {
@@ -112,7 +112,7 @@
       border: 2px solid transparent;
       background-clip: padding-box;
     }
-    /* ✅ Clean scrollbars (Firefox) */
+    /* Clean scrollbars (Firefox) */
     * { scrollbar-width: thin; scrollbar-color: var(--sb-thumb) var(--sb-track); }
 
     /* === RAINING PIPES === */
@@ -180,8 +180,8 @@
     }
     .button:hover::before { width: 250%; }
 
-    /* ✅ Batch buttons: identical styling */
-    .batch-copy-btn { /* same visuals as .button */
+    /* Batch buttons: identical styling */
+    .batch-copy-btn {
       padding: 0.75em 1.6em;
       border: none;
       border-radius: 6px;
@@ -288,17 +288,40 @@
       transform: translateX(100%);
     }
 
-    /* === MAIN CONTAINER === */
+    /* ============================================================
+       ✅ Layout wrapper (no glass) + 2 separate glass cards
+       ============================================================ */
     .container {
       position: relative;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
+      width: 90%;
+      max-width: 1120px;
+      z-index: 2;
+      display: flex;
+      justify-content: center;
+      transition: max-width 0.25s ease;
+    }
+    .container:not(.dual) { max-width: 520px; }
+
+    .panels {
+      width: 100%;
+      display: flex;
+      gap: 18px;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
+    .panel { width: 100%; display: block; }
+    .panel.secondary.hidden { display: none !important; }
+
+    .panel-card {
       background: var(--glass-bg);
       border-radius: 16px;
       box-shadow: var(--shadow);
       padding: 30px 25px;
-      width: 90%;
+      width: 100%;
       max-width: 520px;
       text-align: center;
       z-index: 2;
@@ -310,16 +333,16 @@
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translate(-50%, -48%); }
-      to { opacity: 1; transform: translate(-50%, -50%); }
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     h2 { margin-bottom: 8px; font-weight: 700; color: var(--accent); }
     p { margin-top: 0; font-size: 14px; color: var(--text); opacity: 0.95; }
 
-    #qtyMarker { align-self: flex-start; font-size: 14px; color: var(--text); margin-bottom: 5px; }
+    .qtyMarker { align-self: flex-start; font-size: 14px; color: var(--text); margin-bottom: 5px; }
 
-    #inputText {
+    .inputText {
       width: 100%;
       padding: 12px;
       font-size: 16px;
@@ -332,7 +355,7 @@
       caret-color: transparent;
       transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
     }
-    #inputText:focus { outline: none; }
+    .inputText:focus { outline: none; }
 
     .output-container {
       margin-top: 20px;
@@ -354,7 +377,7 @@
       transition: background-color 0.25s ease, border-color 0.25s ease;
     }
 
-    #splitOutputsMount {
+    .splitOutputsMount {
       width: 100%;
       display: none;
       max-height: 320px;
@@ -402,7 +425,7 @@
       user-select: none;
     }
 
-    /* === MODALS === */
+    /* === Modals (Remove/Duplicates) === */
     .remove-modal, .duplicate-modal {
       background: var(--glass-bg);
       border-radius: 10px;
@@ -415,9 +438,9 @@
       position: absolute;
       border: 1px solid var(--panel-border);
     }
-
     .remove-modal.visible, .duplicate-modal.visible { opacity: 1; visibility: visible; }
 
+    /* single-mode placement like before */
     .remove-modal {
       top: 50%;
       left: 0;
@@ -436,9 +459,20 @@
     }
 
     .duplicate-modal h4 { margin: 0 0 8px; font-size: 14px; color: var(--accent); }
-    #duplicateList { font-size: 13px; color: var(--text); max-height: 120px; overflow-y: auto; }
+    .duplicateList { font-size: 13px; color: var(--text); max-height: 120px; overflow-y: auto; }
 
-    /* ✅ switches */
+    /* dual mode: keep those modals INSIDE each card */
+    .container.dual .remove-modal,
+    .container.dual .duplicate-modal {
+      position: static;
+      transform: none;
+      width: 100%;
+      margin: 10px 0 0 0;
+      text-align: left;
+      padding: 12px;
+    }
+
+    /* switches */
     .toggle-container {
       display: flex;
       align-items: center;
@@ -485,22 +519,21 @@
       z-index: 2;
     }
 
-    /* === CLICKABLE NUMBER TOKENS === */
+    /* Clickable tokens */
     .num-token, .dup-token, .dup-line-token {
       cursor: pointer;
       padding: 2px 4px;
       border-radius: 4px;
       transition: background-color 0.2s ease, color 0.2s ease;
     }
-
     .num-token:hover, .dup-token:hover, .dup-line-token:hover { background-color: var(--token-hover); }
     .num-token.highlight, .dup-token.highlight, .dup-line-token.highlight {
       background-color: var(--accent-light);
       color: #fff;
     }
 
-    /* === DUPLICATE NUMBERS LINE SCROLL AREA === */
-    #duplicateCopyWrapper {
+    /* Duplicate numbers line scroll area */
+    .duplicateCopyWrapper {
       max-width: 240px;
       display: flex;
       flex-direction: column;
@@ -508,7 +541,7 @@
       gap: 10px;
     }
 
-    #duplicateCopyText {
+    .duplicateCopyText {
       max-height: 200px;
       max-width: 240px;
       overflow-y: auto;
@@ -632,7 +665,7 @@
       transform: translateY(1px);
     }
 
-    #removeText {
+    .removeText {
       width: 100%;
       padding: 10px;
       border-radius: 8px;
@@ -650,22 +683,14 @@
 
     @media (max-width: 980px) {
       body { overflow: auto; }
-      .remove-modal, .duplicate-modal {
-        position: static;
-        transform: none;
-        width: 100%;
-        max-width: 520px;
-        margin: 10px 0 0 0;
-      }
-      .duplicate-modal { text-align: center; }
+      .panels { flex-direction: column; }
       .container { top: 0; left: 0; transform: none; margin: 160px auto 40px; }
-
       .header-right { flex-direction: column; align-items: flex-end; }
       .settings-card { width: min(var(--settings-width), 92vw); margin-top: 0; }
     }
 
     /* =======================================================================
-       ✅ SMOOTH COPIED TOAST (smooth restart)
+       Smooth Copied Toast
        ======================================================================= */
     .copied-toast {
       position: fixed;
@@ -725,9 +750,7 @@
     .left  { clip-path: inset(0 50% 0 0); }
     .right { clip-path: inset(0 0 0 50%); }
 
-    .copied-toast.play .overlay {
-      animation: overlayFade 650ms ease forwards;
-    }
+    .copied-toast.play .overlay { animation: overlayFade 650ms ease forwards; }
 
     .copied-toast.play .left {
       animation:
@@ -815,10 +838,21 @@
         </label>
       </div>
 
-      <div class="toggle-container" style="margin-bottom: 0; border-bottom:none; padding-bottom:0;">
+      <div class="toggle-container" style="margin-bottom: var(--settings-row-gap); border-bottom:none; padding-bottom:0;">
         <span class="toggle-label">SL-O</span>
         <label class="switch">
           <input type="checkbox" id="sloToggle" onchange="formatText()">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="settings-divider"></div>
+
+      <!-- ✅ Secondary toggle -->
+      <div class="toggle-container" style="margin-bottom: 0; border-bottom:none; padding-bottom:0;">
+        <span class="toggle-label">Secondary</span>
+        <label class="switch">
+          <input type="checkbox" id="secondaryToggle" onchange="toggleSecondary()">
           <span class="slider"></span>
         </label>
       </div>
@@ -831,41 +865,104 @@
     <div class="headline-text" id="headlineText">Loading motivation...</div>
   </div>
 
-  <div class="container">
-    <div class="remove-modal" id="removeModal">
-      <label for="removeText" style="font-weight:600;">Remove Order Numbers:</label>
-      <div style="font-size: 12px; color: var(--muted); margin-bottom: 5px;">Don’t use | here</div>
-      <input type="text" id="removeText" placeholder="Type numbers to remove" oninput="formatText()" />
-    </div>
+  <!-- Wrapper (no glass) -->
+  <div class="container" id="mainContainer">
+    <div class="panels" id="panelsWrap">
 
-    <h2>Paste sales number here</h2>
-    <p>Ensure spaces between each sales number</p>
-    <div id="qtyMarker">Qty: 0</div>
-    <input type="text" id="inputText" placeholder="Enter text here" oninput="formatText()" />
+      <!-- =========================
+           PRIMARY CARD
+           ========================= -->
+      <div class="panel primary" id="panelPrimary">
+        <div class="panel-card">
+          <div class="panel-inner">
 
-    <div class="button-container" id="mainButtons">
-      <button class="button" id="pasteButton" onclick="pasteText()">Paste</button>
-      <button class="button" id="copyButton" onclick="copyText()" style="display:none;">Copy</button>
-      <button class="button" id="clearButton" onclick="requestClear()" style="display:none;">Clear</button>
-    </div>
+            <div class="remove-modal" id="removeModal">
+              <label for="removeText" style="font-weight:600;">Remove Order Numbers:</label>
+              <div style="font-size: 12px; color: var(--muted); margin-bottom: 5px;">Don’t use | here</div>
+              <input class="removeText" type="text" id="removeText" placeholder="Type numbers to remove" oninput="formatText()" />
+            </div>
 
-    <div id="splitUnderLine" class="split-under-main-buttons"></div>
+            <h2>Paste sales number here</h2>
+            <p>Ensure spaces between each sales number</p>
+            <div id="qtyMarker" class="qtyMarker">Qty: 0</div>
+            <input class="inputText" type="text" id="inputText" placeholder="Enter text here" oninput="formatText()" />
 
-    <div class="output-container" id="outputText"></div>
-    <div id="splitOutputsMount"></div>
+            <div class="button-container" id="mainButtons">
+              <button class="button" id="pasteButton" onclick="pasteTextFor('')">Paste</button>
+              <button class="button" id="copyButton" onclick="copyTextFor('')" style="display:none;">Copy</button>
+              <button class="button" id="clearButton" onclick="requestClearFor('')" style="display:none;">Clear</button>
+            </div>
 
-    <div class="duplicate-modal" id="duplicateModal">
-      <h4>Removed Duplicates</h4>
+            <div id="splitUnderLine" class="split-under-main-buttons"></div>
 
-      <div id="duplicateList">None</div>
+            <div class="output-container" id="outputText"></div>
+            <div id="splitOutputsMount" class="splitOutputsMount"></div>
 
-      <div id="duplicateCopyWrapper" class="hidden" style="margin-top:10px; font-size:12px;">
-        <div id="duplicateCopyLabel" style="font-weight:600;">Duplicate numbers line:</div>
-        <div id="duplicateCopyText">None</div>
-        <button class="button" type="button" style="padding:4px 10px; font-size:11px;" onclick="copyDuplicates()">
-          Copy duplicates
-        </button>
+            <div class="duplicate-modal" id="duplicateModal">
+              <h4>Removed Duplicates</h4>
+
+              <div id="duplicateList" class="duplicateList">None</div>
+
+              <div id="duplicateCopyWrapper" class="duplicateCopyWrapper hidden" style="margin-top:10px; font-size:12px;">
+                <div id="duplicateCopyLabel" style="font-weight:600;">Duplicate numbers line:</div>
+                <div id="duplicateCopyText" class="duplicateCopyText">None</div>
+                <button class="button" type="button" style="padding:4px 10px; font-size:11px;" onclick="copyDuplicatesFor('')">
+                  Copy duplicates
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
       </div>
+
+      <!-- =========================
+           SECONDARY CARD
+           ========================= -->
+      <div class="panel secondary hidden" id="panelSecondary">
+        <div class="panel-card">
+          <div class="panel-inner">
+
+            <div class="remove-modal" id="removeModal2">
+              <label for="removeText2" style="font-weight:600;">Remove Order Numbers:</label>
+              <div style="font-size: 12px; color: var(--muted); margin-bottom: 5px;">Don’t use | here</div>
+              <input class="removeText" type="text" id="removeText2" placeholder="Type numbers to remove" oninput="formatText()" />
+            </div>
+
+            <h2>Paste sales number here</h2>
+            <p>Ensure spaces between each sales number</p>
+            <div id="qtyMarker2" class="qtyMarker">Qty: 0</div>
+            <input class="inputText" type="text" id="inputText2" placeholder="Enter text here" oninput="formatText()" />
+
+            <div class="button-container" id="mainButtons2">
+              <button class="button" id="pasteButton2" onclick="pasteTextFor('2')">Paste</button>
+              <button class="button" id="copyButton2" onclick="copyTextFor('2')" style="display:none;">Copy</button>
+              <button class="button" id="clearButton2" onclick="requestClearFor('2')" style="display:none;">Clear</button>
+            </div>
+
+            <div id="splitUnderLine2" class="split-under-main-buttons"></div>
+
+            <div class="output-container" id="outputText2"></div>
+            <div id="splitOutputsMount2" class="splitOutputsMount"></div>
+
+            <div class="duplicate-modal" id="duplicateModal2">
+              <h4>Removed Duplicates</h4>
+
+              <div id="duplicateList2" class="duplicateList">None</div>
+
+              <div id="duplicateCopyWrapper2" class="duplicateCopyWrapper hidden" style="margin-top:10px; font-size:12px;">
+                <div id="duplicateCopyLabel2" style="font-weight:600;">Duplicate numbers line:</div>
+                <div id="duplicateCopyText2" class="duplicateCopyText">None</div>
+                <button class="button" type="button" style="padding:4px 10px; font-size:11px;" onclick="copyDuplicatesFor('2')">
+                  Copy duplicates
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -887,7 +984,7 @@
     </div>
   </div>
 
-  <!-- ✅ Confirm Clear modal (Win95 style) -->
+  <!-- Confirm Clear modal (Win95 style) -->
   <div id="clearBackdrop" class="w95-backdrop hidden" aria-hidden="true"></div>
   <div id="clearModal" class="w95-modal hidden" role="dialog" aria-modal="true"
        aria-labelledby="clearTitle" aria-describedby="clearMsg">
@@ -897,7 +994,7 @@
     </div>
 
     <div class="w95-body">
-      <div id="clearMsg" class="w95-message">Clear everything?</div>
+      <div id="clearMsg" class="w95-message">Clear?</div>
 
       <div class="w95-btn-row">
         <button class="w95-btn" type="button" onclick="confirmClear()">Yes, Clear</button>
@@ -908,7 +1005,7 @@
 
   <footer>Please note qty may not reflect the actual number</footer>
 
-  <!-- ✅ Pop + Wipe Copied toast -->
+  <!-- Copied toast -->
   <div id="copiedToast" class="copied-toast" aria-hidden="true">
     <div class="overlay" aria-hidden="true"></div>
     <div class="word-container" aria-hidden="true">
@@ -917,22 +1014,55 @@
     </div>
   </div>
 
-  <!-- ✅ PASTE FALLBACK -->
+  <!-- Paste fallback -->
   <textarea id="pasteFallback" aria-hidden="true"
     style="position:fixed; left:-9999px; top:-9999px; width:1px; height:1px; opacity:0;"></textarea>
 
 <script>
-let itemCounts = {};
-let currentOutputParts = [];   // raw tokens (no prefix)
-let duplicateLine = "";
+/* =========================================================
+   Per-panel state (primary suffix "" and secondary suffix "2")
+   ========================================================= */
+const panelState = {
+  "":  { itemCounts:{}, currentOutputParts:[], duplicateLine:"" },
+  "2": { itemCounts:{}, currentOutputParts:[], duplicateLine:"" }
+};
 
 let lt99ModalOpen = false;
 let clearModalOpen = false;
 
-let split99JustPressed = false; // ✅ NEW: used to decide whether to show modal or silently untoggle
+let split99JustPressed = false;          // used to decide modal vs silent untoggle
+let _pendingClearSuffix = "";            // "" or "2"
+
+/* =========================
+   Secondary toggle
+   ========================= */
+function isSecondaryOn() {
+  return !!document.getElementById('secondaryToggle')?.checked;
+}
+
+function toggleSecondary() {
+  const on = isSecondaryOn();
+  const panel = document.getElementById('panelSecondary');
+  const container = document.getElementById('mainContainer');
+
+  if (on) {
+    panel.classList.remove('hidden');
+    container.classList.add('dual');
+    try { localStorage.setItem('sp_secondary', '1'); } catch {}
+    formatText();
+    setTimeout(() => document.getElementById('inputText2')?.focus(), 0);
+  } else {
+    panel.classList.add('hidden');
+    container.classList.remove('dual');
+    try { localStorage.setItem('sp_secondary', '0'); } catch {}
+    formatText();
+    setTimeout(() => document.getElementById('inputText')?.focus(), 0);
+  }
+}
 
 /* =======================================================================
-   ✅ NEW: Auto-clear after 5 minutes of inactivity OR 5 minutes in background tab
+   Auto-clear after 5 minutes of inactivity OR 5 minutes in background tab
+   (clears BOTH panels)
    ======================================================================= */
 const AUTO_CLEAR_MS = 5 * 60 * 1000;
 
@@ -956,8 +1086,6 @@ function _scheduleAutoClearCheck() {
     : Math.max(0, AUTO_CLEAR_MS - (now - _hiddenSinceAt));
 
   const nextIn = Math.min(idleRemaining, hiddenRemaining);
-
-  // If already due, run right away (next tick) so we don't drift.
   _autoClearTimer = setTimeout(_autoClearCheck, Math.max(25, nextIn));
 }
 
@@ -968,44 +1096,38 @@ function _autoClearCheck() {
 
   if (idleTooLong || hiddenTooLong) {
     _clearInputsDueToInactivity();
-    // After clearing, reschedule so it doesn't repeatedly re-clear.
     _lastUserActivityAt = Date.now();
     if (document.hidden) _hiddenSinceAt = Date.now();
     _scheduleAutoClearCheck();
     return;
   }
-
-  // Not due yet: reschedule based on remaining time.
   _scheduleAutoClearCheck();
 }
 
 function _clearInputsDueToInactivity() {
-  // Close any open modals to avoid weird stuck UI states
   if (lt99ModalOpen) hideLt99Modal();
   if (clearModalOpen) hideClearModal();
 
-  const input = document.getElementById('inputText');
-  const remove = document.getElementById('removeText');
+  const input1 = document.getElementById('inputText');
+  const remove1 = document.getElementById('removeText');
+  if (input1) input1.value = "";
+  if (remove1) remove1.value = "";
 
-  // Clear the main input (and remove field for a clean state)
-  if (input) input.value = "";
-  if (remove) remove.value = "";
+  const input2 = document.getElementById('inputText2');
+  const remove2 = document.getElementById('removeText2');
+  if (input2) input2.value = "";
+  if (remove2) remove2.value = "";
 
   formatText();
 }
 
-// Track meaningful user activity (not mousemove, so it won't stay alive from accidental wiggles)
 ['pointerdown','keydown','wheel','touchstart','scroll'].forEach(evt => {
   window.addEventListener(evt, _setUserActivityNow, { passive: true });
 });
 
-// Tab visibility: if hidden for 5 minutes -> clear
 document.addEventListener('visibilitychange', () => {
-  if (document.hidden) {
-    _hiddenSinceAt = Date.now();
-  } else {
-    _hiddenSinceAt = null;
-  }
+  if (document.hidden) _hiddenSinceAt = Date.now();
+  else _hiddenSinceAt = null;
   _scheduleAutoClearCheck();
 });
 /* ======================================================================= */
@@ -1015,19 +1137,15 @@ function show(el, showFlag) {
   else el.classList.remove("visible");
 }
 
-function setSplitUnderLineVisible(isVisible) {
-  const line = document.getElementById('splitUnderLine');
+function setSplitUnderLineVisible(suffix, isVisible) {
+  const line = document.getElementById(`splitUnderLine${suffix}`);
   if (!line) return;
   line.style.display = isVisible ? "block" : "none";
 }
 
-function syncRemoveState() {
-  const removeModal = document.getElementById('removeModal');
-  const removeText = document.getElementById('removeText');
-  removeModal.classList.remove('disabled-box');
-  removeText.removeAttribute("disabled");
-}
-
+/* =========================
+   Dark mode
+   ========================= */
 function applyDarkMode(isDark) {
   document.body.classList.toggle('dark', !!isDark);
   const t = document.getElementById('darkModeToggle');
@@ -1040,13 +1158,13 @@ function toggleDarkMode() {
   try { localStorage.setItem('sp_darkmode', isDark ? '1' : '0'); } catch {}
 }
 
-/* ✅ helper: hide footer while modal is open */
+/* helper: hide footer while modal is open */
 function setModalOpen(open) {
   document.body.classList.toggle("modal-open", !!open);
 }
 
 /* =========================
-   ✅ SMOOTH Copied Toast
+   Copied toast
    ========================= */
 function showCopiedToast(text = "Copied") {
   const toast = document.getElementById("copiedToast");
@@ -1063,8 +1181,6 @@ function showCopiedToast(text = "Copied") {
   clearTimeout(showCopiedToast._hideT);
 
   toast.classList.remove("play");
-
-  // cancel current animation without a jarring flash
   left.style.animation = "none";
   right.style.animation = "none";
 
@@ -1082,7 +1198,7 @@ function showCopiedToast(text = "Copied") {
 }
 
 /* =========================
-   ✅ Less-than-99 modal
+   Less-than-99 modal
    ========================= */
 function showLt99Modal(msg = "Less than 99") {
   const modal = document.getElementById('lt99Modal');
@@ -1125,7 +1241,7 @@ function hideLt99Modal() {
   if (input) input.focus();
 }
 
-/* ✅ split99 toggle handler */
+/* ✅ Split99 toggle handler (PRIMARY ONLY validation) */
 function onSplit99Toggle() {
   const splitToggle = document.getElementById('split99Toggle');
   if (!splitToggle) return;
@@ -1141,28 +1257,10 @@ function onSplit99Toggle() {
   // turning ON
   split99JustPressed = true;
 
-  const input = document.getElementById('inputText')?.value ?? "";
-  const removeInput = document.getElementById('removeText')?.value.trim() ?? "";
-  const keepDuplicates = !!document.getElementById('keepDuplicatesToggle')?.checked;
+  // ✅ ONLY validate Primary panel ("") — Secondary is ignored for modal
+  const primaryLen = getCurrentPartsForPanel("").length;
 
-  let allParts = input
-    .replace(/\|/g, ' ')
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean);
-
-  const counts = {};
-  allParts.forEach(p => counts[p] = (counts[p] || 0) + 1);
-
-  let parts = keepDuplicates ? allParts : Object.keys(counts);
-
-  if (removeInput) {
-    const removeSet = new Set(removeInput.split(/[\s,|]+/).filter(Boolean));
-    parts = parts.filter(p => !removeSet.has(p));
-  }
-
-  // If <= 99 at the moment user tries to enable -> show modal + turn off
-  if (parts.length <= 99) {
+  if (primaryLen <= 99) {
     showLt99Modal("Less than 99");
     splitToggle.checked = false;
     split99JustPressed = false;
@@ -1170,18 +1268,20 @@ function onSplit99Toggle() {
     return;
   }
 
-  // valid enable
   if (lt99ModalOpen) hideLt99Modal();
   formatText();
-
-  // once enabled successfully, clear the "just pressed" flag
   split99JustPressed = false;
 }
 
-/* Clear confirm modal */
-function showClearModal() {
+/* =========================
+   Clear confirm modal
+   ========================= */
+function showClearModal(message) {
   const modal = document.getElementById('clearModal');
   const backdrop = document.getElementById('clearBackdrop');
+  const msgEl = document.getElementById('clearMsg');
+
+  if (msgEl) msgEl.textContent = message || "Clear?";
 
   setModalOpen(true);
 
@@ -1203,28 +1303,24 @@ function hideClearModal() {
   backdrop.setAttribute('aria-hidden', 'true');
 
   clearModalOpen = false;
-
   if (!lt99ModalOpen) setModalOpen(false);
 
-  const input = document.getElementById('inputText');
-  if (input) input.focus();
+  document.getElementById('inputText')?.focus();
 }
 
-function requestClear() {
-  const hasInput = document.getElementById('inputText').value.trim().length > 0;
-  const hasRemove = document.getElementById('removeText').value.trim().length > 0;
-  const hasAny = hasInput || hasRemove ||
-    document.getElementById('keepDuplicatesToggle').checked ||
-    document.getElementById('split99Toggle').checked ||
-    document.getElementById('sloToggle').checked;
+function requestClearFor(suffix) {
+  const hasInput = (document.getElementById(`inputText${suffix}`)?.value ?? "").trim().length > 0;
+  const hasRemove = (document.getElementById(`removeText${suffix}`)?.value ?? "").trim().length > 0;
+  if (!hasInput && !hasRemove) return;
 
-  if (!hasAny) return;
-  showClearModal();
+  _pendingClearSuffix = suffix;
+  const label = suffix === "2" ? "Secondary" : "Primary";
+  showClearModal(`Clear ${label}?`);
 }
 
 function confirmClear() {
   hideClearModal();
-  clearText(true);
+  clearPanel(_pendingClearSuffix, true);
 }
 
 /* Enter/Esc modal controls */
@@ -1239,7 +1335,9 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-/* ✅ CSV cell */
+/* =========================
+   CSV cell
+   ========================= */
 function csvCell(v) {
   const s = String(v ?? "");
   const looksNumeric = /^[0-9]+$/.test(s);
@@ -1249,7 +1347,9 @@ function csvCell(v) {
   return `"${s.replaceAll('"','""')}"`;
 }
 
-/* ✅ SL-O helpers */
+/* =========================
+   SL-O helpers
+   ========================= */
 function isSloOn() {
   return !!document.getElementById('sloToggle')?.checked;
 }
@@ -1260,27 +1360,82 @@ function joinWithPrefix(arr, sep='|') {
   return arr.map(withSloPrefix).join(sep);
 }
 
-/* Main formatter */
+/* Which panels are visible right now? */
+function getVisiblePanels() {
+  const arr = [""];
+  if (isSecondaryOn()) arr.push("2");
+  return arr;
+}
+
+/* Build tokens exactly how formatter will use them (no DOM changes) */
+function getCurrentPartsForPanel(suffix) {
+  const input = document.getElementById(`inputText${suffix}`)?.value ?? "";
+  const removeInput = document.getElementById(`removeText${suffix}`)?.value.trim() ?? "";
+  const keepDuplicates = !!document.getElementById('keepDuplicatesToggle')?.checked;
+
+  let allParts = input
+    .replace(/\|/g, ' ')
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  const counts = {};
+  allParts.forEach(p => counts[p] = (counts[p] || 0) + 1);
+
+  let parts = keepDuplicates ? allParts : Object.keys(counts);
+
+  if (removeInput) {
+    const removeSet = new Set(removeInput.split(/[\s,|]+/).filter(Boolean));
+    parts = parts.filter(p => !removeSet.has(p));
+  }
+
+  return parts;
+}
+
+/* =========================================================
+   Main formatter (formats BOTH panels)
+   - ✅ Split-99 modal logic is PRIMARY only (handled elsewhere)
+   - ✅ Silent untoggle also PRIMARY only
+   ========================================================= */
 function formatText() {
-  const input = document.getElementById('inputText').value;
+  const split99 = !!document.getElementById('split99Toggle')?.checked;
+  const vis = getVisiblePanels();
 
-  const output = document.getElementById('outputText');
-  const splitMount = document.getElementById('splitOutputsMount');
+  // render all visible panels
+  vis.forEach(suffix => formatPanel(suffix));
 
-  const copyBtn = document.getElementById('copyButton');
-  const clearBtn = document.getElementById('clearButton');
-  const pasteBtn = document.getElementById('pasteButton');
-  const qty = document.getElementById('qtyMarker');
+  // ✅ ONLY Primary panel can force split-off when it drops <= 99
+  if (split99 && !split99JustPressed) {
+    const primaryParts = panelState[""].currentOutputParts || [];
+    if (primaryParts.length <= 99) {
+      const splitToggle = document.getElementById('split99Toggle');
+      if (splitToggle) splitToggle.checked = false;
 
-  const removeModal = document.getElementById('removeModal');
-  const duplicateModal = document.getElementById('duplicateModal');
-  const duplicateListDiv = document.getElementById('duplicateList');
+      // re-render all visible panels with split off
+      vis.forEach(suffix => formatPanel(suffix));
+    }
+  }
+}
 
-  const split99 = document.getElementById('split99Toggle').checked;
+/* Format ONE panel and return its parts array */
+function formatPanel(suffix) {
+  const inputEl = document.getElementById(`inputText${suffix}`);
+  const output = document.getElementById(`outputText${suffix}`);
+  const splitMount = document.getElementById(`splitOutputsMount${suffix}`);
 
-  syncRemoveState();
+  const copyBtn = document.getElementById(`copyButton${suffix}`);
+  const clearBtn = document.getElementById(`clearButton${suffix}`);
+  const pasteBtn = document.getElementById(`pasteButton${suffix}`);
+  const qty = document.getElementById(`qtyMarker${suffix}`);
 
-  const removeInput = document.getElementById('removeText').value.trim();
+  const removeModal = document.getElementById(`removeModal${suffix}`);
+  const duplicateModal = document.getElementById(`duplicateModal${suffix}`);
+  const duplicateListDiv = document.getElementById(`duplicateList${suffix}`);
+
+  const split99 = !!document.getElementById('split99Toggle')?.checked;
+
+  const removeInput = document.getElementById(`removeText${suffix}`)?.value.trim() ?? "";
+  const input = inputEl?.value ?? "";
 
   if (input.trim() === "") {
     output.style.display = "none";
@@ -1289,29 +1444,24 @@ function formatText() {
     splitMount.style.display = "none";
     splitMount.innerHTML = "";
 
-    setSplitUnderLineVisible(false);
+    setSplitUnderLineVisible(suffix, false);
 
     copyBtn.style.display = "none";
     clearBtn.style.display = "none";
     pasteBtn.style.display = "inline-block";
     qty.innerText = "Qty: 0";
+
     show(removeModal, false);
     show(duplicateModal, false);
 
     duplicateListDiv.innerText = "None";
-    renderDuplicateLine([]);
+    renderDuplicateLine(suffix, []);
 
-    currentOutputParts = [];
-    duplicateLine = "";
+    panelState[suffix].itemCounts = {};
+    panelState[suffix].currentOutputParts = [];
+    panelState[suffix].duplicateLine = "";
 
-    // if split was on and input got cleared, just disable it cleanly
-    if (split99) {
-      const st = document.getElementById('split99Toggle');
-      if (st) st.checked = false;
-    }
-
-    if (lt99ModalOpen) hideLt99Modal();
-    return;
+    return [];
   }
 
   pasteBtn.style.display = "none";
@@ -1325,35 +1475,31 @@ function formatText() {
     .replace(/\|/g, ' ')
     .trim()
     .split(/\s+/)
-    .filter(p => p);
+    .filter(Boolean);
 
   const counts = {};
   allParts.forEach(p => counts[p] = (counts[p] || 0) + 1);
-  itemCounts = counts;
+  panelState[suffix].itemCounts = counts;
 
   const duplicateBlocks = [];
   for (const n in counts) {
     if (counts[n] > 1) {
       duplicateBlocks.push(`
         <div>
-          <span class="dup-token" data-num="${n}" onclick="highlightNumber('${n}')">
-            ${n}
-          </span><br>
+          <span class="dup-token" data-num="${n}" onclick="highlightNumber('${n}')">${n}</span><br>
           Removed x${counts[n]-1}<br>
           Appears x${counts[n]}
         </div>
       `);
     }
   }
-
-  duplicateListDiv.innerHTML =
-    duplicateBlocks.length ? duplicateBlocks.join('') : "None";
+  duplicateListDiv.innerHTML = duplicateBlocks.length ? duplicateBlocks.join('') : "None";
 
   const duplicateNumbers = Object.keys(counts).filter(n => counts[n] > 1);
-  duplicateLine = duplicateNumbers.join('|');
-  renderDuplicateLine(duplicateNumbers);
+  panelState[suffix].duplicateLine = duplicateNumbers.join('|');
+  renderDuplicateLine(suffix, duplicateNumbers);
 
-  const keepDuplicates = document.getElementById('keepDuplicatesToggle').checked;
+  const keepDuplicates = !!document.getElementById('keepDuplicatesToggle')?.checked;
   let parts = keepDuplicates ? allParts : Object.keys(counts);
 
   if (removeInput) {
@@ -1361,57 +1507,34 @@ function formatText() {
     parts = parts.filter(p => !removeSet.has(p));
   }
 
-  currentOutputParts = [...parts];
+  panelState[suffix].currentOutputParts = [...parts];
   qty.innerText = `Qty: ${parts.length}`;
 
-  // ✅ NEW: If split is ON, but remove/changes drop qty <= 99,
-  // silently untoggle (NO modal) for clean experience.
-  if (split99 && parts.length <= 99 && !split99JustPressed) {
-    const splitToggle = document.getElementById('split99Toggle');
-    if (splitToggle) splitToggle.checked = false;
-
+  // If split is OFF OR this panel is <=99, show normal output.
+  // ✅ This makes Secondary "ignore" the <=99 split modal rule automatically.
+  if (!split99 || parts.length <= 99) {
     splitMount.style.display = "none";
     splitMount.innerHTML = "";
-    setSplitUnderLineVisible(false);
+    setSplitUnderLineVisible(suffix, false);
 
     output.style.display = "block";
-    renderOutput(parts);
-    return;
+    renderOutput(suffix, parts);
+    return parts;
   }
 
-  // If split is ON and qty <= 99 due to user pressing toggle,
-  // onSplit99Toggle already handled modal + turning it off.
-  if (split99 && parts.length <= 99) {
-    splitMount.style.display = "none";
-    splitMount.innerHTML = "";
-    setSplitUnderLineVisible(false);
+  // Split ON + >99 => split batches
+  output.style.display = "none";
+  output.innerHTML = "";
 
-    output.style.display = "block";
-    renderOutput(parts);
-    return;
-  }
+  splitMount.style.display = "block";
+  renderSplitOutputs(suffix, parts);
 
-  if (!split99) {
-    splitMount.style.display = "none";
-    splitMount.innerHTML = "";
-
-    setSplitUnderLineVisible(false);
-
-    output.style.display = "block";
-    renderOutput(parts);
-  } else {
-    output.style.display = "none";
-    output.innerHTML = "";
-
-    splitMount.style.display = "block";
-    renderSplitOutputs(parts);
-
-    setSplitUnderLineVisible(parts.length > 99);
-  }
+  setSplitUnderLineVisible(suffix, parts.length > 99);
+  return parts;
 }
 
-function renderOutput(parts) {
-  const outEl = document.getElementById('outputText');
+function renderOutput(suffix, parts) {
+  const outEl = document.getElementById(`outputText${suffix}`);
   outEl.innerHTML = "";
   parts.forEach((p, idx) => {
     const span = document.createElement('span');
@@ -1420,20 +1543,17 @@ function renderOutput(parts) {
     span.textContent = withSloPrefix(p);
     span.onclick = () => highlightNumber(p);
     outEl.appendChild(span);
-    if (idx < parts.length-1)
-      outEl.appendChild(document.createTextNode('|'));
+    if (idx < parts.length-1) outEl.appendChild(document.createTextNode('|'));
   });
 }
 
-function renderSplitOutputs(parts) {
-  const mount = document.getElementById('splitOutputsMount');
+function renderSplitOutputs(suffix, parts) {
+  const mount = document.getElementById(`splitOutputsMount${suffix}`);
   mount.innerHTML = "";
 
   const groupSize = 99;
   const groups = [];
-  for (let i = 0; i < parts.length; i += groupSize) {
-    groups.push(parts.slice(i, i + groupSize));
-  }
+  for (let i = 0; i < parts.length; i += groupSize) groups.push(parts.slice(i, i + groupSize));
 
   groups.forEach((group, idx) => {
     if (idx > 0) {
@@ -1481,9 +1601,9 @@ function renderSplitOutputs(parts) {
   });
 }
 
-function renderDuplicateLine(dups) {
-  const wrapper = document.getElementById('duplicateCopyWrapper');
-  const container = document.getElementById('duplicateCopyText');
+function renderDuplicateLine(suffix, dups) {
+  const wrapper = document.getElementById(`duplicateCopyWrapper${suffix}`);
+  const container = document.getElementById(`duplicateCopyText${suffix}`);
 
   if (!dups.length) {
     wrapper.classList.add("hidden");
@@ -1492,8 +1612,8 @@ function renderDuplicateLine(dups) {
   }
 
   wrapper.classList.remove("hidden");
-
   container.innerHTML = "";
+
   dups.forEach((n, idx) => {
     const span = document.createElement('span');
     span.className = 'dup-line-token';
@@ -1501,98 +1621,32 @@ function renderDuplicateLine(dups) {
     span.textContent = n;
     span.onclick = () => highlightNumber(n);
     container.appendChild(span);
-    if (idx < dups.length-1)
-      container.appendChild(document.createTextNode('|'));
+    if (idx < dups.length-1) container.appendChild(document.createTextNode('|'));
   });
 }
 
 function highlightNumber(value) {
   const tokens = document.querySelectorAll('.num-token, .dup-token, .dup-line-token');
-  tokens.forEach(t => {
-    t.classList.toggle('highlight', t.dataset.num === value);
-  });
+  tokens.forEach(t => t.classList.toggle('highlight', t.dataset.num === value));
 }
 
-function copyDuplicates() {
-  if (duplicateLine) {
-    navigator.clipboard.writeText(duplicateLine);
-    showCopiedToast("Copied duplicates");
+function copyDuplicatesFor(suffix) {
+  const line = panelState[suffix].duplicateLine;
+  if (line) {
+    navigator.clipboard.writeText(line);
+    showCopiedToast(suffix === "2" ? "Copied duplicates (Secondary)" : "Copied duplicates");
   }
 }
 
-window.onload = () => {
-  try {
-    const saved = localStorage.getItem('sp_darkmode');
-    applyDarkMode(saved === '1');
-  } catch { applyDarkMode(false); }
-
-  const container = document.getElementById('pipeBackground');
-  for (let i = 0; i < 50; i++) {
-    const pipe = document.createElement('img');
-    pipe.src = 'pipe.png';
-    pipe.className = 'pipe';
-    pipe.style.left = `${Math.random()*window.innerWidth}px`;
-    pipe.style.top = `${-Math.random()*1000}px`;
-    pipe.style.animationDuration = `${8 + Math.random()*4}s`;
-    pipe.style.animationDelay = `${Math.random()*5}s`;
-    container.appendChild(pipe);
-  }
-
-  fetch('motivation.txt')
-    .then(r => r.text())
-    .then(data => {
-      const lines = data.split('\n').filter(l => l.trim());
-      const msg = lines.length ? lines[Math.floor(Math.random()*lines.length)] : "Stay positive. Keep pushing forward!";
-      startMarquee(msg);
-    })
-    .catch(() => startMarquee("Stay positive. Keep pushing forward!"));
-
-  const input = document.getElementById('inputText');
-  input.focus();
-  input.style.caretColor = "transparent";
-
-  input.addEventListener('paste', () => setTimeout(formatText, 0));
-
-  // ✅ NEW: start the auto-clear scheduler once the page is ready
-  _scheduleAutoClearCheck();
-};
-
-/* marquee */
-function startMarquee(text) {
-  const scroller = document.querySelector('.headline-scroller');
-  const el = document.getElementById('headlineText');
-
-  el.textContent = text;
-
-  if (el._marqueeAnim) {
-    try { el._marqueeAnim.cancel(); } catch {}
-    el._marqueeAnim = null;
-  }
-
-  requestAnimationFrame(() => {
-    const scrollWidth = scroller.clientWidth;
-    const textWidth = el.scrollWidth;
-
-    const fromX = scrollWidth;
-    const toX = -textWidth;
-
-    const distance = fromX - toX;
-    const pxPerSec = 140;
-    const duration = Math.max(9000, (distance / pxPerSec) * 1000);
-
-    el._marqueeAnim = el.animate(
-      [{ transform: `translateX(${fromX}px)` }, { transform: `translateX(${toX}px)` }],
-      { duration, iterations: Infinity, easing: 'linear' }
-    );
-  });
-}
-
-async function pasteText() {
-  const input = document.getElementById('inputText');
-  const pasteBtn = document.getElementById('pasteButton');
+/* =========================
+   Paste/Copy/Clear per panel
+   ========================= */
+async function pasteTextFor(suffix) {
+  const input = document.getElementById(`inputText${suffix}`);
+  const pasteBtn = document.getElementById(`pasteButton${suffix}`);
+  if (!input) return;
 
   input.focus();
-
   if (pasteBtn) { pasteBtn.disabled = true; setTimeout(() => pasteBtn.disabled = false, 250); }
 
   try {
@@ -1630,44 +1684,47 @@ async function pasteText() {
   input.focus();
 }
 
-function copyText() {
-  if (currentOutputParts.length) {
-    navigator.clipboard.writeText(joinWithPrefix(currentOutputParts, '|'));
-    showCopiedToast("Copied");
+function copyTextFor(suffix) {
+  const parts = panelState[suffix].currentOutputParts;
+  if (parts.length) {
+    navigator.clipboard.writeText(joinWithPrefix(parts, '|'));
+    showCopiedToast(suffix === "2" ? "Copied (Secondary)" : "Copied");
   }
 }
 
-function clearText(skipConfirm=false) {
-  if (!skipConfirm) { requestClear(); return; }
+function clearPanel(suffix, skipConfirm=false) {
+  if (!skipConfirm) { requestClearFor(suffix); return; }
 
-  document.getElementById('inputText').value = "";
-  document.getElementById('removeText').value = "";
-  document.getElementById('keepDuplicatesToggle').checked = false;
-  document.getElementById('split99Toggle').checked = false;
-  document.getElementById('sloToggle').checked = false;
+  document.getElementById(`inputText${suffix}`).value = "";
+  document.getElementById(`removeText${suffix}`).value = "";
 
-  syncRemoveState();
-
-  if (lt99ModalOpen) hideLt99Modal();
+  panelState[suffix].itemCounts = {};
+  panelState[suffix].currentOutputParts = [];
+  panelState[suffix].duplicateLine = "";
 
   formatText();
 }
 
+/* =========================
+   CSV export
+   - Secondary OFF: export primary only
+   - Secondary ON: export both panels
+   ========================= */
 function exportCSV() {
-  const split99On = document.getElementById('split99Toggle').checked;
+  const split99On = !!document.getElementById('split99Toggle')?.checked;
 
-  if (split99On) {
+  function buildSplit99CsvForSuffix(suffix, title) {
     const groupSize = 99;
+    const parts = panelState[suffix].currentOutputParts;
 
     const groups = [];
-    for (let i = 0; i < currentOutputParts.length; i += groupSize) {
-      groups.push(currentOutputParts.slice(i, i + groupSize));
-    }
+    for (let i = 0; i < parts.length; i += groupSize) groups.push(parts.slice(i, i + groupSize));
 
     const groupCount = groups.length;
     const maxLen = Math.max(0, ...groups.map(g => g.length));
 
     const rows = [];
+    rows.push([title]);
     const headerRow = [];
     for (let c = 0; c < groupCount; c++) headerRow.push(`Group ${c + 1}`);
     rows.push(headerRow);
@@ -1680,32 +1737,145 @@ function exportCSV() {
       }
       rows.push(row);
     }
+    rows.push([]);
+    return rows.map(r => r.map(csvCell).join(",")).join("\n");
+  }
 
-    const csv = rows.map(r => r.map(csvCell).join(",")).join("\n");
+  function buildNormalCsvForSuffix(suffix, title) {
+    const headers = ["Sales number","Duplicated","Removed","Appears"];
+    const rows = [];
+    rows.push([title]);
+    rows.push(headers);
+
+    const counts = panelState[suffix].itemCounts || {};
+    for (const [num,count] of Object.entries(counts)) {
+      const dup = count > 1 ? "Yes" : "No";
+      rows.push([withSloPrefix(num), dup, count>1 ? count-1 : 0, count]);
+    }
+    rows.push([]);
+    return rows.map(r => r.map(csvCell).join(",")).join("\n");
+  }
+
+  if (!isSecondaryOn()) {
+    const csv = split99On
+      ? buildSplit99CsvForSuffix("", "Primary")
+      : buildNormalCsvForSuffix("", "Primary");
 
     const blob = new Blob([csv], { type:"text/csv;charset=utf-8" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = "The_Kyle_File_Batches.csv";
+    link.download = split99On ? "The_Kyle_File_Batches.csv" : "The_Kyle_File.csv";
     link.click();
     return;
   }
 
-  const headers = ["Sales number","Duplicated","Removed","Appears"];
-  const rows = [headers];
-
-  for (const [num,count] of Object.entries(itemCounts)) {
-    const dup = count > 1 ? "Yes" : "No";
-    rows.push([withSloPrefix(num), dup, count>1 ? count-1 : 0, count]);
+  let csv = "";
+  if (split99On) {
+    csv += buildSplit99CsvForSuffix("", "Primary");
+    csv += "\n";
+    csv += buildSplit99CsvForSuffix("2", "Secondary");
+  } else {
+    csv += buildNormalCsvForSuffix("", "Primary");
+    csv += "\n";
+    csv += buildNormalCsvForSuffix("2", "Secondary");
   }
-
-  const csv = rows.map(r => r.map(csvCell).join(",")).join("\n");
 
   const blob = new Blob([csv], { type:"text/csv;charset=utf-8" });
   const link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
-  link.download = "The_Kyle_File.csv";
+  link.download = split99On ? "The_Kyle_File_Batches_Dual.csv" : "The_Kyle_File_Dual.csv";
   link.click();
+}
+
+/* =========================
+   Startup + pipes + marquee
+   ========================= */
+window.onload = () => {
+  try {
+    const saved = localStorage.getItem('sp_darkmode');
+    applyDarkMode(saved === '1');
+  } catch { applyDarkMode(false); }
+
+  // restore Secondary toggle
+  try {
+    const s = localStorage.getItem('sp_secondary');
+    const on = (s === '1');
+    const t = document.getElementById('secondaryToggle');
+    if (t) t.checked = on;
+  } catch {}
+
+  // apply secondary UI state
+  const on = isSecondaryOn();
+  const panel = document.getElementById('panelSecondary');
+  const container = document.getElementById('mainContainer');
+  if (on) {
+    panel.classList.remove('hidden');
+    container.classList.add('dual');
+  } else {
+    panel.classList.add('hidden');
+    container.classList.remove('dual');
+  }
+
+  const containerPipes = document.getElementById('pipeBackground');
+  for (let i = 0; i < 50; i++) {
+    const pipe = document.createElement('img');
+    pipe.src = 'pipe.png';
+    pipe.className = 'pipe';
+    pipe.style.left = `${Math.random()*window.innerWidth}px`;
+    pipe.style.top = `${-Math.random()*1000}px`;
+    pipe.style.animationDuration = `${8 + Math.random()*4}s`;
+    pipe.style.animationDelay = `${Math.random()*5}s`;
+    containerPipes.appendChild(pipe);
+  }
+
+  fetch('motivation.txt')
+    .then(r => r.text())
+    .then(data => {
+      const lines = data.split('\n').filter(l => l.trim());
+      const msg = lines.length ? lines[Math.floor(Math.random()*lines.length)] : "Stay positive. Keep pushing forward!";
+      startMarquee(msg);
+    })
+    .catch(() => startMarquee("Stay positive. Keep pushing forward!"));
+
+  const input = document.getElementById('inputText');
+  input?.focus();
+  if (input) input.style.caretColor = "transparent";
+
+  input?.addEventListener('paste', () => setTimeout(formatText, 0));
+  document.getElementById('inputText2')?.addEventListener('paste', () => setTimeout(formatText, 0));
+
+  _scheduleAutoClearCheck();
+  formatText();
+};
+
+/* marquee */
+function startMarquee(text) {
+  const scroller = document.querySelector('.headline-scroller');
+  const el = document.getElementById('headlineText');
+
+  el.textContent = text;
+
+  if (el._marqueeAnim) {
+    try { el._marqueeAnim.cancel(); } catch {}
+    el._marqueeAnim = null;
+  }
+
+  requestAnimationFrame(() => {
+    const scrollWidth = scroller.clientWidth;
+    const textWidth = el.scrollWidth;
+
+    const fromX = scrollWidth;
+    const toX = -textWidth;
+
+    const distance = fromX - toX;
+    const pxPerSec = 140;
+    const duration = Math.max(9000, (distance / pxPerSec) * 1000);
+
+    el._marqueeAnim = el.animate(
+      [{ transform: `translateX(${fromX}px)` }, { transform: `translateX(${toX}px)` }],
+      { duration, iterations: Infinity, easing: 'linear' }
+    );
+  });
 }
 </script>
 
