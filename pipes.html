@@ -337,6 +337,18 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
+    /* ✅ Secondary sits vertically centered (in its own side) while Primary stays put */
+    .container.dual .panel.secondary { align-self: center; }
+
+    /* ✅ Pop-in animation for Secondary when toggled on */
+    @keyframes popFromCenter {
+      0% { opacity: 0; transform: translateY(18px) scale(0.94); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .container.dual .panel.secondary.pop .panel-card {
+      animation: popFromCenter 260ms cubic-bezier(0.2, 0.9, 0.2, 1) both;
+    }
+
     h2 { margin-bottom: 8px; font-weight: 700; color: var(--accent); }
     p { margin-top: 0; font-size: 14px; color: var(--text); opacity: 0.95; }
 
@@ -687,6 +699,7 @@
       .container { top: 0; left: 0; transform: none; margin: 160px auto 40px; }
       .header-right { flex-direction: column; align-items: flex-end; }
       .settings-card { width: min(var(--settings-width), 92vw); margin-top: 0; }
+      .container.dual .panel.secondary { align-self: stretch; } /* stacked mode */
     }
 
     /* =======================================================================
@@ -848,7 +861,6 @@
 
       <div class="settings-divider"></div>
 
-      <!-- ✅ Secondary toggle -->
       <div class="toggle-container" style="margin-bottom: 0; border-bottom:none; padding-bottom:0;">
         <span class="toggle-label">Secondary</span>
         <label class="switch">
@@ -865,13 +877,10 @@
     <div class="headline-text" id="headlineText">Loading motivation...</div>
   </div>
 
-  <!-- Wrapper (no glass) -->
   <div class="container" id="mainContainer">
     <div class="panels" id="panelsWrap">
 
-      <!-- =========================
-           PRIMARY CARD
-           ========================= -->
+      <!-- PRIMARY -->
       <div class="panel primary" id="panelPrimary">
         <div class="panel-card">
           <div class="panel-inner">
@@ -916,9 +925,7 @@
         </div>
       </div>
 
-      <!-- =========================
-           SECONDARY CARD
-           ========================= -->
+      <!-- SECONDARY -->
       <div class="panel secondary hidden" id="panelSecondary">
         <div class="panel-card">
           <div class="panel-inner">
@@ -966,7 +973,7 @@
     </div>
   </div>
 
-  <!-- === Less than/equal 99 modal (Win95 style) === -->
+  <!-- Less than/equal 99 modal (Win95 style) -->
   <div id="lt99Backdrop" class="w95-backdrop hidden" aria-hidden="true"></div>
   <div id="lt99Modal" class="w95-modal hidden" role="dialog" aria-modal="true"
        aria-labelledby="lt99Title" aria-describedby="lt99Msg">
@@ -1019,9 +1026,6 @@
     style="position:fixed; left:-9999px; top:-9999px; width:1px; height:1px; opacity:0;"></textarea>
 
 <script>
-/* =========================================================
-   Per-panel state (primary suffix "" and secondary suffix "2")
-   ========================================================= */
 const panelState = {
   "":  { itemCounts:{}, currentOutputParts:[], duplicateLine:"" },
   "2": { itemCounts:{}, currentOutputParts:[], duplicateLine:"" }
@@ -1030,12 +1034,10 @@ const panelState = {
 let lt99ModalOpen = false;
 let clearModalOpen = false;
 
-let split99JustPressed = false;          // used to decide modal vs silent untoggle
-let _pendingClearSuffix = "";            // "" or "2"
+let split99JustPressed = false;
+let _pendingClearSuffix = "";
 
-/* =========================
-   Secondary toggle
-   ========================= */
+/* Secondary toggle */
 function isSecondaryOn() {
   return !!document.getElementById('secondaryToggle')?.checked;
 }
@@ -1048,11 +1050,18 @@ function toggleSecondary() {
   if (on) {
     panel.classList.remove('hidden');
     container.classList.add('dual');
+
+    // pop-in
+    panel.classList.add('pop');
+    clearTimeout(toggleSecondary._popT);
+    toggleSecondary._popT = setTimeout(() => panel.classList.remove('pop'), 320);
+
     try { localStorage.setItem('sp_secondary', '1'); } catch {}
     formatText();
     setTimeout(() => document.getElementById('inputText2')?.focus(), 0);
   } else {
     panel.classList.add('hidden');
+    panel.classList.remove('pop');
     container.classList.remove('dual');
     try { localStorage.setItem('sp_secondary', '0'); } catch {}
     formatText();
@@ -1060,10 +1069,7 @@ function toggleSecondary() {
   }
 }
 
-/* =======================================================================
-   Auto-clear after 5 minutes of inactivity OR 5 minutes in background tab
-   (clears BOTH panels)
-   ======================================================================= */
+/* Auto-clear after 5 minutes */
 const AUTO_CLEAR_MS = 5 * 60 * 1000;
 
 let _autoClearTimer = null;
@@ -1079,7 +1085,6 @@ function _scheduleAutoClearCheck() {
   clearTimeout(_autoClearTimer);
 
   const now = Date.now();
-
   const idleRemaining = Math.max(0, AUTO_CLEAR_MS - (now - _lastUserActivityAt));
   const hiddenRemaining = (_hiddenSinceAt == null)
     ? Infinity
@@ -1130,7 +1135,6 @@ document.addEventListener('visibilitychange', () => {
   else _hiddenSinceAt = null;
   _scheduleAutoClearCheck();
 });
-/* ======================================================================= */
 
 function show(el, showFlag) {
   if (showFlag) el.classList.add("visible");
@@ -1143,9 +1147,7 @@ function setSplitUnderLineVisible(suffix, isVisible) {
   line.style.display = isVisible ? "block" : "none";
 }
 
-/* =========================
-   Dark mode
-   ========================= */
+/* Dark mode */
 function applyDarkMode(isDark) {
   document.body.classList.toggle('dark', !!isDark);
   const t = document.getElementById('darkModeToggle');
@@ -1158,14 +1160,11 @@ function toggleDarkMode() {
   try { localStorage.setItem('sp_darkmode', isDark ? '1' : '0'); } catch {}
 }
 
-/* helper: hide footer while modal is open */
 function setModalOpen(open) {
   document.body.classList.toggle("modal-open", !!open);
 }
 
-/* =========================
-   Copied toast
-   ========================= */
+/* Copied toast */
 function showCopiedToast(text = "Copied") {
   const toast = document.getElementById("copiedToast");
   const left = document.getElementById("copiedLeft");
@@ -1197,9 +1196,7 @@ function showCopiedToast(text = "Copied") {
   }, 820);
 }
 
-/* =========================
-   Less-than-99 modal
-   ========================= */
+/* Less-than-99 modal */
 function showLt99Modal(msg = "Less than 99") {
   const modal = document.getElementById('lt99Modal');
   const backdrop = document.getElementById('lt99Backdrop');
@@ -1241,12 +1238,11 @@ function hideLt99Modal() {
   if (input) input.focus();
 }
 
-/* ✅ Split99 toggle handler (PRIMARY ONLY validation) */
+/* Split99 toggle handler (PRIMARY ONLY validation) */
 function onSplit99Toggle() {
   const splitToggle = document.getElementById('split99Toggle');
   if (!splitToggle) return;
 
-  // turning OFF
   if (!splitToggle.checked) {
     split99JustPressed = false;
     if (lt99ModalOpen) hideLt99Modal();
@@ -1254,10 +1250,8 @@ function onSplit99Toggle() {
     return;
   }
 
-  // turning ON
   split99JustPressed = true;
 
-  // ✅ ONLY validate Primary panel ("") — Secondary is ignored for modal
   const primaryLen = getCurrentPartsForPanel("").length;
 
   if (primaryLen <= 99) {
@@ -1273,9 +1267,7 @@ function onSplit99Toggle() {
   split99JustPressed = false;
 }
 
-/* =========================
-   Clear confirm modal
-   ========================= */
+/* Clear confirm modal */
 function showClearModal(message) {
   const modal = document.getElementById('clearModal');
   const backdrop = document.getElementById('clearBackdrop');
@@ -1323,7 +1315,6 @@ function confirmClear() {
   clearPanel(_pendingClearSuffix, true);
 }
 
-/* Enter/Esc modal controls */
 document.addEventListener('keydown', (e) => {
   if (lt99ModalOpen) {
     if (e.key === 'Enter' || e.key === 'Escape') { e.preventDefault(); hideLt99Modal(); }
@@ -1335,9 +1326,7 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-/* =========================
-   CSV cell
-   ========================= */
+/* CSV cell */
 function csvCell(v) {
   const s = String(v ?? "");
   const looksNumeric = /^[0-9]+$/.test(s);
@@ -1347,9 +1336,7 @@ function csvCell(v) {
   return `"${s.replaceAll('"','""')}"`;
 }
 
-/* =========================
-   SL-O helpers
-   ========================= */
+/* SL-O helpers */
 function isSloOn() {
   return !!document.getElementById('sloToggle')?.checked;
 }
@@ -1367,7 +1354,6 @@ function getVisiblePanels() {
   return arr;
 }
 
-/* Build tokens exactly how formatter will use them (no DOM changes) */
 function getCurrentPartsForPanel(suffix) {
   const input = document.getElementById(`inputText${suffix}`)?.value ?? "";
   const removeInput = document.getElementById(`removeText${suffix}`)?.value.trim() ?? "";
@@ -1392,32 +1378,24 @@ function getCurrentPartsForPanel(suffix) {
   return parts;
 }
 
-/* =========================================================
-   Main formatter (formats BOTH panels)
-   - ✅ Split-99 modal logic is PRIMARY only (handled elsewhere)
-   - ✅ Silent untoggle also PRIMARY only
-   ========================================================= */
+/* Main formatter */
 function formatText() {
   const split99 = !!document.getElementById('split99Toggle')?.checked;
   const vis = getVisiblePanels();
 
-  // render all visible panels
   vis.forEach(suffix => formatPanel(suffix));
 
-  // ✅ ONLY Primary panel can force split-off when it drops <= 99
   if (split99 && !split99JustPressed) {
     const primaryParts = panelState[""].currentOutputParts || [];
     if (primaryParts.length <= 99) {
       const splitToggle = document.getElementById('split99Toggle');
       if (splitToggle) splitToggle.checked = false;
 
-      // re-render all visible panels with split off
       vis.forEach(suffix => formatPanel(suffix));
     }
   }
 }
 
-/* Format ONE panel and return its parts array */
 function formatPanel(suffix) {
   const inputEl = document.getElementById(`inputText${suffix}`);
   const output = document.getElementById(`outputText${suffix}`);
@@ -1510,8 +1488,6 @@ function formatPanel(suffix) {
   panelState[suffix].currentOutputParts = [...parts];
   qty.innerText = `Qty: ${parts.length}`;
 
-  // If split is OFF OR this panel is <=99, show normal output.
-  // ✅ This makes Secondary "ignore" the <=99 split modal rule automatically.
   if (!split99 || parts.length <= 99) {
     splitMount.style.display = "none";
     splitMount.innerHTML = "";
@@ -1522,7 +1498,6 @@ function formatPanel(suffix) {
     return parts;
   }
 
-  // Split ON + >99 => split batches
   output.style.display = "none";
   output.innerHTML = "";
 
@@ -1638,9 +1613,7 @@ function copyDuplicatesFor(suffix) {
   }
 }
 
-/* =========================
-   Paste/Copy/Clear per panel
-   ========================= */
+/* Paste/Copy/Clear per panel */
 async function pasteTextFor(suffix) {
   const input = document.getElementById(`inputText${suffix}`);
   const pasteBtn = document.getElementById(`pasteButton${suffix}`);
@@ -1705,11 +1678,7 @@ function clearPanel(suffix, skipConfirm=false) {
   formatText();
 }
 
-/* =========================
-   CSV export
-   - Secondary OFF: export primary only
-   - Secondary ON: export both panels
-   ========================= */
+/* CSV export */
 function exportCSV() {
   const split99On = !!document.getElementById('split99Toggle')?.checked;
 
@@ -1787,16 +1756,13 @@ function exportCSV() {
   link.click();
 }
 
-/* =========================
-   Startup + pipes + marquee
-   ========================= */
+/* Startup + pipes + marquee */
 window.onload = () => {
   try {
     const saved = localStorage.getItem('sp_darkmode');
     applyDarkMode(saved === '1');
   } catch { applyDarkMode(false); }
 
-  // restore Secondary toggle
   try {
     const s = localStorage.getItem('sp_secondary');
     const on = (s === '1');
@@ -1804,7 +1770,6 @@ window.onload = () => {
     if (t) t.checked = on;
   } catch {}
 
-  // apply secondary UI state
   const on = isSecondaryOn();
   const panel = document.getElementById('panelSecondary');
   const container = document.getElementById('mainContainer');
