@@ -1,0 +1,588 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Custom Longboard Generator</title>
+  <style>
+    :root { color-scheme: dark; }
+    body{
+      margin:0; min-height:100vh; display:grid; place-items:center;
+      background:#0b0c0f; color:#e8e8ea;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+    .app{
+      width:min(1150px, 95vw);
+      display:grid;
+      grid-template-columns: 1.35fr 0.65fr;
+      gap:16px;
+      padding:16px;
+      align-items:start;
+    }
+    .card{
+      background:#0f1117;
+      border:1px solid #1e2230;
+      border-radius:18px;
+      padding:14px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.35);
+    }
+
+    /* Desktop canvas behavior: stable, nice proportions */
+    canvas{
+      width:100%;
+      height:auto;
+      display:block;
+      border-radius:12px;
+      background: radial-gradient(1000px 500px at 50% 40%, rgba(255,255,255,.05), rgba(255,255,255,0));
+      cursor:grab;
+      user-select:none;
+      touch-action:none; /* we’ll handle touch gestures ourselves */
+    }
+    canvas:active{ cursor:grabbing; }
+
+    h2{ margin:0 0 8px; font-size:14px; opacity:.9; letter-spacing:.2px; }
+    .hint{ font-size:12px; opacity:.75; line-height:1.35; }
+    .row{ display:grid; gap:10px; margin-bottom:14px; }
+
+    input[type="file"]{
+      width:100%;
+      padding:10px;
+      border-radius:12px;
+      border:1px dashed #2b3146;
+      background:#0b0c0f;
+      color:#e8e8ea;
+    }
+    .ctrl{
+      display:grid;
+      grid-template-columns: 1fr auto;
+      gap:10px;
+      align-items:center;
+    }
+    input[type="range"]{ width:100%; grid-column:1 / -1; }
+    .value{ font-variant-numeric: tabular-nums; font-size:12px; opacity:.85; min-width:60px; text-align:right; }
+    .mini{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
+    button{
+      width:100%;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid #2b3146;
+      background:#151a28;
+      color:#e8e8ea;
+      font-weight:600;
+      cursor:pointer;
+    }
+    button:hover{ background:#1b2133; }
+    select{
+      width:100%;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid #2b3146;
+      background:#0b0c0f;
+      color:#e8e8ea;
+    }
+    .status{
+      font-size:12px;
+      padding:10px;
+      border-radius:12px;
+      border:1px solid #2b3146;
+      background: rgba(255,255,255,.03);
+      word-break: break-word;
+      line-height: 1.35;
+    }
+    .ok{ border-color: rgba(80, 200, 120, .35); }
+    .bad{ border-color: rgba(255, 90, 90, .35); }
+    code{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 12px; }
+
+    /* ===== Mobile-only layout changes (ONLY on mobile) ===== */
+    @media (max-width: 768px) and (pointer: coarse) {
+      body{ place-items: stretch; }
+      .app{
+        width:100%;
+        padding:10px;
+        grid-template-columns: 1fr;
+      }
+      .controls{
+        position: static !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <div class="card">
+      <!-- Desktop uses fixed internal resolution; mobile will override via JS -->
+      <canvas id="c" width="900" height="1600"></canvas>
+      <div class="hint" id="hint" style="margin-top:10px;"></div>
+    </div>
+
+    <div class="card controls" style="position: sticky; top: 14px;">
+      <div class="row">
+        <h2>Board mask</h2>
+        <div id="status" class="status">Loading <code>s8bord.png</code>…</div>
+        <div class="hint">Keep <code>index.html</code> and <code>s8bord.png</code> in the same folder.</div>
+      </div>
+
+      <div class="row">
+        <h2>Upload your graphic</h2>
+        <input id="upload" type="file" accept="image/*" />
+        <div class="hint">If it lands off-screen, hit <b>Center</b>.</div>
+      </div>
+
+      <div class="row">
+        <h2>Transform</h2>
+
+        <div class="ctrl">
+          <label for="scale">Scale</label>
+          <div class="value" id="scaleVal">1.00×</div>
+          <input id="scale" type="range" min="0.1" max="6" step="0.01" value="1" />
+        </div>
+
+        <div class="ctrl">
+          <label for="rot">Rotation</label>
+          <div class="value" id="rotVal">0.0°</div>
+          <input id="rot" type="range" min="-180" max="180" step="0.1" value="0" />
+        </div>
+
+        <div class="ctrl">
+          <label for="overlay">Board overlay opacity</label>
+          <div class="value" id="opVal">25%</div>
+          <input id="overlay" type="range" min="0" max="1" step="0.01" value="0.25" />
+        </div>
+
+        <div class="row" style="margin:0;">
+          <label class="hint" for="blend" style="opacity:.85;">Overlay blend mode</label>
+          <select id="blend">
+            <option value="multiply" selected>multiply (recommended)</option>
+            <option value="source-over">normal</option>
+            <option value="overlay">overlay</option>
+            <option value="screen">screen</option>
+            <option value="soft-light">soft-light</option>
+            <option value="hard-light">hard-light</option>
+          </select>
+        </div>
+
+        <div class="mini" style="margin-top:10px;">
+          <button id="center">Center</button>
+          <button id="reset">Reset</button>
+        </div>
+      </div>
+
+      <div class="row">
+        <h2>Export</h2>
+        <button id="export">Download PNG</button>
+        <div class="hint">Exports what you see.</div>
+      </div>
+    </div>
+  </div>
+
+<script>
+(() => {
+  const BOARD_SRC = "./s8bord.png";
+
+  const canvas = document.getElementById("c");
+  const ctx = canvas.getContext("2d");
+
+  const statusEl = document.getElementById("status");
+  const hintEl = document.getElementById("hint");
+
+  const upload = document.getElementById("upload");
+  const scaleSlider = document.getElementById("scale");
+  const rotSlider = document.getElementById("rot");
+  const overlaySlider = document.getElementById("overlay");
+  const blendSel = document.getElementById("blend");
+
+  const scaleVal = document.getElementById("scaleVal");
+  const rotVal = document.getElementById("rotVal");
+  const opVal = document.getElementById("opVal");
+
+  const btnCenter = document.getElementById("center");
+  const btnReset = document.getElementById("reset");
+  const btnExport = document.getElementById("export");
+
+  const board = new Image();
+  let boardReady = false;
+
+  let userImg = new Image();
+  let userReady = false;
+
+  const state = {
+    x: 0,
+    y: 0,
+    scale: 1,
+    rot: 0,          // radians
+    overlay: 0.25,
+    blend: "multiply"
+  };
+
+  // ----- MOBILE DETECTION (used to change behavior, NOT desktop) -----
+  function isMobileNow(){
+    return window.matchMedia("(max-width: 768px)").matches &&
+           window.matchMedia("(pointer: coarse)").matches;
+  }
+
+  // Desktop: keep the nice fixed internal resolution.
+  const DESKTOP_W = 900;
+  const DESKTOP_H = 1600;
+
+  // Mobile: pick a resolution based on screen, but keep aspect close to DESKTOP.
+  function setCanvasForCurrentDevice(){
+    const mobile = isMobileNow();
+
+    if (mobile){
+      // Match the canvas' internal pixels to visible width for sharpness,
+      // and compute height by aspect ratio.
+      const rect = canvas.getBoundingClientRect();
+      const cssW = Math.max(320, rect.width);
+      const aspect = DESKTOP_H / DESKTOP_W; // ~1.777...
+      const cssH = Math.min(window.innerHeight * 0.78, cssW * aspect);
+
+      const dpr = Math.min(3, window.devicePixelRatio || 1);
+
+      canvas.style.height = cssH + "px";
+      canvas.width  = Math.round(cssW * dpr);
+      canvas.height = Math.round(cssH * dpr);
+
+      // draw in CSS pixel units:
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      hintEl.textContent = "Mobile: drag to move • pinch zoom • two-finger rotate";
+    } else {
+      // Restore desktop defaults
+      canvas.style.height = "auto";
+      canvas.width = DESKTOP_W;
+      canvas.height = DESKTOP_H;
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+      hintEl.textContent = "Desktop: drag to move • wheel zoom • Shift+wheel rotate";
+    }
+
+    // Recenter after any resize
+    state.x = (canvas.width / (window.devicePixelRatio || 1)) / 2;
+    state.y = (canvas.height / (window.devicePixelRatio || 1)) / 2;
+    draw();
+  }
+
+  function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
+
+  function setStatusOk(msg){
+    statusEl.classList.remove("bad");
+    statusEl.classList.add("ok");
+    statusEl.innerHTML = msg;
+  }
+  function setStatusBad(msg){
+    statusEl.classList.remove("ok");
+    statusEl.classList.add("bad");
+    statusEl.innerHTML = msg;
+  }
+
+  function updateLabels(){
+    scaleVal.textContent = `${(+state.scale).toFixed(2)}×`;
+    rotVal.textContent = `${(state.rot * 180 / Math.PI).toFixed(1)}°`;
+    opVal.textContent = `${Math.round(state.overlay * 100)}%`;
+  }
+
+  function computeBoardFit(){
+    // Fit board to canvas height (in CSS pixel units after transform)
+    const dpr = (isMobileNow() ? Math.min(3, window.devicePixelRatio || 1) : 1);
+    const cw = canvas.width / dpr;
+    const ch = canvas.height / dpr;
+
+    const s = ch / board.height;
+    const bw = board.width * s;
+    const bh = board.height * s;
+    const bx = (cw - bw) / 2;
+    const by = (ch - bh) / 2;
+    return { bw, bh, bx, by };
+  }
+
+  function draw(){
+    // Clear in CSS pixel units (because we used setTransform)
+    const dpr = (isMobileNow() ? Math.min(3, window.devicePixelRatio || 1) : 1);
+    const cw = canvas.width / dpr;
+    const ch = canvas.height / dpr;
+
+    ctx.clearRect(0, 0, cw, ch);
+
+    if (!boardReady){
+      ctx.save();
+      ctx.fillStyle = "rgba(255,255,255,.9)";
+      ctx.font = "18px system-ui, sans-serif";
+      ctx.fillText("Board mask not loaded.", 24, 40);
+      ctx.restore();
+      return;
+    }
+
+    const { bw, bh, bx, by } = computeBoardFit();
+
+    // faint board preview (helps confirm it's working)
+    ctx.save();
+    ctx.globalAlpha = 0.15;
+    ctx.drawImage(board, bx, by, bw, bh);
+    ctx.restore();
+
+    if (userReady){
+      // 1) user art
+      ctx.save();
+      ctx.translate(state.x, state.y);
+      ctx.rotate(state.rot);
+      ctx.scale(state.scale, state.scale);
+      ctx.imageSmoothingEnabled = true;
+      ctx.drawImage(userImg, -userImg.width/2, -userImg.height/2);
+      ctx.restore();
+
+      // 2) mask to board alpha (works best if PNG background is transparent)
+      ctx.save();
+      ctx.globalCompositeOperation = "destination-in";
+      ctx.drawImage(board, bx, by, bw, bh);
+      ctx.restore();
+      ctx.globalCompositeOperation = "source-over";
+    }
+
+    // 3) overlay board texture/logo without hiding art
+    if (state.overlay > 0){
+      ctx.save();
+      ctx.globalAlpha = state.overlay;
+      ctx.globalCompositeOperation = state.blend;
+      ctx.drawImage(board, bx, by, bw, bh);
+      ctx.restore();
+      ctx.globalCompositeOperation = "source-over";
+    }
+  }
+
+  function reset(){
+    state.scale = 1;
+    state.rot = 0;
+    state.overlay = 0.25;
+    state.blend = "multiply";
+
+    scaleSlider.value = state.scale;
+    rotSlider.value = 0;
+    overlaySlider.value = state.overlay;
+    blendSel.value = state.blend;
+
+    updateLabels();
+    setCanvasForCurrentDevice();
+  }
+
+  function centerImage(){
+    const dpr = (isMobileNow() ? Math.min(3, window.devicePixelRatio || 1) : 1);
+    const cw = canvas.width / dpr;
+    const ch = canvas.height / dpr;
+
+    state.x = cw / 2;
+    state.y = ch / 2;
+
+    if (userReady && boardReady){
+      const { bw, bh } = computeBoardFit();
+      const fitW = bw * 0.70;
+      const fitH = bh * 0.75;
+      const s = Math.min(fitW / userImg.width, fitH / userImg.height);
+      state.scale = clamp(s, 0.1, 6);
+      scaleSlider.value = state.scale;
+    }
+
+    updateLabels();
+    draw();
+  }
+
+  // ---- Load board ----
+  async function loadBoard(){
+    setStatusOk(`Loading <code>${BOARD_SRC}</code>…`);
+    boardReady = false;
+
+    board.onload = async () => {
+      try { if (board.decode) await board.decode(); } catch {}
+      boardReady = true;
+      setStatusOk(`Loaded: <code>${BOARD_SRC}</code><br>Size: ${board.width}×${board.height}`);
+      setCanvasForCurrentDevice();
+    };
+
+    board.onerror = () => {
+      boardReady = false;
+      setStatusBad(
+        `Failed to load <code>${BOARD_SRC}</code>.<br>` +
+        `Make sure it’s next to this HTML and spelled exactly the same (case matters).`
+      );
+      draw();
+    };
+
+    board.src = BOARD_SRC;
+  }
+
+  // ---- Upload image ----
+  upload.addEventListener("change", (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      userImg = img;
+      userReady = true;
+      URL.revokeObjectURL(url);
+      centerImage();
+    };
+    img.onerror = () => {
+      userReady = false;
+      URL.revokeObjectURL(url);
+      alert("Could not load that image file.");
+      draw();
+    };
+    img.src = url;
+  });
+
+  // ---- Sliders ----
+  scaleSlider.addEventListener("input", () => {
+    state.scale = parseFloat(scaleSlider.value);
+    updateLabels();
+    draw();
+  });
+
+  rotSlider.addEventListener("input", () => {
+    state.rot = parseFloat(rotSlider.value) * Math.PI / 180;
+    updateLabels();
+    draw();
+  });
+
+  overlaySlider.addEventListener("input", () => {
+    state.overlay = parseFloat(overlaySlider.value);
+    updateLabels();
+    draw();
+  });
+
+  blendSel.addEventListener("change", () => {
+    state.blend = blendSel.value;
+    draw();
+  });
+
+  btnReset.addEventListener("click", reset);
+  btnCenter.addEventListener("click", centerImage);
+
+  // ---- Export ----
+  btnExport.addEventListener("click", () => {
+    const a = document.createElement("a");
+    a.download = "longboard-graphic.png";
+    a.href = canvas.toDataURL("image/png");
+    a.click();
+  });
+
+  // ---- Desktop drag + wheel ----
+  let dragging = false;
+  let last = { x: 0, y: 0 };
+
+  canvas.addEventListener("pointerdown", (e) => {
+    if (!userReady) return;
+    dragging = true;
+    canvas.setPointerCapture(e.pointerId);
+    last.x = e.clientX;
+    last.y = e.clientY;
+  });
+
+  canvas.addEventListener("pointermove", (e) => {
+    if (!dragging || !userReady) return;
+
+    // convert screen pixels to canvas CSS pixels
+    const rect = canvas.getBoundingClientRect();
+    const sx = (canvas.width / (isMobileNow() ? Math.min(3, window.devicePixelRatio || 1) : 1)) / rect.width;
+    const sy = (canvas.height / (isMobileNow() ? Math.min(3, window.devicePixelRatio || 1) : 1)) / rect.height;
+
+    const dx = (e.clientX - last.x) * sx;
+    const dy = (e.clientY - last.y) * sy;
+    last.x = e.clientX;
+    last.y = e.clientY;
+
+    state.x += dx;
+    state.y += dy;
+    draw();
+  });
+
+  canvas.addEventListener("pointerup", (e) => {
+    dragging = false;
+    try { canvas.releasePointerCapture(e.pointerId); } catch {}
+  });
+
+  canvas.addEventListener("wheel", (e) => {
+    if (!userReady) return;
+    // Only do wheel on non-mobile; mobile scrolling would feel gross
+    if (isMobileNow()) return;
+
+    e.preventDefault();
+    if (e.shiftKey){
+      state.rot = clamp(state.rot + (-e.deltaY * 0.002), -Math.PI, Math.PI);
+      rotSlider.value = (state.rot * 180 / Math.PI).toFixed(1);
+    } else {
+      const factor = Math.exp(-e.deltaY * 0.0016);
+      state.scale = clamp(state.scale * factor, 0.1, 6);
+      scaleSlider.value = state.scale.toFixed(2);
+    }
+    updateLabels();
+    draw();
+  }, { passive:false });
+
+  // ---- Mobile-only pinch zoom + two-finger rotate ----
+  let lastTouches = null;
+
+  canvas.addEventListener("touchstart", (e) => {
+    if (!isMobileNow()) return;
+    if (!userReady) return;
+    if (e.touches.length === 2){
+      lastTouches = [
+        { x: e.touches[0].clientX, y: e.touches[0].clientY },
+        { x: e.touches[1].clientX, y: e.touches[1].clientY }
+      ];
+    } else {
+      lastTouches = null;
+    }
+  }, { passive:true });
+
+  canvas.addEventListener("touchmove", (e) => {
+    if (!isMobileNow()) return;
+    if (!userReady) return;
+    if (e.touches.length !== 2 || !lastTouches) return;
+
+    e.preventDefault();
+
+    const a = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    const b = { x: e.touches[1].clientX, y: e.touches[1].clientY };
+    const pa = lastTouches[0];
+    const pb = lastTouches[1];
+
+    const dist = Math.hypot(a.x - b.x, a.y - b.y);
+    const prev = Math.hypot(pa.x - pb.x, pa.y - pb.y);
+    const ratio = dist / prev;
+
+    const ang = Math.atan2(b.y - a.y, b.x - a.x);
+    const pang = Math.atan2(pb.y - pa.y, pb.x - pa.x);
+
+    state.scale = clamp(state.scale * ratio, 0.1, 6);
+    state.rot = clamp(state.rot + (ang - pang), -Math.PI, Math.PI);
+ 
+    scaleSlider.value = state.scale.toFixed(2);
+    rotSlider.value = (state.rot * 180 / Math.PI).toFixed(1);
+
+    updateLabels();
+    draw();
+
+    lastTouches = [a, b];
+  }, { passive:false });
+
+  // ---- Handle switching between mobile/desktop cleanly ----
+  let lastMode = isMobileNow();
+  window.addEventListener("resize", () => {
+    const mode = isMobileNow();
+    // If mode changes (phone rotated / resized), reconfigure canvas properly
+    if (mode !== lastMode){
+      lastMode = mode;
+    }
+    setCanvasForCurrentDevice();
+  });
+
+  // Init
+  updateLabels();
+  reset();
+  loadBoard();
+})();
+</script>
+</body>
+</html>
