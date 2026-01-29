@@ -238,13 +238,38 @@
 
   <footer>Kyle Tuck Inc.</footer>
 
-  <!-- Loader Logic + Search -->
+  <!-- Loader Logic + Search (fixed for back button / bfcache) -->
   <script>
-    function loadPage(path) {
-      const loader = document.getElementById('loader');
-      loader.classList.add('active');
-      setTimeout(() => { window.location.href = path; }, 3500);
+    const loader = document.getElementById('loader');
+
+    function hideLoader() {
+      loader.classList.remove('active');
     }
+
+    // If restored from back/forward cache, ensure loader is hidden
+    window.addEventListener('pageshow', (e) => {
+      if (e.persisted) hideLoader();
+    });
+
+    // Extra safety: some browsers expose nav type as back_forward
+    try {
+      const nav = performance.getEntriesByType('navigation')[0];
+      if (nav && nav.type === 'back_forward') hideLoader();
+    } catch {}
+
+    // Only show loader when navigation is initiated intentionally from this page
+    function loadPage(path) {
+      sessionStorage.setItem('intentionalNav', '1');
+      loader.classList.add('active');
+      setTimeout(() => { window.location.href = path; }, 900);
+    }
+
+    // On normal load / refresh / back, hide loader unless we intentionally navigated away
+    document.addEventListener('DOMContentLoaded', () => {
+      const intentional = sessionStorage.getItem('intentionalNav') === '1';
+      sessionStorage.removeItem('intentionalNav');
+      if (!intentional) hideLoader();
+    });
 
     const pages = [
       { name: "Pipe Formatter", path: "pipes" },
@@ -282,6 +307,7 @@
 
     function handleKey(e) {
       const suggestions = Array.from(document.querySelectorAll(".suggestion"));
+
       if (e.key === "ArrowDown") {
         e.preventDefault();
         if (suggestions.length > 0) {
@@ -300,26 +326,35 @@
           suggestions[currentSelection].click();
         } else {
           const input = document.getElementById("searchInput").value.toLowerCase();
-          const match = pages.find(p => p.name.toLowerCase().includes(input));
+          const match = pages.find(p => p.name.toLowerCase().includes(input) && !p.hidden);
           if (match) loadPage(match.path);
         }
       }
     }
+
     function updateHighlight(suggestions) {
       suggestions.forEach((el, index) => {
         el.classList.toggle("selected", index === currentSelection);
       });
     }
+
     document.addEventListener("click", e => {
       const suggestionsBox = document.getElementById("suggestions");
       if (!document.querySelector(".search-bar").contains(e.target)) {
         suggestionsBox.style.display = "none";
       }
     });
+
+    // Clean URL behavior
     if (window.location.pathname.endsWith('/index.html')) {
       const cleanPath = window.location.pathname.replace('/index.html', '/');
       window.history.replaceState(null, '', cleanPath);
     }
+
+    // Expose functions for inline HTML handlers
+    window.loadPage = loadPage;
+    window.showSuggestions = showSuggestions;
+    window.handleKey = handleKey;
   </script>
 
   <!-- Animated Welcome Title -->
@@ -328,6 +363,7 @@
     const titleEl = document.getElementById('animatedTitle');
     const text = titleEl.textContent;
     titleEl.textContent = '';
+
     [...text].forEach(char => {
       const span = document.createElement('span');
       span.textContent = char;
@@ -337,6 +373,7 @@
       span.style.color = '#0f858e';
       titleEl.appendChild(span);
     });
+
     anime.timeline({ loop: true })
       .add({
         targets: '#animatedTitle span',
