@@ -6,11 +6,33 @@
   <title>Custom Longboard Generator</title>
   <style>
     :root { color-scheme: dark; }
+
     body{
       margin:0; min-height:100vh; display:grid; place-items:center;
       background:#0b0c0f; color:#e8e8ea;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
     }
+
+    /* ===== HOME BUTTON (routes to personal.html) ===== */
+    .menu-buttons{
+      position:fixed;
+      top:12px;
+      left:12px;
+      z-index:9999;
+    }
+    .navBtn{
+      padding:10px 14px;
+      border-radius:12px;
+      border:1px solid #2b3146;
+      background:#151a28;
+      color:#e8e8ea;
+      font-weight:700;
+      cursor:pointer;
+      box-shadow: 0 10px 24px rgba(0,0,0,.30);
+    }
+    .navBtn:hover{ background:#1b2133; }
+    .navBtn:active{ transform: translate(1px,1px); }
+
     .app{
       width:min(1150px, 95vw);
       display:grid;
@@ -19,6 +41,7 @@
       padding:16px;
       align-items:start;
     }
+
     .card{
       background:#0f1117;
       border:1px solid #1e2230;
@@ -52,15 +75,18 @@
       background:#0b0c0f;
       color:#e8e8ea;
     }
+
     .ctrl{
       display:grid;
       grid-template-columns: 1fr auto;
       gap:10px;
       align-items:center;
     }
+
     input[type="range"]{ width:100%; grid-column:1 / -1; }
     .value{ font-variant-numeric: tabular-nums; font-size:12px; opacity:.85; min-width:60px; text-align:right; }
     .mini{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
+
     button{
       width:100%;
       padding:10px 12px;
@@ -72,6 +98,7 @@
       cursor:pointer;
     }
     button:hover{ background:#1b2133; }
+
     select{
       width:100%;
       padding:10px 12px;
@@ -80,6 +107,7 @@
       background:#0b0c0f;
       color:#e8e8ea;
     }
+
     .status{
       font-size:12px;
       padding:10px;
@@ -109,6 +137,11 @@
 </head>
 
 <body>
+  <!-- HOME BUTTON -->
+  <div class="menu-buttons">
+    <button class="navBtn" onclick="location.href='personal'">Home</button>
+  </div>
+
   <div class="app">
     <div class="card">
       <!-- Desktop uses fixed internal resolution; mobile will override via JS -->
@@ -230,11 +263,9 @@
     const mobile = isMobileNow();
 
     if (mobile){
-      // Match the canvas' internal pixels to visible width for sharpness,
-      // and compute height by aspect ratio.
       const rect = canvas.getBoundingClientRect();
       const cssW = Math.max(320, rect.width);
-      const aspect = DESKTOP_H / DESKTOP_W; // ~1.777...
+      const aspect = DESKTOP_H / DESKTOP_W;
       const cssH = Math.min(window.innerHeight * 0.78, cssW * aspect);
 
       const dpr = Math.min(3, window.devicePixelRatio || 1);
@@ -243,12 +274,10 @@
       canvas.width  = Math.round(cssW * dpr);
       canvas.height = Math.round(cssH * dpr);
 
-      // draw in CSS pixel units:
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
       hintEl.textContent = "Mobile: drag to move • pinch zoom • two-finger rotate";
     } else {
-      // Restore desktop defaults
       canvas.style.height = "auto";
       canvas.width = DESKTOP_W;
       canvas.height = DESKTOP_H;
@@ -257,7 +286,6 @@
       hintEl.textContent = "Desktop: drag to move • wheel zoom • Shift+wheel rotate";
     }
 
-    // Recenter after any resize
     state.x = (canvas.width / (window.devicePixelRatio || 1)) / 2;
     state.y = (canvas.height / (window.devicePixelRatio || 1)) / 2;
     draw();
@@ -283,7 +311,6 @@
   }
 
   function computeBoardFit(){
-    // Fit board to canvas height (in CSS pixel units after transform)
     const dpr = (isMobileNow() ? Math.min(3, window.devicePixelRatio || 1) : 1);
     const cw = canvas.width / dpr;
     const ch = canvas.height / dpr;
@@ -297,7 +324,6 @@
   }
 
   function draw(){
-    // Clear in CSS pixel units (because we used setTransform)
     const dpr = (isMobileNow() ? Math.min(3, window.devicePixelRatio || 1) : 1);
     const cw = canvas.width / dpr;
     const ch = canvas.height / dpr;
@@ -315,14 +341,12 @@
 
     const { bw, bh, bx, by } = computeBoardFit();
 
-    // faint board preview (helps confirm it's working)
     ctx.save();
     ctx.globalAlpha = 0.15;
     ctx.drawImage(board, bx, by, bw, bh);
     ctx.restore();
 
     if (userReady){
-      // 1) user art
       ctx.save();
       ctx.translate(state.x, state.y);
       ctx.rotate(state.rot);
@@ -331,7 +355,6 @@
       ctx.drawImage(userImg, -userImg.width/2, -userImg.height/2);
       ctx.restore();
 
-      // 2) mask to board alpha (works best if PNG background is transparent)
       ctx.save();
       ctx.globalCompositeOperation = "destination-in";
       ctx.drawImage(board, bx, by, bw, bh);
@@ -339,7 +362,6 @@
       ctx.globalCompositeOperation = "source-over";
     }
 
-    // 3) overlay board texture/logo without hiding art
     if (state.overlay > 0){
       ctx.save();
       ctx.globalAlpha = state.overlay;
@@ -386,7 +408,6 @@
     draw();
   }
 
-  // ---- Load board ----
   async function loadBoard(){
     setStatusOk(`Loading <code>${BOARD_SRC}</code>…`);
     boardReady = false;
@@ -410,7 +431,6 @@
     board.src = BOARD_SRC;
   }
 
-  // ---- Upload image ----
   upload.addEventListener("change", (e) => {
     const file = e.target.files && e.target.files[0];
     if (!file) return;
@@ -432,7 +452,6 @@
     img.src = url;
   });
 
-  // ---- Sliders ----
   scaleSlider.addEventListener("input", () => {
     state.scale = parseFloat(scaleSlider.value);
     updateLabels();
@@ -459,7 +478,6 @@
   btnReset.addEventListener("click", reset);
   btnCenter.addEventListener("click", centerImage);
 
-  // ---- Export ----
   btnExport.addEventListener("click", () => {
     const a = document.createElement("a");
     a.download = "longboard-graphic.png";
@@ -467,7 +485,6 @@
     a.click();
   });
 
-  // ---- Desktop drag + wheel ----
   let dragging = false;
   let last = { x: 0, y: 0 };
 
@@ -482,10 +499,10 @@
   canvas.addEventListener("pointermove", (e) => {
     if (!dragging || !userReady) return;
 
-    // convert screen pixels to canvas CSS pixels
     const rect = canvas.getBoundingClientRect();
-    const sx = (canvas.width / (isMobileNow() ? Math.min(3, window.devicePixelRatio || 1) : 1)) / rect.width;
-    const sy = (canvas.height / (isMobileNow() ? Math.min(3, window.devicePixelRatio || 1) : 1)) / rect.height;
+    const dpr = (isMobileNow() ? Math.min(3, window.devicePixelRatio || 1) : 1);
+    const sx = (canvas.width / dpr) / rect.width;
+    const sy = (canvas.height / dpr) / rect.height;
 
     const dx = (e.clientX - last.x) * sx;
     const dy = (e.clientY - last.y) * sy;
@@ -504,7 +521,6 @@
 
   canvas.addEventListener("wheel", (e) => {
     if (!userReady) return;
-    // Only do wheel on non-mobile; mobile scrolling would feel gross
     if (isMobileNow()) return;
 
     e.preventDefault();
@@ -520,7 +536,6 @@
     draw();
   }, { passive:false });
 
-  // ---- Mobile-only pinch zoom + two-finger rotate ----
   let lastTouches = null;
 
   canvas.addEventListener("touchstart", (e) => {
@@ -557,7 +572,7 @@
 
     state.scale = clamp(state.scale * ratio, 0.1, 6);
     state.rot = clamp(state.rot + (ang - pang), -Math.PI, Math.PI);
- 
+
     scaleSlider.value = state.scale.toFixed(2);
     rotSlider.value = (state.rot * 180 / Math.PI).toFixed(1);
 
@@ -567,18 +582,15 @@
     lastTouches = [a, b];
   }, { passive:false });
 
-  // ---- Handle switching between mobile/desktop cleanly ----
   let lastMode = isMobileNow();
   window.addEventListener("resize", () => {
     const mode = isMobileNow();
-    // If mode changes (phone rotated / resized), reconfigure canvas properly
     if (mode !== lastMode){
       lastMode = mode;
     }
     setCanvasForCurrentDevice();
   });
 
-  // Init
   updateLabels();
   reset();
   loadBoard();
