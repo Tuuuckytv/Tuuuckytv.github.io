@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Timelapse Length Calculator</title>
+
   <style>
     body {
       font-family: 'MS Sans Serif', Arial, sans-serif;
@@ -15,6 +16,32 @@
       align-items: center;
       height: 100vh;
     }
+
+    /* ===== HOME BUTTON (Win95 style) ===== */
+    .menu-buttons{
+      position: fixed;
+      top: 12px;
+      left: 12px;
+      z-index: 9999;
+    }
+    .navBtn{
+      padding: 6px 14px;
+      font-weight: bold;
+      background: #cfcfcf;
+      border: 2px solid;
+      border-color: #ffffff #7d7d7d #7d7d7d #ffffff;
+      box-shadow: 1px 1px 0 #000;
+      cursor: pointer;
+      font-family: 'MS Sans Serif', Arial, sans-serif;
+      font-size: 12px;
+      color: #2d2d2d;
+    }
+    .navBtn:active{
+      transform: translate(1px,1px);
+      border-color: #7d7d7d #ffffff #ffffff #7d7d7d;
+    }
+
+    /* ===== WINDOW ===== */
     .window {
       background: #cfcfcf;
       border: 2px solid #7d7d7d;
@@ -22,6 +49,7 @@
       width: 90%;
       max-width: 400px;
     }
+
     .title-bar {
       background: #b0b0b0;
       color: #2d2d2d;
@@ -34,6 +62,7 @@
       border-bottom: 2px solid #7d7d7d;
       box-shadow: inset -2px -2px #a0a0a0, inset 2px 2px #e0e0e0;
     }
+
     .title-bar-buttons span {
       background: #dcdcdc;
       border: 1px solid #7d7d7d;
@@ -43,6 +72,7 @@
       box-shadow: inset -1px -1px #a0a0a0, inset 1px 1px #f0f0f0;
       color: #4d4d4d;
     }
+
     .content {
       padding: 1.5rem;
       display: flex;
@@ -50,6 +80,7 @@
       align-items: center;
       text-align: center;
     }
+
     label {
       display: block;
       margin-top: 1rem;
@@ -58,6 +89,7 @@
       color: #4d4d4d;
       align-self: flex-start;
     }
+
     .fake-dropdown {
       width: 100%;
       margin-top: 0.5rem;
@@ -69,6 +101,7 @@
       cursor: pointer;
       text-align: left;
     }
+
     input {
       width: 100%;
       margin-top: 0.5rem;
@@ -80,7 +113,8 @@
       font-size: 13px;
       color: #4d4d4d;
     }
-    button {
+
+    button.calcBtn {
       margin-top: 1.5rem;
       padding: 6px 12px;
       border: 2px solid #7d7d7d;
@@ -90,11 +124,12 @@
       cursor: pointer;
       color: #4d4d4d;
       box-shadow: inset -2px -2px #b0b0b0, inset 2px 2px #f0f0f0;
-      align-self: center;
     }
-    button:active {
+
+    button.calcBtn:active {
       box-shadow: inset 2px 2px #b0b0b0, inset -2px -2px #f0f0f0;
     }
+
     #result {
       margin-top: 1.5rem;
       font-size: 13px;
@@ -107,18 +142,17 @@
       width: 100%;
       text-align: center;
     }
-    /* Modal */
+
+    /* ===== MODAL ===== */
     .modal {
       display: none;
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      inset: 0;
       background: rgba(0,0,0,0.3);
       justify-content: center;
       align-items: center;
     }
+
     .modal-content {
       background: #cfcfcf;
       padding: 1rem;
@@ -127,6 +161,7 @@
       min-width: 200px;
       text-align: center;
     }
+
     .option {
       padding: 6px;
       background: #e0e0e0;
@@ -135,12 +170,20 @@
       cursor: pointer;
       box-shadow: inset -1px -1px #b0b0b0, inset 1px 1px #f0f0f0;
     }
+
     .option:hover {
       background: #d0d0d0;
     }
   </style>
 </head>
+
 <body>
+
+  <!-- HOME BUTTON -->
+  <div class="menu-buttons">
+    <button class="navBtn" onclick="location.href='personal.html'">Home</button>
+  </div>
+
   <div class="window">
     <div class="title-bar">
       <span>Timelapse Calculator</span>
@@ -148,40 +191,45 @@
         <span>_</span><span>□</span><span>X</span>
       </div>
     </div>
+
     <div class="content">
-      <label for="interval">Interval (seconds)</label>
-      <div class="fake-dropdown" onclick="openModal('intervalModal')" id="intervalDisplay">Select Interval</div>
+      <label>Interval (seconds)</label>
+      <div class="fake-dropdown" id="intervalDisplay" onclick="openModal('intervalModal')">
+        Select Interval
+      </div>
 
-      <label for="fps">Frames Per Second (FPS)</label>
-      <div class="fake-dropdown" onclick="openModal('fpsModal')" id="fpsDisplay">Select FPS</div>
+      <label>Frames Per Second (FPS)</label>
+      <div class="fake-dropdown" id="fpsDisplay" onclick="openModal('fpsModal')">
+        Select FPS
+      </div>
 
-      <label for="recording">Recording Time (hours)</label>
-      <input type="number" id="recording" placeholder="Enter hours" step="0.1" min="0">
+      <label>Recording Time (hours)</label>
+      <input type="number" id="recording" step="0.1" min="0" placeholder="Enter hours">
 
-      <button onclick="calculate()">Calculate</button>
+      <button class="calcBtn" onclick="calculate()">Calculate</button>
 
       <div id="result"></div>
     </div>
   </div>
 
-  <!-- Interval Modal -->
+  <!-- INTERVAL MODAL -->
   <div class="modal" id="intervalModal">
     <div class="modal-content">
-      <div class="option" onclick="selectOption('interval', 2, '2s')">2s</div>
-      <div class="option" onclick="selectOption('interval', 4, '4s')">4s</div>
-      <div class="option" onclick="selectOption('interval', 10, '10s')">10s</div>
-      <div class="option" onclick="selectOption('interval', 30, '30s')">30s</div>
-      <div class="option" onclick="selectOption('interval', 60, '60s')">60s</div>
+      <div class="option" onclick="selectOption('interval',2,'2s')">2s</div>
+      <div class="option" onclick="selectOption('interval',4,'4s')">4s</div>
+      <div class="option" onclick="selectOption('interval',10,'10s')">10s</div>
+      <div class="option" onclick="selectOption('interval',30,'30s')">30s</div>
+      <div class="option" onclick="selectOption('interval',60,'60s')">60s</div>
     </div>
   </div>
 
-  <!-- FPS Modal -->
+  <!-- FPS MODAL -->
   <div class="modal" id="fpsModal">
     <div class="modal-content">
-      <div class="option" onclick="selectOption('fps', 24, '24')">24</div>
-      <div class="option" onclick="selectOption('fps', 25, '25')">25</div>
-      <div class="option" onclick="selectOption('fps', 30, '30')">30</div>
-      <div class="option" onclick="selectOption('fps', 60, '60')">60</div>
+      <div class="option" onclick="selectOption('fps',24,'24')">24</div>
+      <div class="option" onclick="selectOption('fps',25,'25')">25</div>
+      <div class="option" onclick="selectOption('fps',30,'30')">30</div>
+      <div class="option" onclick="selectOption('fps',60,'60')">60</div>
     </div>
   </div>
 
@@ -189,57 +237,53 @@
     let selectedInterval = null;
     let selectedFps = null;
 
-    function openModal(id) {
-      document.getElementById(id).style.display = 'flex';
+    function openModal(id){
+      document.getElementById(id).style.display = "flex";
     }
 
-    function closeModal(id) {
-      document.getElementById(id).style.display = 'none';
+    function closeModals(){
+      document.querySelectorAll(".modal").forEach(m=>m.style.display="none");
     }
 
-    function selectOption(type, value, label) {
-      if (type === 'interval') {
-        selectedInterval = value;
-        document.getElementById('intervalDisplay').innerText = label;
-        closeModal('intervalModal');
-      } else if (type === 'fps') {
-        selectedFps = value;
-        document.getElementById('fpsDisplay').innerText = label;
-        closeModal('fpsModal');
+    function selectOption(type,value,label){
+      if(type==="interval"){
+        selectedInterval=value;
+        intervalDisplay.textContent=label;
+        closeModals();
+      }
+      if(type==="fps"){
+        selectedFps=value;
+        fpsDisplay.textContent=label;
+        closeModals();
       }
     }
 
-    window.onclick = function(event) {
-      if (event.target.classList.contains('modal')) {
-        event.target.style.display = 'none';
+    window.onclick = e=>{
+      if(e.target.classList.contains("modal")) closeModals();
+    };
+
+    function calculate(){
+      const hours = parseFloat(recording.value);
+      if(!selectedInterval || !selectedFps){
+        result.textContent="Please select interval and FPS.";
+        return;
       }
-    }
-
-    function calculate() {
-      const interval = parseFloat(selectedInterval);
-      const fps = parseFloat(selectedFps);
-      const hours = parseFloat(document.getElementById("recording").value);
-
-      if (!interval || !fps) {
-        document.getElementById("result").innerText = "Please select interval and FPS.";
+      if(isNaN(hours) || hours<=0){
+        result.textContent="Please enter a valid recording time.";
         return;
       }
 
-      if (isNaN(hours) || hours <= 0) {
-        document.getElementById("result").innerText = "Please enter a valid recording time.";
-        return;
-      }
+      const totalSeconds = hours*3600;
+      const frames = totalSeconds/selectedInterval;
+      const playbackSeconds = frames/selectedFps;
 
-      const totalSeconds = hours * 3600;
-      const frames = totalSeconds / interval;
-      const playbackSeconds = frames / fps;
+      const m = Math.floor(playbackSeconds/60);
+      const s = Math.round(playbackSeconds%60);
 
-      const minutes = Math.floor(playbackSeconds / 60);
-      const seconds = Math.round(playbackSeconds % 60);
-
-      document.getElementById("result").innerText =
-        `Output length: ${minutes}m ${seconds}s (${playbackSeconds.toFixed(1)} seconds)`;
+      result.textContent =
+        `Output length: ${m}m ${s}s (${playbackSeconds.toFixed(1)} seconds)`;
     }
   </script>
+
 </body>
 </html>
