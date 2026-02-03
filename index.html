@@ -223,7 +223,7 @@
 
   <!-- Main Content -->
   <div class="search-bar">
-    <input type="text" placeholder="Search page..." id="searchInput" autocomplete="off">
+    <input type="text" placeholder="Search page..." id="searchInput" oninput="showSuggestions()" onkeydown="handleKey(event)">
     <div id="suggestions" class="suggestions" style="display: none;"></div>
   </div>
 
@@ -238,11 +238,9 @@
 
   <footer>Kyle Tuck Inc.</footer>
 
-  <!-- Loader Logic + Search (fixed search reliability) -->
+  <!-- Loader Logic + Search (fixed for back button / bfcache) -->
   <script>
     const loader = document.getElementById('loader');
-    const searchInputEl = document.getElementById('searchInput');
-    const suggestionsBox = document.getElementById('suggestions');
 
     function hideLoader() {
       loader.classList.remove('active');
@@ -261,16 +259,9 @@
 
     // Only show loader when navigation is initiated intentionally from this page
     function loadPage(path) {
-      if (!path) return;
-
-      // Ensure consistent relative navigation (works with/without trailing slash)
-      const url = new URL(path, window.location.href).toString();
-
       sessionStorage.setItem('intentionalNav', '1');
       loader.classList.add('active');
-
-      // Slight delay for animation; keep small so it doesn't feel "broken"
-      setTimeout(() => { window.location.assign(url); }, 450);
+      setTimeout(() => { window.location.href = path; }, 900);
     }
 
     // On normal load / refresh / back, hide loader unless we intentionally navigated away
@@ -291,56 +282,27 @@
     ];
 
     let currentSelection = -1;
-    let currentMatches = [];
 
-    function renderSuggestions(matches) {
-      suggestionsBox.innerHTML = "";
+    function showSuggestions() {
+      const input = document.getElementById("searchInput").value.toLowerCase();
+      const suggestionBox = document.getElementById("suggestions");
+      suggestionBox.innerHTML = "";
       currentSelection = -1;
-      currentMatches = matches;
 
-      if (matches.length === 0) {
-        suggestionsBox.style.display = "none";
-        return;
-      }
+      if (!input) { suggestionBox.style.display = "none"; return; }
+
+      const matches = pages.filter(p => p.name.toLowerCase().includes(input) && !p.hidden);
+      if (matches.length === 0) { suggestionBox.style.display = "none"; return; }
 
       matches.forEach((page, index) => {
         const div = document.createElement("div");
         div.className = "suggestion";
         div.textContent = page.name;
-        div.dataset.index = String(index);
-
-        // mousedown beats blur/click race conditions (mobile + desktop)
-        div.addEventListener("mousedown", (e) => {
-          e.preventDefault();
-          loadPage(page.path);
-        });
-
-        suggestionsBox.appendChild(div);
+        div.dataset.index = index;
+        div.onclick = () => { loadPage(page.path); };
+        suggestionBox.appendChild(div);
       });
-
-      suggestionsBox.style.display = "block";
-    }
-
-    function showSuggestions() {
-      const input = searchInputEl.value.trim().toLowerCase();
-
-      if (!input) {
-        suggestionsBox.style.display = "none";
-        return;
-      }
-
-      const matches = pages
-        .filter(p => !p.hidden)
-        .filter(p => p.name.toLowerCase().includes(input));
-
-      renderSuggestions(matches);
-    }
-
-    function updateHighlight() {
-      const suggestions = Array.from(document.querySelectorAll(".suggestion"));
-      suggestions.forEach((el, index) => {
-        el.classList.toggle("selected", index === currentSelection);
-      });
+      suggestionBox.style.display = "block";
     }
 
     function handleKey(e) {
@@ -350,43 +312,34 @@
         e.preventDefault();
         if (suggestions.length > 0) {
           currentSelection = (currentSelection + 1) % suggestions.length;
-          updateHighlight();
+          updateHighlight(suggestions);
         }
       } else if (e.key === "ArrowUp") {
         e.preventDefault();
         if (suggestions.length > 0) {
           currentSelection = (currentSelection - 1 + suggestions.length) % suggestions.length;
-          updateHighlight();
+          updateHighlight(suggestions);
         }
       } else if (e.key === "Enter") {
         e.preventDefault();
-
-        // If an item is highlighted, use it
-        if (currentSelection >= 0 && currentSelection < currentMatches.length) {
-          loadPage(currentMatches[currentSelection].path);
-          return;
+        if (currentSelection >= 0 && currentSelection < suggestions.length) {
+          suggestions[currentSelection].click();
+        } else {
+          const input = document.getElementById("searchInput").value.toLowerCase();
+          const match = pages.find(p => p.name.toLowerCase().includes(input) && !p.hidden);
+          if (match) loadPage(match.path);
         }
-
-        // Otherwise: do a "best match" (startsWith preferred, then includes)
-        const input = searchInputEl.value.trim().toLowerCase();
-        if (!input) return;
-
-        const best =
-          pages.find(p => !p.hidden && p.name.toLowerCase().startsWith(input)) ||
-          pages.find(p => !p.hidden && p.name.toLowerCase().includes(input));
-
-        if (best) loadPage(best.path);
-      } else if (e.key === "Escape") {
-        suggestionsBox.style.display = "none";
       }
     }
 
-    // Wire events reliably (avoid inline handler races)
-    searchInputEl.addEventListener("input", showSuggestions);
-    searchInputEl.addEventListener("keydown", handleKey);
+    function updateHighlight(suggestions) {
+      suggestions.forEach((el, index) => {
+        el.classList.toggle("selected", index === currentSelection);
+      });
+    }
 
-    // Hide suggestions when clicking outside
-    document.addEventListener("mousedown", (e) => {
+    document.addEventListener("click", e => {
+      const suggestionsBox = document.getElementById("suggestions");
       if (!document.querySelector(".search-bar").contains(e.target)) {
         suggestionsBox.style.display = "none";
       }
@@ -398,8 +351,10 @@
       window.history.replaceState(null, '', cleanPath);
     }
 
-    // Expose for your existing button onclicks
+    // Expose functions for inline HTML handlers
     window.loadPage = loadPage;
+    window.showSuggestions = showSuggestions;
+    window.handleKey = handleKey;
   </script>
 
   <!-- Animated Welcome Title -->
