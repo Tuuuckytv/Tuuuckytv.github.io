@@ -6,6 +6,7 @@
   <title>Kyle Tuck</title>
   <link rel="icon" href="pipe.png" type="image/png" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
   <style>
     :root {
       --accent: #0f858e;
@@ -34,18 +35,29 @@
       padding: 20px;
     }
 
-    /* Loader */
+    /* Loader BLUR MASK (overlay) */
     #loader {
       position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background-color: var(--bg);
-      display: flex; justify-content: center; align-items: center;
+      inset: 0;
+      display: grid;
+      place-items: center;
       z-index: 9999;
-      opacity: 0; visibility: hidden;
-      transition: opacity 0.4s ease, visibility 0.4s ease;
+
+      /* blur + tint over the existing page */
+      background: rgba(234, 244, 245, 0.35);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.25s ease, visibility 0.25s ease;
     }
-    #loader.active { opacity: 1; visibility: visible; }
+    #loader.active {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto; /* block clicks while "loading" */
+    }
 
     .cubes {
       position: absolute; top: 50%; left: 50%;
@@ -211,6 +223,7 @@
     }
   </style>
 </head>
+
 <body>
 
   <!-- Loader -->
@@ -243,41 +256,31 @@
     const searchInputEl = document.getElementById('searchInput');
     const suggestionsBox = document.getElementById('suggestions');
 
+    function showLoader() {
+      loader.classList.add('active');
+    }
+
     function hideLoader() {
       loader.classList.remove('active');
     }
 
-    // If restored from back/forward cache, ensure loader is hidden
-    window.addEventListener('pageshow', (e) => {
-      if (e.persisted) hideLoader();
-
-      // Also clear intentional nav on BFCache restore
-      sessionStorage.removeItem('intentionalNav');
+    // ALWAYS hide when page is shown (covers BFCache restore + normal load)
+    window.addEventListener('pageshow', () => {
+      hideLoader();
     });
 
-    // Extra safety: some browsers expose nav type as back_forward
-    try {
-      const nav = performance.getEntriesByType('navigation')[0];
-      if (nav && nav.type === 'back_forward') hideLoader();
-    } catch {}
-
-    // Only show loader when navigation is initiated intentionally from this page
+    // Navigation with blur mask loader
     function loadPage(path) {
       if (!path) return;
-      sessionStorage.setItem('intentionalNav', '1');
-      loader.classList.add('active');
-
-      // build consistent URL (supports trailing slash / base paths)
+      showLoader();
       const url = new URL(path, window.location.href).toString();
-      setTimeout(() => { window.location.assign(url); }, 450);
+      setTimeout(() => {
+        window.location.assign(url);
+      }, 120);
     }
 
-    // On normal load / refresh / back, hide loader unless we intentionally navigated away
-    document.addEventListener('DOMContentLoaded', () => {
-      const intentional = sessionStorage.getItem('intentionalNav') === '1';
-      sessionStorage.removeItem('intentionalNav');
-      if (!intentional) hideLoader();
-    });
+    // Expose for your existing button onclicks
+    window.loadPage = loadPage;
 
     const pages = [
       { name: "Pipe Formatter", path: "pipes", hidden: false },
@@ -369,31 +372,38 @@
           return;
         }
 
-        // Otherwise: allow "secret launch" for hidden pages too
         const input = searchInputEl.value.trim().toLowerCase();
         if (!input) return;
 
-        // 1) exact path match first (typing "sk8" will open sk8)
-        const exactPath = pages.find(p => p.path.toLowerCase() === input);
-        if (exactPath) { loadPage(exactPath.path); return; }
+        // Rank matches so later items don't get "shadowed" by earlier .find() matches
+        const ranked = pages
+          .map(p => {
+            const name = p.name.toLowerCase();
+            const path = p.path.toLowerCase();
 
-        // 2) exact name match
-        const exactName = pages.find(p => p.name.toLowerCase() === input);
-        if (exactName) { loadPage(exactName.path); return; }
+            let score = 0;
+            if (path === input) score = 100;
+            else if (name === input) score = 95;
+            else if (path.startsWith(input)) score = 80;
+            else if (name.startsWith(input)) score = 75;
+            else if (path.includes(input)) score = 60;
+            else if (name.includes(input)) score = 55;
 
-        // 3) startsWith match (hidden allowed) — helps partial typing
-        const starts = pages.find(p => p.name.toLowerCase().startsWith(input) || p.path.toLowerCase().startsWith(input));
-        if (starts) { loadPage(starts.path); return; }
+            return { p, score };
+          })
+          .filter(x => x.score > 0)
+          .sort((a, b) => b.score - a.score);
 
-        // 4) includes match (hidden allowed)
-        const includes = pages.find(p => p.name.toLowerCase().includes(input) || p.path.toLowerCase().includes(input));
-        if (includes) { loadPage(includes.path); return; }
+        if (ranked.length) {
+          loadPage(ranked[0].p.path);
+          return;
+        }
       } else if (e.key === "Escape") {
         suggestionsBox.style.display = "none";
       }
     }
 
-    // Wire events reliably (no inline handlers)
+    // Wire events reliably (no inline handlers needed here, but fine to keep buttons)
     searchInputEl.addEventListener("input", showSuggestions);
     searchInputEl.addEventListener("keydown", handleKey);
 
@@ -409,9 +419,6 @@
       const cleanPath = window.location.pathname.replace('/index.html', '/');
       window.history.replaceState(null, '', cleanPath);
     }
-
-    // Expose for your existing button onclicks
-    window.loadPage = loadPage;
   </script>
 
   <!-- Animated Welcome Title -->
@@ -451,5 +458,6 @@
         endDelay: 500
       });
   </script>
+
 </body>
 </html>
