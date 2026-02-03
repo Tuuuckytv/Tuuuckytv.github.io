@@ -43,7 +43,6 @@
       place-items: center;
       z-index: 9999;
 
-      /* blur + tint over the existing page */
       background: rgba(234, 244, 245, 0.35);
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
@@ -56,7 +55,7 @@
     #loader.active {
       opacity: 1;
       visibility: visible;
-      pointer-events: auto; /* block clicks while "loading" */
+      pointer-events: auto;
     }
 
     .cubes {
@@ -87,7 +86,6 @@
     .item:nth-child(5){margin-top:-6.25em;color:#39bcc4;animation-delay:-0.4s;}
     .item:nth-child(6){margin-top:-9.375em;color:#5ed0d6;animation-delay:-0.2s;}
 
-    /* Container */
     .container {
       background: var(--glass-bg);
       backdrop-filter: blur(var(--blur));
@@ -118,7 +116,6 @@
       margin-bottom: 2rem;
     }
 
-    /* Buttons */
     .button {
       padding: 0.9em 2em;
       border: none;
@@ -156,7 +153,6 @@
     }
     .button:hover::before { width: 250%; }
 
-    /* Search */
     .search-bar {
       position: fixed;
       top: 20px;
@@ -252,48 +248,71 @@
   <footer>Kyle Tuck Inc.</footer>
 
   <script>
+    // -----------------------------
+    // Loader (blur mask) - BFCache safe
+    // -----------------------------
     const loader = document.getElementById('loader');
     const searchInputEl = document.getElementById('searchInput');
     const suggestionsBox = document.getElementById('suggestions');
 
-    function showLoader() {
-      loader.classList.add('active');
-    }
+    function showLoader() { loader.classList.add('active'); }
+    function hideLoader() { loader.classList.remove('active'); }
 
-    function hideLoader() {
-      loader.classList.remove('active');
-    }
+    // Always hide when the page is shown (normal load + BFCache restore)
+    window.addEventListener('pageshow', hideLoader);
 
-    // ALWAYS hide when page is shown (covers BFCache restore + normal load)
-    window.addEventListener('pageshow', () => {
-      hideLoader();
-    });
-
-    // Navigation with blur mask loader
     function loadPage(path) {
       if (!path) return;
       showLoader();
       const url = new URL(path, window.location.href).toString();
-      setTimeout(() => {
-        window.location.assign(url);
-      }, 120);
+      setTimeout(() => window.location.assign(url), 120);
     }
-
-    // Expose for your existing button onclicks
     window.loadPage = loadPage;
 
+    // -----------------------------
+    // Pages (Level 2: aliases)
+    // Each page gets auto alias: test1, test2, ...
+    // -----------------------------
     const pages = [
-      { name: "Pipe Formatter", path: "pipes", hidden: false },
-      { name: "Date Checker", path: "date", hidden: false },
+      { name: "Pipe Formatter", path: "pipes", hidden: false, aliases: ["pipe", "formatter"] },
+      { name: "Date Checker", path: "date", hidden: false, aliases: [] },
 
-      // Hidden pages: NOT shown in suggestions, but CAN be launched by typing + Enter
-      { name: "Prompt Generator", path: "download", hidden: true },
-      { name: "Pace", path: "pacecalc", hidden: true },
-      { name: "Random", path: "chooser", hidden: true },
-      { name: "Sk8", path: "sk8", hidden: true },
-      { name: "Kyle", path: "personal", hidden: true }
+      // Hidden pages (not in suggestions, but searchable + Enter)
+      { name: "Prompt Generator", path: "download", hidden: true, aliases: ["prompt", "gen"] },
+      { name: "Pace", path: "pacecalc", hidden: true, aliases: ["pace", "run"] },
+      { name: "Random", path: "chooser", hidden: true, aliases: ["random", "chooser"] },
+      { name: "Sk8", path: "sk8", hidden: true, aliases: ["skate", "longboard"] },
+      { name: "Kyle", path: "personal", hidden: true, aliases: ["me", "about"] }
     ];
 
+    // Auto-add test aliases based on position in the array:
+    // first page gets test1, second test2, ...
+    pages.forEach((page, index) => {
+      const testAlias = `test${index + 1}`;
+      page.aliases = page.aliases ? [...page.aliases, testAlias] : [testAlias];
+    });
+
+    // -----------------------------
+    // Build a searchable index once
+    // -----------------------------
+    function normalize(str) {
+      return (str || "")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, " ")
+        .trim();
+    }
+
+    const pageIndex = pages.map(p => {
+      const all = [p.name, p.path, ...(p.aliases || [])];
+      const tokens = normalize(all.join(" "))
+        .split(/\s+/)
+        .filter(Boolean);
+      return { ...p, _tokens: Array.from(new Set(tokens)) };
+    });
+
+    // -----------------------------
+    // Suggestions (only non-hidden)
+    // -----------------------------
     let currentSelection = -1;
     let currentMatches = [];
 
@@ -310,10 +329,9 @@
       matches.forEach((page, index) => {
         const div = document.createElement("div");
         div.className = "suggestion";
-        div.textContent = page.name;
+        div.textContent = page.name; // show clean name, not aliases
         div.dataset.index = String(index);
 
-        // mousedown beats blur/click races
         div.addEventListener("mousedown", (e) => {
           e.preventDefault();
           loadPage(page.path);
@@ -326,17 +344,17 @@
     }
 
     function showSuggestions() {
-      const input = searchInputEl.value.trim().toLowerCase();
+      const input = normalize(searchInputEl.value);
 
       if (!input) {
         suggestionsBox.style.display = "none";
         return;
       }
 
-      // ONLY show non-hidden pages in suggestions
-      const matches = pages
+      // ONLY show non-hidden pages in the dropdown
+      const matches = pageIndex
         .filter(p => !p.hidden)
-        .filter(p => p.name.toLowerCase().includes(input));
+        .filter(p => p._tokens.some(t => t.includes(input)));
 
       renderSuggestions(matches);
     }
@@ -346,6 +364,30 @@
       suggestions.forEach((el, index) => {
         el.classList.toggle("selected", index === currentSelection);
       });
+    }
+
+    // -----------------------------
+    // Enter key search (hidden allowed)
+    // Ranking avoids "shadowing" issues
+    // -----------------------------
+    function findBestMatch(rawInput) {
+      const q = normalize(rawInput);
+      if (!q) return null;
+
+      const ranked = pageIndex
+        .map(p => {
+          let score = 0;
+          for (const t of p._tokens) {
+            if (t === q) score = Math.max(score, 100);
+            else if (t.startsWith(q)) score = Math.max(score, 80);
+            else if (t.includes(q)) score = Math.max(score, 60);
+          }
+          return { p, score };
+        })
+        .filter(x => x.score > 0)
+        .sort((a, b) => b.score - a.score);
+
+      return ranked.length ? ranked[0].p : null;
     }
 
     function handleKey(e) {
@@ -372,42 +414,18 @@
           return;
         }
 
-        const input = searchInputEl.value.trim().toLowerCase();
-        if (!input) return;
+        // Otherwise, search everything (hidden included)
+        const best = findBestMatch(searchInputEl.value);
+        if (best) loadPage(best.path);
 
-        // Rank matches so later items don't get "shadowed" by earlier .find() matches
-        const ranked = pages
-          .map(p => {
-            const name = p.name.toLowerCase();
-            const path = p.path.toLowerCase();
-
-            let score = 0;
-            if (path === input) score = 100;
-            else if (name === input) score = 95;
-            else if (path.startsWith(input)) score = 80;
-            else if (name.startsWith(input)) score = 75;
-            else if (path.includes(input)) score = 60;
-            else if (name.includes(input)) score = 55;
-
-            return { p, score };
-          })
-          .filter(x => x.score > 0)
-          .sort((a, b) => b.score - a.score);
-
-        if (ranked.length) {
-          loadPage(ranked[0].p.path);
-          return;
-        }
       } else if (e.key === "Escape") {
         suggestionsBox.style.display = "none";
       }
     }
 
-    // Wire events reliably (no inline handlers needed here, but fine to keep buttons)
     searchInputEl.addEventListener("input", showSuggestions);
     searchInputEl.addEventListener("keydown", handleKey);
 
-    // Hide suggestions when clicking outside
     document.addEventListener("mousedown", (e) => {
       if (!document.querySelector(".search-bar").contains(e.target)) {
         suggestionsBox.style.display = "none";
