@@ -35,18 +35,15 @@
       padding: 20px;
     }
 
-    /* Loader BLUR MASK (overlay) */
     #loader {
       position: fixed;
       inset: 0;
       display: grid;
       place-items: center;
       z-index: 9999;
-
       background: rgba(234, 244, 245, 0.35);
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
-
       opacity: 0;
       visibility: hidden;
       pointer-events: none;
@@ -222,7 +219,6 @@
 
 <body>
 
-  <!-- Loader -->
   <div id="loader">
     <div class="loop cubes">
       <div class="item cubes"></div><div class="item cubes"></div><div class="item cubes"></div>
@@ -230,7 +226,6 @@
     </div>
   </div>
 
-  <!-- Main Content -->
   <div class="search-bar">
     <input type="text" placeholder="Search page..." id="searchInput" autocomplete="off">
     <div id="suggestions" class="suggestions" style="display: none;"></div>
@@ -248,9 +243,6 @@
   <footer>Kyle Tuck Inc.</footer>
 
   <script>
-    // -----------------------------
-    // Loader (blur mask) - BFCache safe
-    // -----------------------------
     const loader = document.getElementById('loader');
     const searchInputEl = document.getElementById('searchInput');
     const suggestionsBox = document.getElementById('suggestions');
@@ -258,7 +250,6 @@
     function showLoader() { loader.classList.add('active'); }
     function hideLoader() { loader.classList.remove('active'); }
 
-    // Always hide when the page is shown (normal load + BFCache restore)
     window.addEventListener('pageshow', hideLoader);
 
     function loadPage(path) {
@@ -269,15 +260,9 @@
     }
     window.loadPage = loadPage;
 
-    // -----------------------------
-    // Pages (Level 2: aliases)
-    // Each page gets auto alias: test1, test2, ...
-    // -----------------------------
     const pages = [
       { name: "Pipe Formatter", path: "pipes", hidden: false, aliases: ["pipe", "formatter"] },
       { name: "Date Checker", path: "date", hidden: false, aliases: [] },
-
-      // Hidden pages (not in suggestions, but searchable + Enter)
       { name: "Prompt Generator", path: "download", hidden: true, aliases: ["prompt", "gen"] },
       { name: "Pace", path: "pacecalc", hidden: true, aliases: ["pace", "run"] },
       { name: "Random", path: "chooser", hidden: true, aliases: ["random", "chooser"] },
@@ -285,16 +270,11 @@
       { name: "Kyle", path: "personal", hidden: true, aliases: ["me", "about"] }
     ];
 
-    // Auto-add test aliases based on position in the array:
-    // first page gets test1, second test2, ...
     pages.forEach((page, index) => {
       const testAlias = `test${index + 1}`;
       page.aliases = page.aliases ? [...page.aliases, testAlias] : [testAlias];
     });
 
-    // -----------------------------
-    // Build a searchable index once
-    // -----------------------------
     function normalize(str) {
       return (str || "")
         .toLowerCase()
@@ -310,9 +290,6 @@
       return { ...p, _tokens: Array.from(new Set(tokens)) };
     });
 
-    // -----------------------------
-    // Suggestions (only non-hidden)
-    // -----------------------------
     let currentSelection = -1;
     let currentMatches = [];
 
@@ -329,7 +306,7 @@
       matches.forEach((page, index) => {
         const div = document.createElement("div");
         div.className = "suggestion";
-        div.textContent = page.name; // show clean name, not aliases
+        div.textContent = page.name;
         div.dataset.index = String(index);
 
         div.addEventListener("mousedown", (e) => {
@@ -351,7 +328,6 @@
         return;
       }
 
-      // ONLY show non-hidden pages in the dropdown
       const matches = pageIndex
         .filter(p => !p.hidden)
         .filter(p => p._tokens.some(t => t.includes(input)));
@@ -366,10 +342,6 @@
       });
     }
 
-    // -----------------------------
-    // Enter key search (hidden allowed)
-    // Ranking avoids "shadowing" issues
-    // -----------------------------
     function findBestMatch(rawInput) {
       const q = normalize(rawInput);
       if (!q) return null;
@@ -408,16 +380,13 @@
       } else if (e.key === "Enter") {
         e.preventDefault();
 
-        // If a visible suggestion is highlighted, use it
         if (currentSelection >= 0 && currentSelection < currentMatches.length) {
           loadPage(currentMatches[currentSelection].path);
           return;
         }
 
-        // Otherwise, search everything (hidden included)
         const best = findBestMatch(searchInputEl.value);
         if (best) loadPage(best.path);
-
       } else if (e.key === "Escape") {
         suggestionsBox.style.display = "none";
       }
@@ -432,14 +401,12 @@
       }
     });
 
-    // Clean URL behavior
     if (window.location.pathname.endsWith('/index.html')) {
       const cleanPath = window.location.pathname.replace('/index.html', '/');
       window.history.replaceState(null, '', cleanPath);
     }
   </script>
 
-  <!-- Animated Welcome Title -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
   <script>
     const titleEl = document.getElementById('animatedTitle');
