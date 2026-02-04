@@ -35,6 +35,13 @@
       padding: 20px;
     }
 
+    /* ADDED: hide underlying UI instantly while glitching/navigating */
+    body.is-navigating .container,
+    body.is-navigating .search-bar,
+    body.is-navigating footer {
+      opacity: 0 !important;
+    }
+
     #loader {
       position: fixed;
       inset: 0;
@@ -93,6 +100,7 @@
       text-align: center;
       animation: fadeIn 0.8s ease;
       z-index: 1;
+      transition: opacity .15s ease;
     }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(15px); }
@@ -157,6 +165,7 @@
       transform: translateX(-50%);
       z-index: 10;
       width: 300px;
+      transition: opacity .15s ease;
     }
     #searchInput {
       padding: 10px 14px;
@@ -213,6 +222,7 @@
       font-size: 12px;
       color: #777;
       font-style: italic;
+      transition: opacity .15s ease;
     }
 
     /* ADDITION: Glitch overlay + ERROR text */
@@ -301,10 +311,24 @@
     function showLoader() { loader.classList.add('active'); }
     function hideLoader() { loader.classList.remove('active'); }
 
-    window.addEventListener('pageshow', hideLoader);
+    window.addEventListener('pageshow', () => {
+      hideLoader();
+      // also ensure glitch is off when navigating back
+      document.body.classList.remove("is-navigating");
+      glitchOverlay.classList.remove("active");
+      try { glitchVideo.pause(); glitchVideo.currentTime = 0; } catch(e){}
+      navigating = false;
+    });
 
     function loadPage(path) {
       if (!path) return;
+
+      // If navigating to the Kyle page (personal), play glitch first
+      if (path === "personal") {
+        playGlitchThenGo(path);
+        return;
+      }
+
       showLoader();
       const url = new URL(path, window.location.href).toString();
       setTimeout(() => window.location.assign(url), 120);
@@ -413,6 +437,28 @@
       return ranked.length ? ranked[0].p : null;
     }
 
+    /* === ADDITION: glitch navigation when searching Kyle === */
+    const glitchOverlay = document.getElementById("glitchOverlay");
+    const glitchVideo = document.getElementById("glitchVideo");
+    const GLITCH_NAV_MS = 1500;
+    let navigating = false;
+
+    async function playGlitchThenGo(path){
+      if (navigating) return;
+      navigating = true;
+
+      document.body.classList.add("is-navigating");
+      glitchOverlay.classList.add("active");
+
+      try{
+        glitchVideo.currentTime = 0;
+        await glitchVideo.play();
+      } catch(e){}
+
+      const url = new URL(path, window.location.href).toString();
+      setTimeout(() => window.location.assign(url), GLITCH_NAV_MS);
+    }
+
     function handleKey(e) {
       const suggestions = Array.from(document.querySelectorAll(".suggestion"));
 
@@ -437,7 +483,14 @@
         }
 
         const best = findBestMatch(searchInputEl.value);
-        if (best) loadPage(best.path);
+        if (best) {
+          // If the best match is Kyle/personal, do glitch transition
+          if (best.path === "personal") {
+            playGlitchThenGo(best.path);
+          } else {
+            loadPage(best.path);
+          }
+        }
       } else if (e.key === "Escape") {
         suggestionsBox.style.display = "none";
       }
@@ -456,88 +509,6 @@
       const cleanPath = window.location.pathname.replace('/index.html', '/');
       window.history.replaceState(null, '', cleanPath);
     }
-
-    /* ADDITION: derive secret triggers from the "Kyle" page entry
-       Works everywhere AND while typing in the search input. */
-    const glitchOverlay = document.getElementById("glitchOverlay");
-    const glitchVideo = document.getElementById("glitchVideo");
-
-    const SECRET_DURATION_MS = 1500;
-    let keyBuffer = "";
-    let secretPlaying = false;
-
-    const kyleEntry =
-      pages.find(p => p.path === "personal") ||
-      pages.find(p => (p.name || "").toLowerCase() === "kyle");
-
-    const kyleTokens = kyleEntry
-      ? Array.from(new Set(
-          normalize([kyleEntry.name, kyleEntry.path, ...(kyleEntry.aliases || [])].join(" "))
-            .split(/\s+/)
-            .filter(Boolean)
-        ))
-      : ["kyle"];
-
-    // Prefer longer tokens first if you ever add overlapping aliases
-    kyleTokens.sort((a,b)=>b.length-a.length);
-
-    function playSecretGlitch(){
-      if (secretPlaying) return;
-      secretPlaying = true;
-
-      glitchOverlay.classList.add("active");
-      try{
-        glitchVideo.currentTime = 0;
-        glitchVideo.play();
-      }catch(e){}
-
-      setTimeout(()=>{
-        try{
-          glitchVideo.pause();
-          glitchVideo.currentTime = 0;
-        }catch(e){}
-        glitchOverlay.classList.remove("active");
-        secretPlaying = false;
-      }, SECRET_DURATION_MS);
-    }
-
-    function checkTriggerFromText(text){
-      const q = normalize(text);
-      if (!q) return false;
-      for (const token of kyleTokens) {
-        if (token && q.endsWith(token)) return true;
-      }
-      return false;
-    }
-
-    // Global typing (outside inputs)
-    window.addEventListener("keydown", (e) => {
-      const t = e.target;
-      const isTypingField = t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable);
-
-      // ignore modifiers / non-character keys
-      if (e.ctrlKey || e.metaKey || e.altKey) return;
-      if (e.key.length !== 1) return;
-
-      if (isTypingField) {
-        // Let the input update, then evaluate its full value
-        queueMicrotask(() => {
-          if (checkTriggerFromText(searchInputEl.value)) playSecretGlitch();
-        });
-        return;
-      }
-
-      keyBuffer += e.key.toLowerCase();
-      if (keyBuffer.length > 20) keyBuffer = keyBuffer.slice(-20);
-
-      for (const token of kyleTokens) {
-        if (token && keyBuffer.endsWith(token)) {
-          playSecretGlitch();
-          keyBuffer = "";
-          break;
-        }
-      }
-    });
   </script>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
