@@ -214,6 +214,51 @@
       color: #777;
       font-style: italic;
     }
+
+    /* ADDITION: Glitch overlay + ERROR text */
+    #glitchOverlay{
+      position:fixed;
+      inset:0;
+      z-index:10000;
+      background:#000;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      opacity:0;
+      visibility:hidden;
+      pointer-events:none;
+    }
+    #glitchOverlay.active{
+      opacity:1;
+      visibility:visible;
+    }
+    #glitchVideo{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
+    #errorText{
+      position:absolute;
+      color:#ff1a1a;
+      font-size:clamp(72px,18vw,240px);
+      letter-spacing:.25em;
+      text-transform:uppercase;
+      text-shadow:
+        0 0 12px rgba(255,0,0,.6),
+        0 0 30px rgba(255,0,0,.4);
+      animation:errorGlitch .14s infinite steps(2);
+      user-select:none;
+      pointer-events:none;
+    }
+    @keyframes errorGlitch{
+      0%   { transform:translate(0,0); opacity:1; }
+      25%  { transform:translate(-5px,3px); opacity:.85; }
+      50%  { transform:translate(4px,-4px); opacity:1; }
+      75%  { transform:translate(-3px,2px); opacity:.9; }
+      100% { transform:translate(0,0); opacity:1; }
+    }
   </style>
 </head>
 
@@ -241,6 +286,12 @@
   </div>
 
   <footer>Kyle Tuck Inc.</footer>
+
+  <!-- ADDITION: overlay HTML -->
+  <div id="glitchOverlay" aria-hidden="true">
+    <video id="glitchVideo" src="glitch.mp4" preload="auto" playsinline muted></video>
+    <div id="errorText">ERROR</div>
+  </div>
 
   <script>
     const loader = document.getElementById('loader');
@@ -405,6 +456,88 @@
       const cleanPath = window.location.pathname.replace('/index.html', '/');
       window.history.replaceState(null, '', cleanPath);
     }
+
+    /* ADDITION: derive secret triggers from the "Kyle" page entry
+       Works everywhere AND while typing in the search input. */
+    const glitchOverlay = document.getElementById("glitchOverlay");
+    const glitchVideo = document.getElementById("glitchVideo");
+
+    const SECRET_DURATION_MS = 1500;
+    let keyBuffer = "";
+    let secretPlaying = false;
+
+    const kyleEntry =
+      pages.find(p => p.path === "personal") ||
+      pages.find(p => (p.name || "").toLowerCase() === "kyle");
+
+    const kyleTokens = kyleEntry
+      ? Array.from(new Set(
+          normalize([kyleEntry.name, kyleEntry.path, ...(kyleEntry.aliases || [])].join(" "))
+            .split(/\s+/)
+            .filter(Boolean)
+        ))
+      : ["kyle"];
+
+    // Prefer longer tokens first if you ever add overlapping aliases
+    kyleTokens.sort((a,b)=>b.length-a.length);
+
+    function playSecretGlitch(){
+      if (secretPlaying) return;
+      secretPlaying = true;
+
+      glitchOverlay.classList.add("active");
+      try{
+        glitchVideo.currentTime = 0;
+        glitchVideo.play();
+      }catch(e){}
+
+      setTimeout(()=>{
+        try{
+          glitchVideo.pause();
+          glitchVideo.currentTime = 0;
+        }catch(e){}
+        glitchOverlay.classList.remove("active");
+        secretPlaying = false;
+      }, SECRET_DURATION_MS);
+    }
+
+    function checkTriggerFromText(text){
+      const q = normalize(text);
+      if (!q) return false;
+      for (const token of kyleTokens) {
+        if (token && q.endsWith(token)) return true;
+      }
+      return false;
+    }
+
+    // Global typing (outside inputs)
+    window.addEventListener("keydown", (e) => {
+      const t = e.target;
+      const isTypingField = t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable);
+
+      // ignore modifiers / non-character keys
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      if (e.key.length !== 1) return;
+
+      if (isTypingField) {
+        // Let the input update, then evaluate its full value
+        queueMicrotask(() => {
+          if (checkTriggerFromText(searchInputEl.value)) playSecretGlitch();
+        });
+        return;
+      }
+
+      keyBuffer += e.key.toLowerCase();
+      if (keyBuffer.length > 20) keyBuffer = keyBuffer.slice(-20);
+
+      for (const token of kyleTokens) {
+        if (token && keyBuffer.endsWith(token)) {
+          playSecretGlitch();
+          keyBuffer = "";
+          break;
+        }
+      }
+    });
   </script>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
