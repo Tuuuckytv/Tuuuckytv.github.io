@@ -1,55 +1,552 @@
-<!-- =========================
-FILE 2: personal.html (the destination page)
-- This is the important part: it starts hidden and fades in after navigation.
-- Paste this into your Personal page (or add the marked CSS+JS to your existing one)
-========================= -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Personal</title>
-<link rel="icon" href="pipe.png" type="image/png" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kyle Tuck</title>
+  <link rel="icon" href="pipe.png" type="image/png" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
-<style>
-  /* FADE-IN ADDITION (starts hidden, fades in) */
-  body{
-    opacity:0;
-    transition: opacity 1.0s ease;
-  }
-  body.page-ready{
-    opacity:1;
-  }
+  <style>
+    :root {
+      --accent: #0f858e;
+      --accent-light: #20a6b3;
+      --bg: #eaf4f5;
+      --text: #333;
+      --glass-bg: rgba(255, 255, 255, 0.85);
+      --shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+      --blur: 12px;
+    }
 
-  /* keep your existing personal page styles below... */
-  :root{ --bg:#0a0b10; --text:#f2f6ff; }
-  html,body{ height:100%; }
-  body{
-    margin:0;
-    background:var(--bg);
-    color:var(--text);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:24px;
-  }
-</style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      padding: 20px;
+    }
+
+    /* ADDED: hide underlying UI instantly while glitching/navigating */
+    body.is-navigating .container,
+    body.is-navigating .search-bar,
+    body.is-navigating footer {
+      opacity: 0 !important;
+    }
+
+    #loader {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      z-index: 9999;
+      background: rgba(234, 244, 245, 0.35);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.25s ease, visibility 0.25s ease;
+    }
+    #loader.active {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .cubes {
+      position: absolute; top: 50%; left: 50%;
+      transform-style: preserve-3d;
+    }
+    .loop { transform: rotateX(-35deg) rotateY(-45deg) translateZ(1.5625em); }
+    @keyframes s { to { transform: scale3d(0.2, 0.2, 0.2); } }
+    .item {
+      margin: -1.5625em;
+      width: 3.125em; height: 3.125em;
+      transform-origin: 50% 50% -1.5625em;
+      box-shadow: 0 0 0.125em currentColor;
+      background: currentColor;
+      animation: s 0.6s cubic-bezier(0.45, 0.03, 0.51, 0.95) infinite alternate;
+    }
+    .item:before, .item:after {
+      position: absolute; width: inherit; height: inherit;
+      transform-origin: 0 100%; box-shadow: inherit;
+      background: currentColor; content: "";
+    }
+    .item:before { bottom: 100%; transform: rotateX(90deg); }
+    .item:after { left: 100%; transform: rotateY(90deg); }
+    .item:nth-child(1){margin-top:6.25em;color:var(--accent);animation-delay:-1.2s;}
+    .item:nth-child(2){margin-top:3.125em;color:#18848d;animation-delay:-1s;}
+    .item:nth-child(3){margin-top:0;color:#1f9aa5;animation-delay:-0.8s;}
+    .item:nth-child(4){margin-top:-3.125em;color:#27adb7;animation-delay:-0.6s;}
+    .item:nth-child(5){margin-top:-6.25em;color:#39bcc4;animation-delay:-0.4s;}
+    .item:nth-child(6){margin-top:-9.375em;color:#5ed0d6;animation-delay:-0.2s;}
+
+    .container {
+      background: var(--glass-bg);
+      backdrop-filter: blur(var(--blur));
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 2.5rem;
+      width: 90%; max-width: 550px;
+      text-align: center;
+      animation: fadeIn 0.8s ease;
+      z-index: 1;
+      transition: opacity .15s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h2 {
+      font-weight: 700;
+      font-size: 2.6rem;
+      letter-spacing: 0.05em;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 1rem;
+      color: #555;
+      margin-bottom: 2rem;
+    }
+
+    .button {
+      padding: 0.9em 2em;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      color: var(--accent);
+      transition: all 0.4s ease;
+      font-size: 15px;
+      position: relative;
+      overflow: hidden;
+      outline: 2px solid var(--accent);
+      background: transparent;
+      font-family: 'Inter', sans-serif;
+    }
+    .button:hover {
+      color: #fff;
+      transform: scale(1.05);
+      outline: 2px solid var(--accent-light);
+      box-shadow: 2px 4px 10px -2px #0d6c75;
+    }
+    .button::before {
+      content: "";
+      position: absolute;
+      left: -50px;
+      top: 0;
+      width: 0;
+      height: 100%;
+      background-color: var(--accent);
+      transform: skewX(45deg);
+      z-index: -1;
+      transition: width 0.5s ease;
+    }
+    .button:hover::before { width: 250%; }
+
+    .search-bar {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      width: 300px;
+      transition: opacity .15s ease;
+    }
+    #searchInput {
+      padding: 10px 14px;
+      border: 1px solid rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+      font-size: 15px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(6px);
+      outline: none;
+      transition: all 0.3s ease;
+      font-family: 'Inter', sans-serif;
+    }
+    #searchInput:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(15,133,142,0.15);
+    }
+
+    .suggestions {
+      background: white;
+      border: 1px solid #ccc;
+      border-top: none;
+      max-height: 150px;
+      overflow-y: auto;
+      position: absolute;
+      width: 100%;
+      border-radius: 0 0 8px 8px;
+      box-shadow: var(--shadow);
+    }
+    .suggestion {
+      padding: 8px 12px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .suggestion:hover, .suggestion.selected {
+      background-color: rgba(15,133,142,0.1);
+    }
+
+    .tool-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      justify-content: center;
+      align-items: center;
+    }
+    @media (min-width: 500px) {
+      .tool-grid { flex-direction: row; gap: 20px; }
+    }
+
+    footer {
+      position: fixed;
+      bottom: 10px;
+      right: 15px;
+      font-size: 12px;
+      color: #777;
+      font-style: italic;
+      transition: opacity .15s ease;
+    }
+
+    /* ADDITION: Glitch overlay + ERROR text */
+    #glitchOverlay{
+      position:fixed;
+      inset:0;
+      z-index:10000;
+      background:#000;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      opacity:0;
+      visibility:hidden;
+      pointer-events:none;
+    }
+    #glitchOverlay.active{
+      opacity:1;
+      visibility:visible;
+    }
+    #glitchVideo{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
+    #errorText{
+      position:absolute;
+      color:#ff1a1a;
+      font-size:clamp(72px,18vw,240px);
+      letter-spacing:.25em;
+      text-transform:uppercase;
+      text-shadow:
+        0 0 12px rgba(255,0,0,.6),
+        0 0 30px rgba(255,0,0,.4);
+      animation:errorGlitch .14s infinite steps(2);
+      user-select:none;
+      pointer-events:none;
+    }
+    @keyframes errorGlitch{
+      0%   { transform:translate(0,0); opacity:1; }
+      25%  { transform:translate(-5px,3px); opacity:.85; }
+      50%  { transform:translate(4px,-4px); opacity:1; }
+      75%  { transform:translate(-3px,2px); opacity:.9; }
+      100% { transform:translate(0,0); opacity:1; }
+    }
+  </style>
 </head>
 
 <body>
-  <!-- Your real Personal page content goes here -->
-  <div>
-    <h1>Personal</h1>
-    <p>This page fades in after the glitch.</p>
+
+  <div id="loader">
+    <div class="loop cubes">
+      <div class="item cubes"></div><div class="item cubes"></div><div class="item cubes"></div>
+      <div class="item cubes"></div><div class="item cubes"></div><div class="item cubes"></div>
+    </div>
+  </div>
+
+  <div class="search-bar">
+    <input type="text" placeholder="Search page..." id="searchInput" autocomplete="off">
+    <div id="suggestions" class="suggestions" style="display: none;"></div>
+  </div>
+
+  <div class="container">
+    <h2 id="animatedTitle">Welcome</h2>
+    <p>Choose your tool below to get started:</p>
+    <div class="tool-grid">
+      <button class="button" onclick="loadPage('pipes')">Pipe Formatter</button>
+      <button class="button" onclick="loadPage('date')">Date Checker</button>
+    </div>
+  </div>
+
+  <footer>Kyle Tuck Inc.</footer>
+
+  <!-- ADDITION: overlay HTML -->
+  <div id="glitchOverlay" aria-hidden="true">
+    <video id="glitchVideo" src="glitch.mp4" preload="auto" playsinline muted></video>
+    <div id="errorText">ERROR</div>
   </div>
 
   <script>
-    // FADE-IN ADDITION (fires on normal load + back/forward cache)
-    window.addEventListener("pageshow", () => {
-      requestAnimationFrame(() => {
-        document.body.classList.add("page-ready");
-      });
+    const loader = document.getElementById('loader');
+    const searchInputEl = document.getElementById('searchInput');
+    const suggestionsBox = document.getElementById('suggestions');
+
+    function showLoader() { loader.classList.add('active'); }
+    function hideLoader() { loader.classList.remove('active'); }
+
+    window.addEventListener('pageshow', () => {
+      hideLoader();
+      // also ensure glitch is off when navigating back
+      document.body.classList.remove("is-navigating");
+      glitchOverlay.classList.remove("active");
+      try { glitchVideo.pause(); glitchVideo.currentTime = 0; } catch(e){}
+      navigating = false;
     });
+
+    function loadPage(path) {
+      if (!path) return;
+
+      // If navigating to the Kyle page (personal), play glitch first
+      if (path === "personal") {
+        playGlitchThenGo(path);
+        return;
+      }
+
+      showLoader();
+      const url = new URL(path, window.location.href).toString();
+      setTimeout(() => window.location.assign(url), 120);
+    }
+    window.loadPage = loadPage;
+
+    const pages = [
+      { name: "Pipe Formatter", path: "pipes", hidden: false, aliases: ["pipe", "formatter"] },
+      { name: "Date Checker", path: "date", hidden: false, aliases: [] },
+      { name: "Prompt Generator", path: "download", hidden: true, aliases: ["prompt", "gen"] },
+      { name: "Pace", path: "pacecalc", hidden: true, aliases: ["pace", "run"] },
+      { name: "Random", path: "chooser", hidden: true, aliases: ["random", "chooser"] },
+      { name: "Sk8", path: "sk8", hidden: true, aliases: ["skate", "longboard"] },
+      { name: "Kyle", path: "personal", hidden: true, aliases: ["me", "about"] }
+    ];
+
+    pages.forEach((page, index) => {
+      const testAlias = `test${index + 1}`;
+      page.aliases = page.aliases ? [...page.aliases, testAlias] : [testAlias];
+    });
+
+    function normalize(str) {
+      return (str || "")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, " ")
+        .trim();
+    }
+
+    const pageIndex = pages.map(p => {
+      const all = [p.name, p.path, ...(p.aliases || [])];
+      const tokens = normalize(all.join(" "))
+        .split(/\s+/)
+        .filter(Boolean);
+      return { ...p, _tokens: Array.from(new Set(tokens)) };
+    });
+
+    let currentSelection = -1;
+    let currentMatches = [];
+
+    function renderSuggestions(matches) {
+      suggestionsBox.innerHTML = "";
+      currentSelection = -1;
+      currentMatches = matches;
+
+      if (matches.length === 0) {
+        suggestionsBox.style.display = "none";
+        return;
+      }
+
+      matches.forEach((page, index) => {
+        const div = document.createElement("div");
+        div.className = "suggestion";
+        div.textContent = page.name;
+        div.dataset.index = String(index);
+
+        div.addEventListener("mousedown", (e) => {
+          e.preventDefault();
+          loadPage(page.path);
+        });
+
+        suggestionsBox.appendChild(div);
+      });
+
+      suggestionsBox.style.display = "block";
+    }
+
+    function showSuggestions() {
+      const input = normalize(searchInputEl.value);
+
+      if (!input) {
+        suggestionsBox.style.display = "none";
+        return;
+      }
+
+      const matches = pageIndex
+        .filter(p => !p.hidden)
+        .filter(p => p._tokens.some(t => t.includes(input)));
+
+      renderSuggestions(matches);
+    }
+
+    function updateHighlight() {
+      const suggestions = Array.from(document.querySelectorAll(".suggestion"));
+      suggestions.forEach((el, index) => {
+        el.classList.toggle("selected", index === currentSelection);
+      });
+    }
+
+    function findBestMatch(rawInput) {
+      const q = normalize(rawInput);
+      if (!q) return null;
+
+      const ranked = pageIndex
+        .map(p => {
+          let score = 0;
+          for (const t of p._tokens) {
+            if (t === q) score = Math.max(score, 100);
+            else if (t.startsWith(q)) score = Math.max(score, 80);
+            else if (t.includes(q)) score = Math.max(score, 60);
+          }
+          return { p, score };
+        })
+        .filter(x => x.score > 0)
+        .sort((a, b) => b.score - a.score);
+
+      return ranked.length ? ranked[0].p : null;
+    }
+
+    /* === ADDITION: glitch navigation when searching Kyle === */
+    const glitchOverlay = document.getElementById("glitchOverlay");
+    const glitchVideo = document.getElementById("glitchVideo");
+    const GLITCH_NAV_MS = 1500;
+    let navigating = false;
+
+    async function playGlitchThenGo(path){
+      if (navigating) return;
+      navigating = true;
+
+      document.body.classList.add("is-navigating");
+      glitchOverlay.classList.add("active");
+
+      try{
+        glitchVideo.currentTime = 0;
+        await glitchVideo.play();
+      } catch(e){}
+
+      const url = new URL(path, window.location.href).toString();
+      setTimeout(() => window.location.assign(url), GLITCH_NAV_MS);
+    }
+
+    function handleKey(e) {
+      const suggestions = Array.from(document.querySelectorAll(".suggestion"));
+
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        if (suggestions.length > 0) {
+          currentSelection = (currentSelection + 1) % suggestions.length;
+          updateHighlight();
+        }
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        if (suggestions.length > 0) {
+          currentSelection = (currentSelection - 1 + suggestions.length) % suggestions.length;
+          updateHighlight();
+        }
+      } else if (e.key === "Enter") {
+        e.preventDefault();
+
+        if (currentSelection >= 0 && currentSelection < currentMatches.length) {
+          loadPage(currentMatches[currentSelection].path);
+          return;
+        }
+
+        const best = findBestMatch(searchInputEl.value);
+        if (best) {
+          // If the best match is Kyle/personal, do glitch transition
+          if (best.path === "personal") {
+            playGlitchThenGo(best.path);
+          } else {
+            loadPage(best.path);
+          }
+        }
+      } else if (e.key === "Escape") {
+        suggestionsBox.style.display = "none";
+      }
+    }
+
+    searchInputEl.addEventListener("input", showSuggestions);
+    searchInputEl.addEventListener("keydown", handleKey);
+
+    document.addEventListener("mousedown", (e) => {
+      if (!document.querySelector(".search-bar").contains(e.target)) {
+        suggestionsBox.style.display = "none";
+      }
+    });
+
+    if (window.location.pathname.endsWith('/index.html')) {
+      const cleanPath = window.location.pathname.replace('/index.html', '/');
+      window.history.replaceState(null, '', cleanPath);
+    }
   </script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+  <script>
+    const titleEl = document.getElementById('animatedTitle');
+    const text = titleEl.textContent;
+    titleEl.textContent = '';
+
+    [...text].forEach(char => {
+      const span = document.createElement('span');
+      span.textContent = char;
+      span.style.display = 'inline-block';
+      span.style.opacity = '0';
+      span.style.transform = 'translateY(30px)';
+      span.style.color = '#0f858e';
+      titleEl.appendChild(span);
+    });
+
+    anime.timeline({ loop: true })
+      .add({
+        targets: '#animatedTitle span',
+        opacity: [0, 1],
+        translateY: [30, 0],
+        rotate: [-10, 0],
+        easing: 'easeOutElastic(1, .6)',
+        duration: 700,
+        delay: anime.stagger(80)
+      })
+      .add({
+        targets: '#animatedTitle span',
+        opacity: [1, 0],
+        translateY: [0, -20],
+        easing: 'easeInCubic',
+        duration: 800,
+        delay: anime.stagger(50),
+        endDelay: 500
+      });
+  </script>
+
 </body>
 </html>
