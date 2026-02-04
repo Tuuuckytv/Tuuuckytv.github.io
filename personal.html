@@ -27,14 +27,14 @@
   --font:"Dogica", monospace;
 
   /* VHS knobs (toned down) */
-  --vhs-green: rgba(40,255,120,.06); /* softer tint */
-  --scanline-opacity: .18;           /* softer lines */
-  --scanline-gap: 4px;               /* a bit more spacing */
+  --vhs-green: rgba(40,255,120,.06);
+  --scanline-opacity: .18;
+  --scanline-gap: 4px;
   --scanline-thickness: 1px;
-  --scanline-speed: 12s;             /* slower drift */
-  --band-opacity: .08;               /* softer rolling band */
+  --scanline-speed: 12s;
+  --band-opacity: .08;
   --band-speed: 6.5s;
-  --noise-opacity: .04;              /* subtle grain */
+  --noise-opacity: .04;
 }
 
 *{
@@ -55,6 +55,16 @@ body{
   padding:22px 14px;
   overflow-x:hidden;
   line-height:1.4;
+}
+
+/* Hide underlying UI instantly when navigating (prevents “flash back”) */
+body.is-navigating .wrap,
+body.is-navigating .bg,
+body.is-navigating .vhs-tint,
+body.is-navigating .vhs-lines,
+body.is-navigating .vhs-band,
+body.is-navigating .vhs-noise{
+  opacity:0 !important;
 }
 
 /* background */
@@ -106,7 +116,7 @@ body{
 /* gentle green-ish tint */
 .vhs-tint{
   background:var(--vhs-green);
-  mix-blend-mode:soft-light; /* gentler than screen */
+  mix-blend-mode:soft-light;
   opacity:.7;
 }
 
@@ -338,10 +348,12 @@ h1{
   opacity:0;
   visibility:hidden;
   pointer-events:none;
+  transition:none;
 }
 #glitchOverlay.active{
   opacity:1;
   visibility:visible;
+  pointer-events:none;
 }
 #glitchVideo{
   width:100%;
@@ -370,7 +382,7 @@ h1{
 <div class="vhs-noise" aria-hidden="true"></div>
 
 <!-- Glitch overlay -->
-<div id="glitchOverlay">
+<div id="glitchOverlay" aria-hidden="true">
   <video id="glitchVideo" src="glitch.mp4" preload="auto" playsinline muted></video>
 </div>
 
@@ -402,26 +414,45 @@ document.documentElement.style.setProperty("--cols",Math.ceil(Math.sqrt(pages.le
 
 const overlay = document.getElementById("glitchOverlay");
 const video = document.getElementById("glitchVideo");
-let navigating=false;
+let navigating = false;
 
 function resetOverlay(){
+  // only used when coming BACK to this page
+  document.body.classList.remove("is-navigating");
   overlay.classList.remove("active");
-  try{ video.pause(); video.currentTime=0; }catch(e){}
-  navigating=false;
+  try{ video.pause(); video.currentTime = 0; }catch(e){}
+  navigating = false;
 }
 
+/* If you go back, clear overlay state */
 window.addEventListener("pageshow", resetOverlay);
 
 async function playGlitchThenGo(to){
   if(navigating) return;
-  navigating=true;
+  navigating = true;
+
+  // Hide the page immediately so it can't flash back
+  document.body.classList.add("is-navigating");
+
+  // Keep overlay on top until navigation completes
   overlay.classList.add("active");
-  try{ video.currentTime=0; await video.play(); }catch(e){}
-  setTimeout(()=>{ resetOverlay(); location.href=to; },GLITCH_DURATION_MS);
+
+  try{
+    video.currentTime = 0;
+    await video.play();
+  }catch(e){
+    // autoplay might fail; we still navigate after delay
+  }
+
+  // Navigate WITHOUT removing the overlay (prevents flash)
+  setTimeout(()=>{
+    window.location.assign(to);
+  }, GLITCH_DURATION_MS);
 }
 
-pages.forEach(p=>{
+pages.forEach((p,i)=>{
   const b=document.createElement("button");
+  b.type = "button";
   b.className="btn";
   b.innerHTML=`
     <div class="btn-content">
