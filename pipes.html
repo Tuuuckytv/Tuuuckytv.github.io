@@ -1109,9 +1109,45 @@ function _autoClearCheck() {
   _scheduleAutoClearCheck();
 }
 
+/* ✅ NEW: reset all option toggles (and their saved localStorage) */
+function _resetOptionsPanelToDefault() {
+  // Dark mode OFF
+  const dark = document.getElementById('darkModeToggle');
+  if (dark) dark.checked = false;
+  applyDarkMode(false);
+  try { localStorage.setItem('sp_darkmode', '0'); } catch {}
+
+  // Keep Duplicates OFF
+  const keepDup = document.getElementById('keepDuplicatesToggle');
+  if (keepDup) keepDup.checked = false;
+
+  // Split into 99s OFF
+  const split99 = document.getElementById('split99Toggle');
+  if (split99) split99.checked = false;
+
+  // SL-O OFF
+  const slo = document.getElementById('sloToggle');
+  if (slo) slo.checked = false;
+
+  // Secondary OFF (and persist/hide panel properly)
+  const sec = document.getElementById('secondaryToggle');
+  const wasOn = !!sec?.checked;
+  if (sec) sec.checked = false;
+  if (wasOn) toggleSecondary(); // ensures UI + localStorage sync
+  else {
+    try { localStorage.setItem('sp_secondary', '0'); } catch {}
+    // if it was already off, ensure container state is still correct
+    document.getElementById('panelSecondary')?.classList.add('hidden');
+    document.getElementById('mainContainer')?.classList.remove('dual');
+  }
+}
+
 function _clearInputsDueToInactivity() {
   if (lt99ModalOpen) hideLt99Modal();
   if (clearModalOpen) hideClearModal();
+
+  // ✅ NEW: also untoggle everything in the options panel after 5 min reset
+  _resetOptionsPanelToDefault();
 
   const input1 = document.getElementById('inputText');
   const remove1 = document.getElementById('removeText');
