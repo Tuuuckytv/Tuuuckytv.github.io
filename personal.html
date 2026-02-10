@@ -627,7 +627,7 @@ h1{
     <div class="boot-static"></div>
     <div class="boot-line"></div>
     <div class="boot-bloom"></div>
-    <div class="boot-text">SYNC…</div>
+    <div class="boot-text">Sync</div>
   </div>
 </div>
 
@@ -690,7 +690,7 @@ function startBoot(){
   setTimeout(() => {
     boot.classList.add("lock");
     const t = boot.querySelector(".boot-text");
-    if (t) t.textContent = "LOCK…";
+    if (t) t.textContent = "Synced";
   }, lockAt);
 
   setTimeout(() => {
