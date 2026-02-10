@@ -311,6 +311,11 @@
     function showLoader() { loader.classList.add('active'); }
     function hideLoader() { loader.classList.remove('active'); }
 
+    // ✅ ADDED: mobile keyboard dismiss helper (no visual changes, just UX)
+    function dismissMobileKeyboard() {
+      try { searchInputEl?.blur(); } catch(e) {}
+    }
+
     window.addEventListener('pageshow', () => {
       hideLoader();
       // also ensure glitch is off when navigating back
@@ -322,6 +327,9 @@
 
     function loadPage(path) {
       if (!path) return;
+
+      // ✅ ADDED: hide keyboard when user triggers a search/navigation on mobile
+      dismissMobileKeyboard();
 
       // If navigating to the Kyle page (personal), play glitch first
       if (path === "personal") {
@@ -382,6 +390,8 @@
 
         div.addEventListener("mousedown", (e) => {
           e.preventDefault();
+          // ✅ ADDED: hide keyboard when tapping a suggestion (mobile)
+          dismissMobileKeyboard();
           loadPage(page.path);
         });
 
@@ -443,6 +453,9 @@
       if (navigating) return;
       navigating = true;
 
+      // ✅ ADDED: hide keyboard before glitch overlay (mobile)
+      dismissMobileKeyboard();
+
       document.body.classList.add("is-navigating");
       glitchOverlay.classList.add("active");
 
@@ -473,6 +486,9 @@
       } else if (e.key === "Enter") {
         e.preventDefault();
 
+        // ✅ ADDED: pressing Enter to search should dismiss keyboard on mobile
+        dismissMobileKeyboard();
+
         if (currentSelection >= 0 && currentSelection < currentMatches.length) {
           loadPage(currentMatches[currentSelection].path);
           return;
@@ -489,6 +505,8 @@
         }
       } else if (e.key === "Escape") {
         suggestionsBox.style.display = "none";
+        // optional: you can also dismiss keyboard on escape if you want:
+        // dismissMobileKeyboard();
       }
     }
 
