@@ -26,7 +26,7 @@
   --ease:cubic-bezier(.2,.8,.2,1);
   --font:"Dogica", monospace;
 
-  /* VHS knobs (toned down) */
+  /* VHS knobs (default / desktop) */
   --vhs-green: rgba(40,255,120,.06);
   --scanline-opacity: .18;
   --scanline-gap: 4px;
@@ -35,15 +35,31 @@
   --band-opacity: .08;
   --band-speed: 6.5s;
   --noise-opacity: .04;
+  --noise-jitter-speed: 120ms;
 
   /* Boot “sync punch” intensities */
   --boot-scanline-opacity: .42;
   --boot-noise-opacity: .12;
   --boot-band-opacity: .20;
 
-  /* Boot timing set by JS */
+  /* Boot timing (set by JS) */
   --boot-out-ms: 260ms;
-  --boot-loop-ms: 520ms; /* pulse rate for line + SYNC blink */
+  --boot-loop-ms: 520ms;
+}
+
+/* ===== Mobile perf tuning ===== */
+@media (hover: none) and (pointer: coarse){
+  :root{
+    --scanline-opacity: .14;
+    --band-opacity: .06;
+    --noise-opacity: .025;
+    --noise-jitter-speed: 180ms;
+
+    /* keep the punch, but slightly less aggressive */
+    --boot-scanline-opacity: .30;
+    --boot-noise-opacity: .08;
+    --boot-band-opacity: .14;
+  }
 }
 
 *{
@@ -164,10 +180,11 @@ body.is-navigating .vhs-noise{
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='.4'/%3E%3C/svg%3E");
   background-size:180px 180px;
   mix-blend-mode:overlay;
-  animation:noiseJitter 120ms steps(2) infinite;
+  animation:noiseJitter var(--noise-jitter-speed) steps(2) infinite;
   will-change:transform;
 }
 
+/* Boot “sync punch”: stronger VHS while boot overlay is up */
 body.boot-sync{
   --scanline-opacity: var(--boot-scanline-opacity);
   --noise-opacity: var(--boot-noise-opacity);
@@ -203,9 +220,7 @@ body.boot-sync{
   visibility:hidden;
 }
 
-#bootOverlay.active{
-  visibility:visible;
-}
+#bootOverlay.active{ visibility:visible; }
 
 #bootOverlay .boot-stage{
   position:absolute;
@@ -235,12 +250,11 @@ body.boot-sync{
   opacity:0;
 }
 
-/* subtle static vignette while waiting */
+/* subtle vignette while waiting */
 #bootOverlay .boot-static{
   position:absolute;
   inset:0;
-  background:
-    radial-gradient(1200px 800px at 50% 50%, rgba(0,0,0,.55), rgba(0,0,0,1));
+  background:radial-gradient(1200px 800px at 50% 50%, rgba(0,0,0,.55), rgba(0,0,0,1));
   opacity:.9;
 }
 
@@ -263,7 +277,6 @@ body.boot-sync{
 #bootOverlay.active .boot-bloom{ animation:syncBloom var(--boot-loop-ms) linear infinite; }
 #bootOverlay.active .boot-text{ animation:syncText var(--boot-loop-ms) steps(1) infinite; }
 
-/* A tiny pixel-jitter on the text during the “on” moment */
 @keyframes syncText{
   0%   { opacity:0; transform:translateX(-50%) translateY(0); }
   20%  { opacity:1; transform:translateX(-50%) translateY(0); }
@@ -287,7 +300,7 @@ body.boot-sync{
   100% { opacity:0; transform:scale(1.01); }
 }
 
-/* Final “lock” sweep: stronger and more satisfying */
+/* Final “lock” sweep */
 #bootOverlay.lock .boot-line{ animation:lockLine 520ms var(--ease) forwards !important; }
 #bootOverlay.lock .boot-bloom{ animation:lockBloom 680ms var(--ease) forwards !important; }
 #bootOverlay.lock .boot-text{ animation:lockText 520ms steps(1) forwards !important; }
@@ -298,7 +311,6 @@ body.boot-sync{
   40%  { opacity:1; transform:translateY(-50%) scaleX(1); }
   100% { opacity:0; transform:translateY(-50%) scaleX(1); }
 }
-
 @keyframes lockBloom{
   0%   { opacity:0; transform:scale(1.02); }
   18%  { opacity:.25; transform:scale(1.00); }
@@ -306,7 +318,6 @@ body.boot-sync{
   70%  { opacity:.22; transform:scale(1.01); }
   100% { opacity:0; transform:scale(1.01); }
 }
-
 @keyframes lockText{
   0%   { opacity:0; }
   10%  { opacity:1; }
@@ -314,13 +325,14 @@ body.boot-sync{
   100% { opacity:0; }
 }
 
-/* Fade overlay away after lock */
 #bootOverlay.out{
   transition:opacity var(--boot-out-ms) var(--ease);
   opacity:0;
 }
 
-/* layout */
+/* =========================
+   LAYOUT
+   ========================= */
 .wrap{
   width:100%;
   max-width:960px;
@@ -330,7 +342,9 @@ body.boot-sync{
   gap:18px;
 }
 
-header{ text-align:center; }
+header{
+  text-align:center;
+}
 
 h1{
   margin:0;
@@ -348,6 +362,7 @@ h1{
   text-transform:uppercase;
 }
 
+/* card */
 .card{
   width:100%;
   border-radius:var(--r);
@@ -396,12 +411,7 @@ h1{
   right:16px;
   bottom:14px;
   height:1px;
-  background:linear-gradient(
-    90deg,
-    transparent,
-    rgba(9,249,17,.9),
-    transparent
-  );
+  background:linear-gradient(90deg, transparent, rgba(9,249,17,.9), transparent);
   transform:scaleX(0);
   transform-origin:left;
   transition:transform .35s var(--ease);
@@ -467,7 +477,7 @@ h1{
   62%{ transform:translate(-18px,5px) skew(21deg); }
 }
 
-/* glitch overlay */
+/* glitch overlay (navigation) */
 #glitchOverlay{
   position:fixed;
   inset:0;
@@ -520,6 +530,80 @@ h1{
   outline-offset:3px;
 }
 
+/* ===== Mobile layout polish ===== */
+@media (max-width: 520px){
+  body{ padding:18px 12px; }
+
+  .wrap{
+    gap:14px;
+    max-width:520px;
+  }
+
+  h1{
+    font-size:clamp(28px, 9vw, 44px);
+    letter-spacing:.18em;
+  }
+  .sub{
+    margin-top:10px;
+    font-size:10px;
+    letter-spacing:.14em;
+  }
+
+  .card-inner{ padding:12px; }
+
+  .deck{
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    gap:10px;
+  }
+
+  .btn{
+    padding:14px 12px;
+    min-height:92px;
+    border-radius:14px;
+  }
+  .btn::after{
+    inset:7px;
+    border-radius:10px;
+  }
+
+  .btn-name{
+    font-size:12px;
+    letter-spacing:.08em;
+    line-height:1.05;
+    word-break:keep-all;
+    overflow-wrap:anywhere;
+  }
+  .btn-desc{
+    margin-top:8px;
+    font-size:10px;
+    letter-spacing:.08em;
+    line-height:1.25;
+  }
+
+  /* Footer link centered on mobile */
+  .footer-link{
+    left:50%;
+    right:auto;
+    transform:translateX(-50%);
+    bottom:12px;
+    padding:8px 12px;
+    font-size:10px;
+    letter-spacing:.14em;
+  }
+  .footer-link:hover{
+    transform:translateX(-50%) translateY(-2px);
+  }
+}
+
+/* Ultra-small devices */
+@media (max-width: 360px){
+  h1{ letter-spacing:.14em; }
+  .deck{ gap:8px; }
+  .btn{ padding:12px 10px; min-height:86px; }
+  .btn-name{ font-size:11px; }
+  .btn-desc{ font-size:9px; }
+}
+
 /* reduced motion */
 @media (prefers-reduced-motion: reduce){
   .vhs-tint,.vhs-lines,.vhs-band,.vhs-noise, *{ animation:none !important; }
@@ -543,7 +627,7 @@ h1{
     <div class="boot-static"></div>
     <div class="boot-line"></div>
     <div class="boot-bloom"></div>
-    <div class="boot-text">Sync</div>
+    <div class="boot-text">SYNC…</div>
   </div>
 </div>
 
@@ -574,53 +658,51 @@ h1{
 const PAGE_BOOT_HOLD_MS  = 5000;  // total "loading" time
 const BOOT_OUT_MS        = 260;   // overlay fade out time at end
 const BOOT_LOOP_MS       = 520;   // how fast the line pulses + SYNC blinks
-const FINAL_LOCK_MS      = 700;   // final “lock” flourish length (inside last part)
+const FINAL_LOCK_MS      = 700;   // final “lock” flourish length
 const GLITCH_DURATION_MS = 700;   // used when leaving this page
 
 document.documentElement.style.setProperty("--boot-out-ms", `${BOOT_OUT_MS}ms`);
 document.documentElement.style.setProperty("--boot-loop-ms", `${BOOT_LOOP_MS}ms`);
 
-/* pages */
-const pages=[
+const pages = [
   {name:"Timelapse Calculator",path:"timelapse",desc:"Calculate how long a timelapse will be."},
   {name:"Pace Calculator",path:"pacecalc",desc:"Calculate your pace."},
   {name:"Randomiser",path:"chooser",desc:"Simple randomiser."},
   {name:"Deck Generator",path:"sk8",desc:"Add a graphic to my board."}
 ];
 
+/* Mobile-safe columns: force 2 on phones, otherwise keep your square-ish layout */
+const isMobileCols = window.matchMedia("(max-width: 520px)").matches;
+document.documentElement.style.setProperty("--cols", isMobileCols ? 2 : Math.ceil(Math.sqrt(pages.length)));
+
 const deck = document.getElementById("buttonDeck");
-document.documentElement.style.setProperty("--cols", Math.ceil(Math.sqrt(pages.length)));
 
 /* Boot overlay logic */
 const boot = document.getElementById("bootOverlay");
 
 function startBoot(){
   boot.classList.add("active");
-  document.body.classList.add("boot-sync"); // keep VHS punch on during whole hold
+  document.body.classList.add("boot-sync"); // keep punch on during whole hold
 
   const lockAt = Math.max(0, PAGE_BOOT_HOLD_MS - FINAL_LOCK_MS - BOOT_OUT_MS);
   const fadeAt = Math.max(0, PAGE_BOOT_HOLD_MS - BOOT_OUT_MS);
 
-  // final satisfying “LOCK” sweep
   setTimeout(() => {
     boot.classList.add("lock");
-    // optional: make SYNC say LOCK for the last flourish
     const t = boot.querySelector(".boot-text");
-    if(t) t.textContent = "Synced";
+    if (t) t.textContent = "LOCK…";
   }, lockAt);
 
-  // fade overlay out at the end
   setTimeout(() => {
     boot.classList.add("out");
   }, fadeAt);
 
-  // fully hide overlay after fade completes
   setTimeout(() => {
     boot.classList.remove("active", "out", "lock");
     boot.style.visibility = "hidden";
     document.body.classList.remove("boot-sync");
     const t = boot.querySelector(".boot-text");
-    if(t) t.textContent = "Sync";
+    if (t) t.textContent = "SYNC…";
   }, PAGE_BOOT_HOLD_MS + 40);
 }
 
@@ -628,7 +710,7 @@ window.addEventListener("DOMContentLoaded", () => {
   requestAnimationFrame(startBoot);
 });
 
-/* Glitch navigation (existing) */
+/* Glitch navigation */
 const overlay = document.getElementById("glitchOverlay");
 const video = document.getElementById("glitchVideo");
 let navigating = false;
@@ -653,20 +735,22 @@ async function playGlitchThenGo(to){
     await video.play();
   }catch(e){}
 
-  setTimeout(()=> window.location.assign(to), GLITCH_DURATION_MS);
+  setTimeout(() => {
+    window.location.assign(to);
+  }, GLITCH_DURATION_MS);
 }
 
-/* buttons */
+/* Build buttons */
 pages.forEach((p)=>{
-  const b=document.createElement("button");
+  const b = document.createElement("button");
   b.type = "button";
-  b.className="btn";
-  b.innerHTML=`
+  b.className = "btn";
+  b.innerHTML = `
     <div class="btn-content">
       <div class="btn-name">${p.name}</div>
       <div class="btn-desc">${p.desc}</div>
     </div>`;
-  b.onclick=()=>playGlitchThenGo(p.path);
+  b.onclick = () => playGlitchThenGo(p.path);
   deck.appendChild(b);
 });
 </script>
