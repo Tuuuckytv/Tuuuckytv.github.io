@@ -35,6 +35,15 @@
   --band-opacity: .08;
   --band-speed: 6.5s;
   --noise-opacity: .04;
+
+  /* Boot “sync punch” intensities */
+  --boot-scanline-opacity: .42;
+  --boot-noise-opacity: .12;
+  --boot-band-opacity: .20;
+
+  /* Boot timing set by JS */
+  --boot-out-ms: 260ms;
+  --boot-loop-ms: 520ms; /* pulse rate for line + SYNC blink */
 }
 
 *{
@@ -55,8 +64,6 @@ body{
   padding:22px 14px;
   overflow-x:hidden;
   line-height:1.4;
-  transition: opacity 3.5s cubic-bezier(.2,.8,.2,1);
-
 }
 
 /* Hide underlying UI instantly when navigating (prevents “flash back”) */
@@ -103,7 +110,7 @@ body.is-navigating .vhs-noise{
 @keyframes glowPulse{ to{ transform:scale(1.04); opacity:1; } }
 
 /* =========================
-   VHS OVERLAY (full-screen + upward motion)
+   VHS OVERLAY
    ========================= */
 .vhs-tint,
 .vhs-lines,
@@ -115,14 +122,12 @@ body.is-navigating .vhs-noise{
   z-index:9998;
 }
 
-/* gentle green-ish tint */
 .vhs-tint{
   background:var(--vhs-green);
   mix-blend-mode:soft-light;
   opacity:.7;
 }
 
-/* scanlines that MOVE UP */
 .vhs-lines{
   background:
     repeating-linear-gradient(
@@ -138,7 +143,6 @@ body.is-navigating .vhs-noise{
   opacity:.8;
 }
 
-/* rolling band drifting upward */
 .vhs-band{
   background:
     linear-gradient(
@@ -155,7 +159,6 @@ body.is-navigating .vhs-noise{
   opacity:.85;
 }
 
-/* subtle noise */
 .vhs-noise{
   opacity:var(--noise-opacity);
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='.4'/%3E%3C/svg%3E");
@@ -163,6 +166,12 @@ body.is-navigating .vhs-noise{
   mix-blend-mode:overlay;
   animation:noiseJitter 120ms steps(2) infinite;
   will-change:transform;
+}
+
+body.boot-sync{
+  --scanline-opacity: var(--boot-scanline-opacity);
+  --noise-opacity: var(--boot-noise-opacity);
+  --band-opacity: var(--boot-band-opacity);
 }
 
 @keyframes scanUp{
@@ -181,6 +190,136 @@ body.is-navigating .vhs-noise{
   100% { transform:translate(0,0); }
 }
 
+/* =========================
+   BOOT OVERLAY (LOOPING SYNC)
+   ========================= */
+#bootOverlay{
+  position:fixed;
+  inset:0;
+  z-index:10001;
+  pointer-events:none;
+  background:#000;
+  opacity:1;
+  visibility:hidden;
+}
+
+#bootOverlay.active{
+  visibility:visible;
+}
+
+#bootOverlay .boot-stage{
+  position:absolute;
+  inset:0;
+}
+
+/* looping line pulse */
+#bootOverlay .boot-line{
+  position:absolute;
+  left:0; right:0;
+  top:50%;
+  height:2px;
+  transform:translateY(-50%) scaleX(.1);
+  background:linear-gradient(90deg, transparent, rgba(9,249,17,.98), transparent);
+  filter:drop-shadow(0 0 18px rgba(9,249,17,.60));
+  opacity:0;
+}
+
+/* looping bloom */
+#bootOverlay .boot-bloom{
+  position:absolute;
+  inset:-10%;
+  background:
+    radial-gradient(520px 240px at 50% 50%, rgba(9,249,17,.28), transparent 65%),
+    radial-gradient(900px 520px at 50% 50%, rgba(255,255,255,.07), transparent 70%),
+    radial-gradient(1200px 800px at 50% 50%, rgba(0,0,0,.80), rgba(0,0,0,1));
+  opacity:0;
+}
+
+/* subtle static vignette while waiting */
+#bootOverlay .boot-static{
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(1200px 800px at 50% 50%, rgba(0,0,0,.55), rgba(0,0,0,1));
+  opacity:.9;
+}
+
+/* SYNC text that blinks */
+#bootOverlay .boot-text{
+  position:absolute;
+  left:50%;
+  top:calc(50% + 44px);
+  transform:translateX(-50%);
+  font-size:10px;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  color:rgba(242,246,255,.86);
+  text-shadow:0 0 12px rgba(9,249,17,.25);
+  opacity:0;
+}
+
+/* Start looping when active */
+#bootOverlay.active .boot-line{ animation:syncLine var(--boot-loop-ms) linear infinite; }
+#bootOverlay.active .boot-bloom{ animation:syncBloom var(--boot-loop-ms) linear infinite; }
+#bootOverlay.active .boot-text{ animation:syncText var(--boot-loop-ms) steps(1) infinite; }
+
+/* A tiny pixel-jitter on the text during the “on” moment */
+@keyframes syncText{
+  0%   { opacity:0; transform:translateX(-50%) translateY(0); }
+  20%  { opacity:1; transform:translateX(-50%) translateY(0); }
+  60%  { opacity:1; transform:translateX(-50%) translateY(-1px); }
+  100% { opacity:0; transform:translateX(-50%) translateY(0); }
+}
+
+@keyframes syncLine{
+  0%   { opacity:0; transform:translateY(-50%) scaleX(.12); }
+  12%  { opacity:1; transform:translateY(-50%) scaleX(1); }
+  35%  { opacity:.85; transform:translateY(-50%) scaleX(1); }
+  60%  { opacity:.35; transform:translateY(-50%) scaleX(1); }
+  100% { opacity:0; transform:translateY(-50%) scaleX(1); }
+}
+
+@keyframes syncBloom{
+  0%   { opacity:0; transform:scale(1.02); }
+  14%  { opacity:.18; transform:scale(1.00); }
+  32%  { opacity:.48; transform:scale(1.00); }
+  60%  { opacity:.22; transform:scale(1.01); }
+  100% { opacity:0; transform:scale(1.01); }
+}
+
+/* Final “lock” sweep: stronger and more satisfying */
+#bootOverlay.lock .boot-line{ animation:lockLine 520ms var(--ease) forwards !important; }
+#bootOverlay.lock .boot-bloom{ animation:lockBloom 680ms var(--ease) forwards !important; }
+#bootOverlay.lock .boot-text{ animation:lockText 520ms steps(1) forwards !important; }
+
+@keyframes lockLine{
+  0%   { opacity:0; transform:translateY(-50%) scaleX(.08); }
+  12%  { opacity:1; transform:translateY(-50%) scaleX(1); }
+  40%  { opacity:1; transform:translateY(-50%) scaleX(1); }
+  100% { opacity:0; transform:translateY(-50%) scaleX(1); }
+}
+
+@keyframes lockBloom{
+  0%   { opacity:0; transform:scale(1.02); }
+  18%  { opacity:.25; transform:scale(1.00); }
+  40%  { opacity:.68; transform:scale(1.00); }
+  70%  { opacity:.22; transform:scale(1.01); }
+  100% { opacity:0; transform:scale(1.01); }
+}
+
+@keyframes lockText{
+  0%   { opacity:0; }
+  10%  { opacity:1; }
+  80%  { opacity:1; }
+  100% { opacity:0; }
+}
+
+/* Fade overlay away after lock */
+#bootOverlay.out{
+  transition:opacity var(--boot-out-ms) var(--ease);
+  opacity:0;
+}
+
 /* layout */
 .wrap{
   width:100%;
@@ -191,13 +330,7 @@ body.is-navigating .vhs-noise{
   gap:18px;
 }
 
-/* header */
-header{
-  text-align:center;
-  opacity:0;
-  transform:translateY(8px);
-  animation:enter .65s var(--ease) forwards;
-}
+header{ text-align:center; }
 
 h1{
   margin:0;
@@ -215,16 +348,12 @@ h1{
   text-transform:uppercase;
 }
 
-/* card */
 .card{
   width:100%;
   border-radius:var(--r);
   background:rgba(255,255,255,.03);
   box-shadow:var(--shadow);
   border:1px solid rgba(9,249,17,.28);
-  opacity:0;
-  transform:translateY(10px);
-  animation:enter .75s var(--ease) .12s forwards;
 }
 .card-inner{ padding:16px; }
 
@@ -363,15 +492,11 @@ h1{
   object-fit:cover;
 }
 
-@keyframes enter{
-  to{ opacity:1; transform:translateY(0); }
-}
-
 .footer-link{
   position:fixed;
   right:14px;
   bottom:12px;
-  z-index:9999; /* above VHS overlay (9998) */
+  z-index:9999;
   font-size:11px;
   letter-spacing:.18em;
   text-transform:uppercase;
@@ -398,6 +523,7 @@ h1{
 /* reduced motion */
 @media (prefers-reduced-motion: reduce){
   .vhs-tint,.vhs-lines,.vhs-band,.vhs-noise, *{ animation:none !important; }
+  #bootOverlay{ display:none !important; }
 }
 </style>
 </head>
@@ -410,6 +536,16 @@ h1{
 <div class="vhs-lines" aria-hidden="true"></div>
 <div class="vhs-band" aria-hidden="true"></div>
 <div class="vhs-noise" aria-hidden="true"></div>
+
+<!-- BOOT overlay with looping line + blinking SYNC -->
+<div id="bootOverlay" aria-hidden="true">
+  <div class="boot-stage">
+    <div class="boot-static"></div>
+    <div class="boot-line"></div>
+    <div class="boot-bloom"></div>
+    <div class="boot-text">Sync</div>
+  </div>
+</div>
 
 <!-- Glitch overlay -->
 <div id="glitchOverlay" aria-hidden="true">
@@ -429,12 +565,22 @@ h1{
   </div>
 </div>
 
-<!-- === ADDED: footer link === -->
 <a class="footer-link" href="https://kyletuck.com" target="_blank" rel="noopener noreferrer">kyletuck.com</a>
 
 <script>
-const GLITCH_DURATION_MS = 700;
+/* =========================
+   TIMING KNOBS (edit these)
+   ========================= */
+const PAGE_BOOT_HOLD_MS  = 5000;  // total "loading" time
+const BOOT_OUT_MS        = 260;   // overlay fade out time at end
+const BOOT_LOOP_MS       = 520;   // how fast the line pulses + SYNC blinks
+const FINAL_LOCK_MS      = 700;   // final “lock” flourish length (inside last part)
+const GLITCH_DURATION_MS = 700;   // used when leaving this page
 
+document.documentElement.style.setProperty("--boot-out-ms", `${BOOT_OUT_MS}ms`);
+document.documentElement.style.setProperty("--boot-loop-ms", `${BOOT_LOOP_MS}ms`);
+
+/* pages */
 const pages=[
   {name:"Timelapse Calculator",path:"timelapse",desc:"Calculate how long a timelapse will be."},
   {name:"Pace Calculator",path:"pacecalc",desc:"Calculate your pace."},
@@ -443,47 +589,75 @@ const pages=[
 ];
 
 const deck = document.getElementById("buttonDeck");
-document.documentElement.style.setProperty("--cols",Math.ceil(Math.sqrt(pages.length)));
+document.documentElement.style.setProperty("--cols", Math.ceil(Math.sqrt(pages.length)));
 
+/* Boot overlay logic */
+const boot = document.getElementById("bootOverlay");
+
+function startBoot(){
+  boot.classList.add("active");
+  document.body.classList.add("boot-sync"); // keep VHS punch on during whole hold
+
+  const lockAt = Math.max(0, PAGE_BOOT_HOLD_MS - FINAL_LOCK_MS - BOOT_OUT_MS);
+  const fadeAt = Math.max(0, PAGE_BOOT_HOLD_MS - BOOT_OUT_MS);
+
+  // final satisfying “LOCK” sweep
+  setTimeout(() => {
+    boot.classList.add("lock");
+    // optional: make SYNC say LOCK for the last flourish
+    const t = boot.querySelector(".boot-text");
+    if(t) t.textContent = "Synced";
+  }, lockAt);
+
+  // fade overlay out at the end
+  setTimeout(() => {
+    boot.classList.add("out");
+  }, fadeAt);
+
+  // fully hide overlay after fade completes
+  setTimeout(() => {
+    boot.classList.remove("active", "out", "lock");
+    boot.style.visibility = "hidden";
+    document.body.classList.remove("boot-sync");
+    const t = boot.querySelector(".boot-text");
+    if(t) t.textContent = "Sync";
+  }, PAGE_BOOT_HOLD_MS + 40);
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  requestAnimationFrame(startBoot);
+});
+
+/* Glitch navigation (existing) */
 const overlay = document.getElementById("glitchOverlay");
 const video = document.getElementById("glitchVideo");
 let navigating = false;
 
 function resetOverlay(){
-  // only used when coming BACK to this page
   document.body.classList.remove("is-navigating");
   overlay.classList.remove("active");
   try{ video.pause(); video.currentTime = 0; }catch(e){}
   navigating = false;
 }
-
-/* If you go back, clear overlay state */
 window.addEventListener("pageshow", resetOverlay);
 
 async function playGlitchThenGo(to){
   if(navigating) return;
   navigating = true;
 
-  // Hide the page immediately so it can't flash back
   document.body.classList.add("is-navigating");
-
-  // Keep overlay on top until navigation completes
   overlay.classList.add("active");
 
   try{
     video.currentTime = 0;
     await video.play();
-  }catch(e){
-    // autoplay might fail; we still navigate after delay
-  }
+  }catch(e){}
 
-  // Navigate WITHOUT removing the overlay (prevents flash)
-  setTimeout(()=>{
-    window.location.assign(to);
-  }, GLITCH_DURATION_MS);
+  setTimeout(()=> window.location.assign(to), GLITCH_DURATION_MS);
 }
 
-pages.forEach((p,i)=>{
+/* buttons */
+pages.forEach((p)=>{
   const b=document.createElement("button");
   b.type = "button";
   b.className="btn";
