@@ -119,8 +119,12 @@ align-items:center;
 justify-content:center;
 font-size:clamp(42px,8vw,82px);
 font-weight:900;
+line-height:1;
 color:#28ed00;
 white-space:nowrap;
+overflow:hidden;
+text-overflow:ellipsis;
+padding:0 16px;
 text-shadow:
 0 0 10px rgba(40,237,0,.35),
 0 0 22px rgba(40,237,0,.18);
@@ -128,6 +132,27 @@ text-shadow:
 
 .spinning .reel-item{
 filter:blur(1.3px);
+}
+
+.reel-item.blank{
+opacity:0;
+pointer-events:none;
+}
+
+.slot.locked .reel-item.final{
+animation:finalClick 220ms cubic-bezier(.2,.9,.3,1);
+}
+
+@keyframes finalClick{
+0%{
+transform:translateY(-6px) scale(.985);
+}
+65%{
+transform:translateY(2px) scale(1.02);
+}
+100%{
+transform:translateY(0) scale(1);
+}
 }
 
 /* SMALLER SIDEWAYS SLIDER */
@@ -201,11 +226,8 @@ min-height:1em;
 <div class="wrap">
 
 <section id="inputStage">
-
 <textarea id="options" placeholder="Enter options (one per line or comma-separated)"></textarea>
-
 <button id="submitBtn" class="primary">Submit</button>
-
 </section>
 
 <section id="resultStage" class="hidden">
@@ -217,14 +239,11 @@ min-height:1em;
 </div>
 
 <div id="launcherWrap">
-
 <div id="launcher">
 <div id="launcherGlow"></div>
 <div id="launcherKnob"></div>
 </div>
-
 <div id="power">0%</div>
-
 </div>
 
 </section>
@@ -232,219 +251,229 @@ min-height:1em;
 </div>
 
 <script>
+const ITEM_HEIGHT=90;
+const MAX_CHARS=40;
 
-const ITEM_HEIGHT=90
-const MAX_CHARS=40
+const MIN_SPIN_LOOPS=6;
+const MAX_SPIN_LOOPS=28;
+const MIN_SPIN_DURATION=1400;
+const MAX_SPIN_DURATION=7000;
 
-const MIN_SPIN_LOOPS=6
-const MAX_SPIN_LOOPS=28
-const MIN_SPIN_DURATION=1400
-const MAX_SPIN_DURATION=7000
+const SLIDER_TRAVEL=210;
 
-const SLIDER_TRAVEL=210
+const inputStage=document.getElementById("inputStage");
+const resultStage=document.getElementById("resultStage");
 
-const inputStage=document.getElementById("inputStage")
-const resultStage=document.getElementById("resultStage")
+const textarea=document.getElementById("options");
+const submitBtn=document.getElementById("submitBtn");
+const editBtn=document.getElementById("editBtn");
 
-const textarea=document.getElementById("options")
-const submitBtn=document.getElementById("submitBtn")
-const editBtn=document.getElementById("editBtn")
+const reel=document.getElementById("reel");
+const slot=document.querySelector(".slot");
 
-const reel=document.getElementById("reel")
-const slot=document.querySelector(".slot")
+const launcher=document.getElementById("launcher");
+const knob=document.getElementById("launcherKnob");
+const powerText=document.getElementById("power");
 
-const launcher=document.getElementById("launcher")
-const knob=document.getElementById("launcherKnob")
-const powerText=document.getElementById("power")
+let options=[];
+let spinning=false;
 
-let options=[]
-let spinning=false
-
-let dragging=false
-let startX=0
-let pull=0
+let dragging=false;
+let startX=0;
+let pull=0;
 
 function parseOptions(raw){
+  const parts=raw
+    .split(/[\n,]+/)
+    .map(s=>s.trim().slice(0,MAX_CHARS))
+    .filter(Boolean);
 
-const parts=raw
-.split(/[\n,]+/)
-.map(s=>s.trim().slice(0,MAX_CHARS))
-.filter(Boolean)
-
-return [...new Set(parts.map(p=>p.toLowerCase()))]
-.map(k=>parts.find(p=>p.toLowerCase()===k))
-
+  return [...new Set(parts.map(p=>p.toLowerCase()))]
+    .map(k=>parts.find(p=>p.toLowerCase()===k));
 }
 
 function randIndex(len){
-
-if(crypto?.getRandomValues){
-const u=new Uint32Array(1)
-crypto.getRandomValues(u)
-return u[0]%len
-}
-
-return Math.floor(Math.random()*len)
-
+  if(crypto?.getRandomValues){
+    const u=new Uint32Array(1);
+    crypto.getRandomValues(u);
+    return u[0]%len;
+  }
+  return Math.floor(Math.random()*len);
 }
 
 function shuffle(arr){
+  const copy=[...arr];
 
-const copy=[...arr]
+  for(let i=copy.length-1;i>0;i--){
+    const j=randIndex(i+1);
+    [copy[i],copy[j]]=[copy[j],copy[i]];
+  }
 
-for(let i=copy.length-1;i>0;i--){
-
-const j=randIndex(i+1)
-;[copy[i],copy[j]]=[copy[j],copy[i]]
-
-}
-
-return copy
-
+  return copy;
 }
 
 function clearReel(){
+  reel.innerHTML="";
+  reel.style.transition="none";
+  reel.style.transform="translateY(0)";
+  slot.classList.remove("spinning","locked");
+}
 
-reel.innerHTML=""
-reel.style.transition="none"
-reel.style.transform="translateY(0)"
-slot.classList.remove("spinning")
+function buildFinalWinner(winner){
+  clearReel();
 
+  const items=["",winner,""];
+
+  items.forEach((text,index)=>{
+    const d=document.createElement("div");
+    d.className="reel-item";
+    if(!text){
+      d.classList.add("blank");
+      d.innerHTML="&nbsp;";
+    }else{
+      d.classList.add("final");
+      d.textContent=text;
+    }
+    reel.appendChild(d);
+  });
+
+  reel.style.transform=`translateY(-${ITEM_HEIGHT}px)`;
+
+  void reel.offsetHeight;
+  slot.classList.add("locked");
 }
 
 function submitList(){
+  options=parseOptions(textarea.value);
 
-options=parseOptions(textarea.value)
+  if(!options.length){
+    alert("Add at least one option");
+    return;
+  }
 
-if(!options.length){
-alert("Add at least one option")
-return
-}
+  inputStage.classList.add("hidden");
+  resultStage.classList.remove("hidden");
 
-inputStage.classList.add("hidden")
-resultStage.classList.remove("hidden")
-
-clearReel()
-resetSlider()
-
+  clearReel();
+  resetSlider();
 }
 
 function resetSlider(){
-
-pull=0
-knob.style.transition="transform .15s ease"
-knob.style.transform="translate(0,-50%)"
-powerText.textContent="0%"
-
+  pull=0;
+  knob.style.transition="transform .15s ease";
+  knob.style.transform="translate(0,-50%)";
+  powerText.textContent="0%";
 }
 
 function updateSlider(px){
+  pull=Math.max(0,Math.min(SLIDER_TRAVEL,px));
 
-pull=Math.max(0,Math.min(SLIDER_TRAVEL,px))
+  knob.style.transition="none";
+  knob.style.transform=`translate(${pull}px,-50%)`;
 
-knob.style.transition="none"
-knob.style.transform=`translate(${pull}px,-50%)`
-
-const pct=Math.round((pull/SLIDER_TRAVEL)*100)
-powerText.textContent=pct+"%"
-
+  const pct=Math.round((pull/SLIDER_TRAVEL)*100);
+  powerText.textContent=pct+"%";
 }
 
 function spin(power){
+  if(spinning||!options.length)return;
 
-if(spinning||!options.length)return
+  spinning=true;
+  slot.classList.remove("locked");
 
-spinning=true
+  const loops=Math.round(MIN_SPIN_LOOPS+(MAX_SPIN_LOOPS-MIN_SPIN_LOOPS)*power);
+  const duration=Math.round(MIN_SPIN_DURATION+(MAX_SPIN_DURATION-MIN_SPIN_DURATION)*power);
 
-const loops=Math.round(MIN_SPIN_LOOPS+(MAX_SPIN_LOOPS-MIN_SPIN_LOOPS)*power)
-const duration=Math.round(MIN_SPIN_DURATION+(MAX_SPIN_DURATION-MIN_SPIN_DURATION)*power)
+  const winner=options[randIndex(options.length)];
 
-const winner=options[randIndex(options.length)]
+  const sequence=[""];
 
-const sequence=[""]
+  for(let i=0;i<loops;i++){
+    sequence.push(...shuffle(options));
+  }
 
-for(let i=0;i<loops;i++){
-sequence.push(...shuffle(options))
-}
+  sequence.push(...shuffle(options));
+  sequence.push(winner);
+  sequence.push("");
 
-sequence.push(...shuffle(options))
-sequence.push(winner)
-sequence.push("")
+  clearReel();
 
-clearReel()
+  sequence.forEach(text=>{
+    const d=document.createElement("div");
+    d.className="reel-item";
 
-sequence.forEach(text=>{
-const d=document.createElement("div")
-d.className="reel-item"
-d.textContent=text
-reel.appendChild(d)
-})
+    if(text===""){
+      d.classList.add("blank");
+      d.innerHTML="&nbsp;";
+    }else{
+      d.textContent=text;
+    }
 
-slot.classList.add("spinning")
+    reel.appendChild(d);
+  });
 
-reel.style.transform="translateY(0)"
-void reel.offsetHeight
+  slot.classList.add("spinning");
 
-const winnerIndex=sequence.length-2
-const finalY=-(winnerIndex*ITEM_HEIGHT)
+  reel.style.transform="translateY(0)";
+  void reel.offsetHeight;
 
-reel.style.transition=`transform ${duration}ms cubic-bezier(.12,.82,.18,1)`
-reel.style.transform=`translateY(${finalY}px)`
+  const winnerIndex=sequence.length-2;
+  const finalY=-(winnerIndex*ITEM_HEIGHT);
 
-const done=()=>{
-reel.removeEventListener("transitionend",done)
-slot.classList.remove("spinning")
-spinning=false
-resetSlider()
-}
+  reel.style.transition=`transform ${duration}ms cubic-bezier(.12,.82,.18,1)`;
+  reel.style.transform=`translateY(${finalY}px)`;
 
-reel.addEventListener("transitionend",done,{once:true})
+  const done=()=>{
+    reel.removeEventListener("transitionend",done);
+    slot.classList.remove("spinning");
 
+    buildFinalWinner(winner);
+
+    spinning=false;
+    resetSlider();
+  };
+
+  reel.addEventListener("transitionend",done,{once:true});
 }
 
 knob.addEventListener("pointerdown",e=>{
-if(spinning)return
-dragging=true
-startX=e.clientX-pull
-knob.setPointerCapture(e.pointerId)
-})
+  if(spinning)return;
+  dragging=true;
+  startX=e.clientX-pull;
+  knob.setPointerCapture(e.pointerId);
+});
 
 window.addEventListener("pointermove",e=>{
-if(!dragging)return
-updateSlider(e.clientX-startX)
-})
+  if(!dragging)return;
+  updateSlider(e.clientX-startX);
+});
 
 window.addEventListener("pointerup",()=>{
+  if(!dragging)return;
+  dragging=false;
 
-if(!dragging)return
-dragging=false
+  const ratio=pull/SLIDER_TRAVEL;
 
-const ratio=pull/SLIDER_TRAVEL
+  knob.style.transition="transform .1s ease";
+  knob.style.transform="translate(0,-50%)";
 
-knob.style.transition="transform .1s ease"
-knob.style.transform="translate(0,-50%)"
+  if(ratio>0.05)spin(ratio);
+  else resetSlider();
+});
 
-if(ratio>0.05)spin(ratio)
-else resetSlider()
-
-})
-
-submitBtn.onclick=submitList
+submitBtn.onclick=submitList;
 
 editBtn.onclick=()=>{
+  resultStage.classList.add("hidden");
+  inputStage.classList.remove("hidden");
 
-resultStage.classList.add("hidden")
-inputStage.classList.remove("hidden")
+  clearReel();
+  resetSlider();
 
-clearReel()
-resetSlider()
+  textarea.focus();
+};
 
-textarea.focus()
-
-}
-
-window.onload=()=>textarea.focus()
-
+window.onload=()=>textarea.focus();
 </script>
 
 </body>
