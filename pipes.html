@@ -6,16 +6,18 @@
   <title>Sale Pipe Formatter</title>
   <link rel="icon" href="pipe.png" type="image/png" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
   <style>
     :root {
       --accent: #0f858e;
       --accent-light: #20a6b3;
+
+      /* Light theme */
       --bg: #eaf4f5;
       --text: #333;
       --glass-bg: #ffffff;
       --shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+
       --border: #000;
       --muted: #666;
       --panel-border: #eee;
@@ -24,18 +26,28 @@
       --token-hover: rgba(15,133,142,0.1);
       --footer: #555;
       --pipe-opacity: 0.25;
+
+      /* Win95 modal */
       --w95-border: #cfcfcf;
       --w95-inset1: #ffffff;
       --w95-inset2: #9a9a9a;
       --backdrop: rgba(0,0,0,0.25);
+
+      /* Scrollbar theme (light) */
       --sb-track: rgba(0,0,0,0.06);
       --sb-thumb: rgba(15,133,142,0.45);
       --sb-thumb-hover: rgba(15,133,142,0.65);
       --sb-size: 10px;
+
+      /* Split separator line */
       --split-line: rgba(0,0,0,0.14);
+
+      /* Settings card */
       --settings-width: 180px;
       --settings-pad: 8px;
       --settings-row-gap: 6px;
+
+      /* Copied overlay color */
       --copied-overlay-color: rgba(0,0,0,0.35);
     }
 
@@ -44,21 +56,26 @@
       --text: #eef4f7;
       --glass-bg: #1c252b;
       --shadow: 0 10px 30px rgba(0, 0, 0, 0.42);
+
       --border: #3a4a54;
       --muted: #b4c2cb;
       --panel-border: #2d3b44;
       --input-bg: #151c21;
       --input-text: #eef4f7;
+
       --token-hover: rgba(32,166,179,0.20);
       --footer: #b4c2cb;
       --pipe-opacity: 0.17;
+
       --w95-border: #3a4a54;
       --w95-inset1: #26323a;
       --w95-inset2: #0f1418;
       --backdrop: rgba(0,0,0,0.50);
+
       --sb-track: rgba(255,255,255,0.06);
       --sb-thumb: rgba(32,166,179,0.35);
       --sb-thumb-hover: rgba(32,166,179,0.55);
+
       --split-line: rgba(255,255,255,0.14);
     }
 
@@ -77,8 +94,11 @@
     }
 
     .hidden { display: none !important; }
+
+    /* Hide footer while any Win95 modal is open */
     body.modal-open footer { display: none; }
 
+    /* Clean scrollbars (Chrome/Edge/Safari) */
     *::-webkit-scrollbar { width: var(--sb-size); height: var(--sb-size); }
     *::-webkit-scrollbar-track { background: var(--sb-track); border-radius: 999px; }
     *::-webkit-scrollbar-thumb {
@@ -92,8 +112,10 @@
       border: 2px solid transparent;
       background-clip: padding-box;
     }
+    /* Clean scrollbars (Firefox) */
     * { scrollbar-width: thin; scrollbar-color: var(--sb-thumb) var(--sb-track); }
 
+    /* === RAINING PIPES === */
     .pipe-background {
       position: absolute;
       inset: 0;
@@ -117,7 +139,48 @@
       100% { transform: translateY(110vh); opacity: var(--pipe-opacity); }
     }
 
-    .button,
+    /* === BUTTONS === */
+    .button {
+      padding: 0.75em 1.6em;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      color: var(--accent);
+      transition: all 0.4s ease;
+      font-size: 14px;
+      position: relative;
+      overflow: hidden;
+      outline: 2px solid var(--accent);
+      background: transparent;
+      display: inline-block;
+      white-space: nowrap;
+    }
+
+    .button:hover {
+      color: #fff;
+      transform: scale(1.05);
+      outline: 2px solid var(--accent-light);
+      box-shadow: 2px 4px 10px -2px #0d6c75;
+    }
+
+    .button::before {
+      content: "";
+      position: absolute;
+      left: -50px;
+      top: 0;
+      width: 0;
+      height: 100%;
+      background-color: var(--accent);
+      transform: skewX(45deg);
+      z-index: -1;
+      transition: width 0.5s ease;
+    }
+    .button:hover::before { width: 250%; }
+
+    /* Batch buttons: identical styling */
     .batch-copy-btn {
       padding: 0.75em 1.6em;
       border: none;
@@ -137,7 +200,6 @@
       white-space: nowrap;
     }
 
-    .button:hover,
     .batch-copy-btn:hover {
       color: #fff;
       transform: scale(1.05);
@@ -145,7 +207,6 @@
       box-shadow: 2px 4px 10px -2px #0d6c75;
     }
 
-    .button::before,
     .batch-copy-btn::before {
       content: "";
       position: absolute;
@@ -158,7 +219,6 @@
       z-index: -1;
       transition: width 0.5s ease;
     }
-    .button:hover::before,
     .batch-copy-btn:hover::before { width: 250%; }
 
     .menu-buttons {
@@ -202,6 +262,7 @@
       margin: 8px 0 8px;
     }
 
+    /* === MOTIVATION SCROLLER === */
     .headline-scroller {
       position: fixed;
       top: 120px;
@@ -227,6 +288,9 @@
       transform: translateX(100%);
     }
 
+    /* ============================================================
+       ✅ Layout wrapper (no glass) + 2 separate glass cards
+       ============================================================ */
     .container {
       position: relative;
       top: 50%;
@@ -273,8 +337,10 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
+    /* ✅ Secondary sits vertically centered (in its own side) while Primary stays put */
     .container.dual .panel.secondary { align-self: center; }
 
+    /* ✅ Pop-in animation for Secondary when toggled on */
     @keyframes popFromCenter {
       0% { opacity: 0; transform: translateY(18px) scale(0.94); }
       100% { opacity: 1; transform: translateY(0) scale(1); }
@@ -302,12 +368,6 @@
       transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
     }
     .inputText:focus { outline: none; }
-
-    .inputText.secret-drag-over {
-      outline: 2px dashed var(--accent-light);
-      outline-offset: 4px;
-      background: color-mix(in srgb, var(--input-bg) 75%, var(--accent-light) 25%);
-    }
 
     .output-container {
       margin-top: 20px;
@@ -377,6 +437,7 @@
       user-select: none;
     }
 
+    /* === Modals (Remove/Duplicates) === */
     .remove-modal, .duplicate-modal {
       background: var(--glass-bg);
       border-radius: 10px;
@@ -391,6 +452,7 @@
     }
     .remove-modal.visible, .duplicate-modal.visible { opacity: 1; visibility: visible; }
 
+    /* single-mode placement like before */
     .remove-modal {
       top: 50%;
       left: 0;
@@ -411,6 +473,7 @@
     .duplicate-modal h4 { margin: 0 0 8px; font-size: 14px; color: var(--accent); }
     .duplicateList { font-size: 13px; color: var(--text); max-height: 120px; overflow-y: auto; }
 
+    /* dual mode: keep those modals INSIDE each card */
     .container.dual .remove-modal,
     .container.dual .duplicate-modal {
       position: static;
@@ -421,6 +484,7 @@
       padding: 12px;
     }
 
+    /* switches */
     .toggle-container {
       display: flex;
       align-items: center;
@@ -467,6 +531,7 @@
       z-index: 2;
     }
 
+    /* Clickable tokens */
     .num-token, .dup-token, .dup-line-token {
       cursor: pointer;
       padding: 2px 4px;
@@ -479,6 +544,7 @@
       color: #fff;
     }
 
+    /* Duplicate numbers line scroll area */
     .duplicateCopyWrapper {
       max-width: 240px;
       display: flex;
@@ -505,6 +571,7 @@
 
     .dup-line-token { display: inline-block; margin-right: 4px; }
 
+    /* ===== Windows 95 themed modals ===== */
     .w95-backdrop {
       position: fixed;
       inset: 0;
@@ -519,6 +586,7 @@
       transform: translate(-50%, -50%);
       width: min(420px, 92vw);
       z-index: 1000;
+
       background: var(--glass-bg);
       border: 2px solid var(--w95-border);
       box-shadow:
@@ -631,9 +699,12 @@
       .container { top: 0; left: 0; transform: none; margin: 160px auto 40px; }
       .header-right { flex-direction: column; align-items: flex-end; }
       .settings-card { width: min(var(--settings-width), 92vw); margin-top: 0; }
-      .container.dual .panel.secondary { align-self: stretch; }
+      .container.dual .panel.secondary { align-self: stretch; } /* stacked mode */
     }
 
+    /* =======================================================================
+       Smooth Copied Toast
+       ======================================================================= */
     .copied-toast {
       position: fixed;
       inset: 0;
@@ -641,6 +712,7 @@
       pointer-events: none;
       display: grid;
       place-items: center;
+
       opacity: 0;
       visibility: hidden;
       transition: opacity 140ms ease, visibility 0s linear 140ms;
@@ -808,6 +880,7 @@
   <div class="container" id="mainContainer">
     <div class="panels" id="panelsWrap">
 
+      <!-- PRIMARY -->
       <div class="panel primary" id="panelPrimary">
         <div class="panel-card">
           <div class="panel-inner">
@@ -830,12 +903,15 @@
             </div>
 
             <div id="splitUnderLine" class="split-under-main-buttons"></div>
+
             <div class="output-container" id="outputText"></div>
             <div id="splitOutputsMount" class="splitOutputsMount"></div>
 
             <div class="duplicate-modal" id="duplicateModal">
               <h4>Removed Duplicates</h4>
+
               <div id="duplicateList" class="duplicateList">None</div>
+
               <div id="duplicateCopyWrapper" class="duplicateCopyWrapper hidden" style="margin-top:10px; font-size:12px;">
                 <div id="duplicateCopyLabel" style="font-weight:600;">Duplicate numbers line:</div>
                 <div id="duplicateCopyText" class="duplicateCopyText">None</div>
@@ -849,6 +925,7 @@
         </div>
       </div>
 
+      <!-- SECONDARY -->
       <div class="panel secondary hidden" id="panelSecondary">
         <div class="panel-card">
           <div class="panel-inner">
@@ -871,12 +948,15 @@
             </div>
 
             <div id="splitUnderLine2" class="split-under-main-buttons"></div>
+
             <div class="output-container" id="outputText2"></div>
             <div id="splitOutputsMount2" class="splitOutputsMount"></div>
 
             <div class="duplicate-modal" id="duplicateModal2">
               <h4>Removed Duplicates</h4>
+
               <div id="duplicateList2" class="duplicateList">None</div>
+
               <div id="duplicateCopyWrapper2" class="duplicateCopyWrapper hidden" style="margin-top:10px; font-size:12px;">
                 <div id="duplicateCopyLabel2" style="font-weight:600;">Duplicate numbers line:</div>
                 <div id="duplicateCopyText2" class="duplicateCopyText">None</div>
@@ -893,28 +973,36 @@
     </div>
   </div>
 
+  <!-- Less than/equal 99 modal (Win95 style) -->
   <div id="lt99Backdrop" class="w95-backdrop hidden" aria-hidden="true"></div>
-  <div id="lt99Modal" class="w95-modal hidden" role="dialog" aria-modal="true" aria-labelledby="lt99Title" aria-describedby="lt99Msg">
+  <div id="lt99Modal" class="w95-modal hidden" role="dialog" aria-modal="true"
+       aria-labelledby="lt99Title" aria-describedby="lt99Msg">
     <div class="w95-titlebar">
       <div id="lt99Title" class="w95-title">Warning</div>
       <button class="w95-x" type="button" onclick="hideLt99Modal()" aria-label="Close">✕</button>
     </div>
+
     <div class="w95-body">
       <div id="lt99Msg" class="w95-message">Less than 99</div>
+
       <div class="w95-btn-row">
         <button id="lt99CloseBtn" class="w95-btn" type="button" onclick="hideLt99Modal()">Close</button>
       </div>
     </div>
   </div>
 
+  <!-- Confirm Clear modal (Win95 style) -->
   <div id="clearBackdrop" class="w95-backdrop hidden" aria-hidden="true"></div>
-  <div id="clearModal" class="w95-modal hidden" role="dialog" aria-modal="true" aria-labelledby="clearTitle" aria-describedby="clearMsg">
+  <div id="clearModal" class="w95-modal hidden" role="dialog" aria-modal="true"
+       aria-labelledby="clearTitle" aria-describedby="clearMsg">
     <div class="w95-titlebar">
       <div id="clearTitle" class="w95-title">Confirm</div>
       <button class="w95-x" type="button" onclick="hideClearModal()" aria-label="Close">✕</button>
     </div>
+
     <div class="w95-body">
       <div id="clearMsg" class="w95-message">Clear?</div>
+
       <div class="w95-btn-row">
         <button class="w95-btn" type="button" onclick="confirmClear()">Yes, Clear</button>
         <button class="w95-btn" type="button" onclick="hideClearModal()">Cancel</button>
@@ -924,6 +1012,7 @@
 
   <footer>Please note qty may not reflect the actual number</footer>
 
+  <!-- Copied toast -->
   <div id="copiedToast" class="copied-toast" aria-hidden="true">
     <div class="overlay" aria-hidden="true"></div>
     <div class="word-container" aria-hidden="true">
@@ -932,6 +1021,7 @@
     </div>
   </div>
 
+  <!-- Paste fallback -->
   <textarea id="pasteFallback" aria-hidden="true"
     style="position:fixed; left:-9999px; top:-9999px; width:1px; height:1px; opacity:0;"></textarea>
 
@@ -943,9 +1033,11 @@ const panelState = {
 
 let lt99ModalOpen = false;
 let clearModalOpen = false;
+
 let split99JustPressed = false;
 let _pendingClearSuffix = "";
 
+/* Secondary toggle */
 function isSecondaryOn() {
   return !!document.getElementById('secondaryToggle')?.checked;
 }
@@ -958,9 +1050,12 @@ function toggleSecondary() {
   if (on) {
     panel.classList.remove('hidden');
     container.classList.add('dual');
+
+    // pop-in
     panel.classList.add('pop');
     clearTimeout(toggleSecondary._popT);
     toggleSecondary._popT = setTimeout(() => panel.classList.remove('pop'), 320);
+
     try { localStorage.setItem('sp_secondary', '1'); } catch {}
     formatText();
     setTimeout(() => document.getElementById('inputText2')?.focus(), 0);
@@ -974,7 +1069,9 @@ function toggleSecondary() {
   }
 }
 
+/* Auto-clear after 5 minutes */
 const AUTO_CLEAR_MS = 5 * 60 * 1000;
+
 let _autoClearTimer = null;
 let _lastUserActivityAt = Date.now();
 let _hiddenSinceAt = document.hidden ? Date.now() : null;
@@ -986,9 +1083,13 @@ function _setUserActivityNow() {
 
 function _scheduleAutoClearCheck() {
   clearTimeout(_autoClearTimer);
+
   const now = Date.now();
   const idleRemaining = Math.max(0, AUTO_CLEAR_MS - (now - _lastUserActivityAt));
-  const hiddenRemaining = (_hiddenSinceAt == null) ? Infinity : Math.max(0, AUTO_CLEAR_MS - (now - _hiddenSinceAt));
+  const hiddenRemaining = (_hiddenSinceAt == null)
+    ? Infinity
+    : Math.max(0, AUTO_CLEAR_MS - (now - _hiddenSinceAt));
+
   const nextIn = Math.min(idleRemaining, hiddenRemaining);
   _autoClearTimer = setTimeout(_autoClearCheck, Math.max(25, nextIn));
 }
@@ -1008,27 +1109,34 @@ function _autoClearCheck() {
   _scheduleAutoClearCheck();
 }
 
+/* ✅ NEW: reset all option toggles (and their saved localStorage) */
 function _resetOptionsPanelToDefault() {
+  // Dark mode OFF
   const dark = document.getElementById('darkModeToggle');
   if (dark) dark.checked = false;
   applyDarkMode(false);
   try { localStorage.setItem('sp_darkmode', '0'); } catch {}
 
+  // Keep Duplicates OFF
   const keepDup = document.getElementById('keepDuplicatesToggle');
   if (keepDup) keepDup.checked = false;
 
+  // Split into 99s OFF
   const split99 = document.getElementById('split99Toggle');
   if (split99) split99.checked = false;
 
+  // SL-O OFF
   const slo = document.getElementById('sloToggle');
   if (slo) slo.checked = false;
 
+  // Secondary OFF (and persist/hide panel properly)
   const sec = document.getElementById('secondaryToggle');
   const wasOn = !!sec?.checked;
   if (sec) sec.checked = false;
-  if (wasOn) toggleSecondary();
+  if (wasOn) toggleSecondary(); // ensures UI + localStorage sync
   else {
     try { localStorage.setItem('sp_secondary', '0'); } catch {}
+    // if it was already off, ensure container state is still correct
     document.getElementById('panelSecondary')?.classList.add('hidden');
     document.getElementById('mainContainer')?.classList.remove('dual');
   }
@@ -1038,6 +1146,7 @@ function _clearInputsDueToInactivity() {
   if (lt99ModalOpen) hideLt99Modal();
   if (clearModalOpen) hideClearModal();
 
+  // ✅ NEW: also untoggle everything in the options panel after 5 min reset
   _resetOptionsPanelToDefault();
 
   const input1 = document.getElementById('inputText');
@@ -1074,6 +1183,7 @@ function setSplitUnderLineVisible(suffix, isVisible) {
   line.style.display = isVisible ? "block" : "none";
 }
 
+/* Dark mode */
 function applyDarkMode(isDark) {
   document.body.classList.toggle('dark', !!isDark);
   const t = document.getElementById('darkModeToggle');
@@ -1090,6 +1200,7 @@ function setModalOpen(open) {
   document.body.classList.toggle("modal-open", !!open);
 }
 
+/* Copied toast */
 function showCopiedToast(text = "Copied") {
   const toast = document.getElementById("copiedToast");
   const left = document.getElementById("copiedLeft");
@@ -1121,6 +1232,7 @@ function showCopiedToast(text = "Copied") {
   }, 820);
 }
 
+/* Less-than-99 modal */
 function showLt99Modal(msg = "Less than 99") {
   const modal = document.getElementById('lt99Modal');
   const backdrop = document.getElementById('lt99Backdrop');
@@ -1162,6 +1274,7 @@ function hideLt99Modal() {
   if (input) input.focus();
 }
 
+/* Split99 toggle handler (PRIMARY ONLY validation) */
 function onSplit99Toggle() {
   const splitToggle = document.getElementById('split99Toggle');
   if (!splitToggle) return;
@@ -1190,6 +1303,7 @@ function onSplit99Toggle() {
   split99JustPressed = false;
 }
 
+/* Clear confirm modal */
 function showClearModal(message) {
   const modal = document.getElementById('clearModal');
   const backdrop = document.getElementById('clearBackdrop');
@@ -1248,6 +1362,7 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
+/* CSV cell */
 function csvCell(v) {
   const s = String(v ?? "");
   const looksNumeric = /^[0-9]+$/.test(s);
@@ -1257,6 +1372,7 @@ function csvCell(v) {
   return `"${s.replaceAll('"','""')}"`;
 }
 
+/* SL-O helpers */
 function isSloOn() {
   return !!document.getElementById('sloToggle')?.checked;
 }
@@ -1267,6 +1383,7 @@ function joinWithPrefix(arr, sep='|') {
   return arr.map(withSloPrefix).join(sep);
 }
 
+/* Which panels are visible right now? */
 function getVisiblePanels() {
   const arr = [""];
   if (isSecondaryOn()) arr.push("2");
@@ -1297,6 +1414,7 @@ function getCurrentPartsForPanel(suffix) {
   return parts;
 }
 
+/* Main formatter */
 function formatText() {
   const split99 = !!document.getElementById('split99Toggle')?.checked;
   const vis = getVisiblePanels();
@@ -1531,6 +1649,7 @@ function copyDuplicatesFor(suffix) {
   }
 }
 
+/* Paste/Copy/Clear per panel */
 async function pasteTextFor(suffix) {
   const input = document.getElementById(`inputText${suffix}`);
   const pasteBtn = document.getElementById(`pasteButton${suffix}`);
@@ -1595,6 +1714,7 @@ function clearPanel(suffix, skipConfirm=false) {
   formatText();
 }
 
+/* CSV export */
 function exportCSV() {
   const split99On = !!document.getElementById('split99Toggle')?.checked;
 
@@ -1672,170 +1792,7 @@ function exportCSV() {
   link.click();
 }
 
-/* Secret Excel drag/drop upload on the existing text boxes */
-async function handleSecretExcelUpload(files, suffix = "") {
-  files = [...files].filter(f => /\.(xlsx|xls|csv)$/i.test(f.name));
-  if (!files.length) return;
-
-  const input = document.getElementById(`inputText${suffix}`);
-  if (!input) return;
-
-  const oldPlaceholder = input.placeholder;
-  input.placeholder = "Loading Excel...";
-  input.disabled = true;
-
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  const cutoff = new Date(today);
-  cutoff.setDate(cutoff.getDate() - 1);
-  cutoff.setHours(16, 0, 0, 0);
-
-  const found = [];
-  const seen = new Set();
-
-  function clean(v) {
-    return String(v ?? "").trim().toLowerCase();
-  }
-
-  function findCol(headers, names) {
-    const h = headers.map(clean);
-    for (const name of names) {
-      const i = h.indexOf(clean(name));
-      if (i >= 0) return i;
-    }
-    return -1;
-  }
-
-  function excelDateToJSDate(serial) {
-    const days = Math.floor(Number(serial) - 25569);
-    const seconds = Math.round((Number(serial) - Math.floor(Number(serial))) * 86400);
-    return new Date((days * 86400 + seconds) * 1000);
-  }
-
-  function parseDate(value) {
-    if (value instanceof Date && !isNaN(value)) return value;
-    if (typeof value === "number" && !isNaN(value)) return excelDateToJSDate(value);
-    if (typeof value !== "string") return null;
-
-    const text = value.trim();
-    if (!text) return null;
-    if (!isNaN(Number(text))) return excelDateToJSDate(Number(text));
-
-    const m = text.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?/);
-    if (m) {
-      let year = Number(m[3]);
-      if (year < 100) year += 2000;
-      return new Date(
-        year,
-        Number(m[2]) - 1,
-        Number(m[1]),
-        Number(m[4] || 0),
-        Number(m[5] || 0),
-        Number(m[6] || 0)
-      );
-    }
-
-    const fallback = new Date(text);
-    return isNaN(fallback) ? null : fallback;
-  }
-
-  function truthy(v) {
-    return ["1", "true", "yes", "y"].includes(clean(v));
-  }
-
-  function inactive(row, cols) {
-    const completelyShipped = cols.completelyShipped >= 0 ? row[cols.completelyShipped] : "";
-    const status = cols.status >= 0 ? clean(row[cols.status]) : "";
-    const orderStatus = cols.orderStatus >= 0 ? clean(row[cols.orderStatus]) : "";
-
-    if (truthy(completelyShipped)) return true;
-    if (["cancelled","canceled","closed","complete","completed","deleted"].includes(status)) return true;
-    if (["cancelled","canceled","closed","complete","completed","shipped","despatched","dispatched"].includes(orderStatus)) return true;
-
-    return false;
-  }
-
-  try {
-    for (const file of files) {
-      const buffer = await file.arrayBuffer();
-      const workbook = XLSX.read(buffer, { type: "array", cellDates: true });
-
-      for (const sheetName of workbook.SheetNames) {
-        const rows = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], {
-          header: 1,
-          raw: true,
-          defval: ""
-        });
-
-        if (rows.length < 2) continue;
-
-        const headers = rows[0];
-
-        const cols = {
-          no: findCol(headers, ["No.", "No", "Order No.", "Order No", "Number"]),
-          modifiedAt: findCol(headers, ["Modified At", "ModifiedAt", "Modified Date", "Last Modified"]),
-          orderStatus: findCol(headers, ["Order Status"]),
-          status: findCol(headers, ["Status"]),
-          completelyShipped: findCol(headers, ["Completely Shipped"])
-        };
-
-        if (cols.no < 0 || cols.modifiedAt < 0) continue;
-
-        for (const row of rows.slice(1)) {
-          const no = String(row[cols.no] ?? "").trim();
-          const key = no.toLowerCase();
-
-          if (!no || seen.has(key)) continue;
-
-          const modifiedAt = parseDate(row[cols.modifiedAt]);
-          if (!modifiedAt) continue;
-
-          // Dynamic cutoff:
-          // If today is 28th, ignore anything from 27th at 4pm onwards.
-          // If tomorrow is 29th, ignore anything from 28th at 4pm onwards.
-          if (modifiedAt.getTime() >= cutoff.getTime()) continue;
-          if (inactive(row, cols)) continue;
-
-          seen.add(key);
-          found.push(no);
-        }
-      }
-    }
-
-    input.value = found.join(" ");
-    formatText();
-  } catch (err) {
-    console.error(err);
-    input.value = "";
-    formatText();
-  } finally {
-    input.disabled = false;
-    input.placeholder = oldPlaceholder;
-    input.focus();
-  }
-}
-
-function addSecretExcelDrop(inputId, suffix = "") {
-  const input = document.getElementById(inputId);
-  if (!input) return;
-
-  input.addEventListener("dragover", e => {
-    e.preventDefault();
-    input.classList.add("secret-drag-over");
-  });
-
-  input.addEventListener("dragleave", () => {
-    input.classList.remove("secret-drag-over");
-  });
-
-  input.addEventListener("drop", e => {
-    e.preventDefault();
-    input.classList.remove("secret-drag-over");
-    handleSecretExcelUpload(e.dataTransfer.files, suffix);
-  });
-}
-
+/* Startup + pipes + marquee */
 window.onload = () => {
   try {
     const saved = localStorage.getItem('sp_darkmode');
@@ -1888,13 +1845,11 @@ window.onload = () => {
   input?.addEventListener('paste', () => setTimeout(formatText, 0));
   document.getElementById('inputText2')?.addEventListener('paste', () => setTimeout(formatText, 0));
 
-  addSecretExcelDrop("inputText", "");
-  addSecretExcelDrop("inputText2", "2");
-
   _scheduleAutoClearCheck();
   formatText();
 };
 
+/* marquee */
 function startMarquee(text) {
   const scroller = document.querySelector('.headline-scroller');
   const el = document.getElementById('headlineText');
