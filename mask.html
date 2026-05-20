@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Paper Mask Maker</title>
+
+<style>
+
+*{
+  box-sizing:border-box;
+}
+
+:root{
+  --bg:#f3f0e9;
+  --panel:#ffffff;
+  --text:#222;
+  --accent:#7c3aed;
+}
+
+body{
+  margin:0;
+  font-family:Inter,Arial,sans-serif;
+  background:linear-gradient(135deg,#f5f2eb,#ebe5db);
+  color:var(--text);
+  overflow:hidden;
+}
+
+/* HEADER */
+
+header{
+  height:68px;
+  background:#1f1f1f;
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 4px 18px rgba(0,0,0,0.15);
+  position:relative;
+  z-index:20;
+}
+
+header h1{
+  margin:0;
+  font-size:24px;
+  letter-spacing:-0.03em;
+}
+
+/* APP */
+
+.app{
+  height:calc(100vh - 68px);
+  display:grid;
+  grid-template-columns:270px 1fr;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+  background:white;
+  padding:18px;
+  overflow-y:auto;
+  border-right:1px solid #ddd;
+}
+
+.sidebar h2{
+  margin:0 0 18px;
+  font-size:22px;
+}
+
+.section{
+  margin-bottom:22px;
+}
+
+.section-title{
+  font-size:13px;
+  font-weight:700;
+  color:#666;
+  margin-bottom:10px;
+  text-transform:uppercase;
+  letter-spacing:0.04em;
+}
+
+button,
+.upload-label{
+  width:100%;
+  border:none;
+  background:#222;
+  color:white;
+  padding:12px;
+  border-radius:12px;
+  cursor:pointer;
+  font-weight:700;
+  margin-bottom:10px;
+  transition:0.18s ease;
+  text-align:center;
+  font-size:14px;
+}
+
+button:hover,
+.upload-label:hover{
+  transform:translateY(-2px);
+  background:#333;
+}
+
+button:active{
+  transform:scale(0.98);
+}
+
+.upload-label{
+  display:block;
+  background:var(--accent);
+}
+
+input[type=file]{
+  display:none;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+
+/* MAIN */
+
+.main{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  overflow:hidden;
+}
+
+.canvas-wrap{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:14px;
+  width:100%;
+  height:100%;
+}
+
+/* LABEL */
+
+.a4-label{
+  background:white;
+  padding:8px 16px;
+  border-radius:999px;
+  font-size:13px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.12);
+}
+
+/* WORKSPACE */
+
+#workspace{
+  position:relative;
+
+  width:min(calc(100vw - 340px), calc((100vh - 140px) * 0.707));
+  height:min(calc((100vw - 340px) * 1.414), calc(100vh - 140px));
+
+  aspect-ratio:210 / 297;
+
+  background:white;
+
+  border:2px dashed #444;
+
+  border-radius:14px;
+
+  overflow:hidden;
+
+  box-shadow:0 24px 60px rgba(0,0,0,0.22);
+
+  animation:popIn .35s ease;
+}
+
+/* IMAGE */
+
+#maskImage{
+  position:absolute;
+  left:0;
+  top:0;
+
+  max-width:none;
+
+  display:none;
+
+  cursor:grab;
+
+  user-select:none;
+  -webkit-user-drag:none;
+  touch-action:none;
+
+  z-index:1;
+}
+
+/* PLACEHOLDER */
+
+.placeholder{
+  position:absolute;
+  inset:0;
+  display:grid;
+  place-items:center;
+  text-align:center;
+  color:#777;
+  font-size:18px;
+  padding:30px;
+}
+
+/* CUTOUTS */
+
+.cutout{
+  position:absolute;
+  background:white;
+  border:3px solid #111;
+  display:grid;
+  place-items:center;
+  font-size:12px;
+  font-weight:700;
+  user-select:none;
+  cursor:move;
+  z-index:10;
+
+  box-shadow:
+    0 8px 18px rgba(0,0,0,0.18);
+
+  transition:0.15s ease;
+}
+
+.cutout:hover{
+  transform:scale(1.03);
+}
+
+.eye{
+  width:110px;
+  height:58px;
+  border-radius:50%;
+}
+
+.mouth{
+  width:170px;
+  height:60px;
+  border-radius:0 0 80px 80px;
+}
+
+.handle{
+  position:absolute;
+  width:16px;
+  height:16px;
+  right:-8px;
+  bottom:-8px;
+  background:#111;
+  border:2px solid white;
+  border-radius:50%;
+  cursor:nwse-resize;
+}
+
+/* HINT */
+
+.hint{
+  background:white;
+  padding:8px 16px;
+  border-radius:999px;
+  font-size:13px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.12);
+  color:#555;
+}
+
+/* ANIMATION */
+
+@keyframes popIn{
+  from{
+    opacity:0;
+    transform:scale(0.96);
+  }
+  to{
+    opacity:1;
+    transform:scale(1);
+  }
+}
+
+/* MOBILE */
+
+@media (max-width:900px){
+
+  body{
+    overflow:auto;
+  }
+
+  .app{
+    display:block;
+    height:auto;
+  }
+
+  .sidebar{
+    border-right:none;
+    border-bottom:1px solid #ddd;
+  }
+
+  .main{
+    padding:12px;
+  }
+
+  #workspace{
+    width:94vw;
+    height:min(calc(94vw * 1.414), 72vh);
+  }
+
+}
+
+/* PRINT */
+
+@page{
+  size:A4 portrait;
+  margin:0;
+}
+
+@media print{
+
+  body{
+    background:white;
+    overflow:visible;
+  }
+
+  header,
+  .sidebar,
+  .hint,
+  .a4-label{
+    display:none;
+  }
+
+  .main,
+  .canvas-wrap{
+    padding:0;
+    display:block;
+    height:auto;
+  }
+
+  #workspace{
+    width:210mm;
+    height:297mm;
+    border:2px dashed black;
+    border-radius:0;
+    box-shadow:none;
+  }
+
+  .handle{
+    display:none;
+  }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>Paper Mask Maker</h1>
+</header>
+
+<div class="app">
+
+  <aside class="sidebar">
+
+    <h2>Controls</h2>
+
+    <div class="section">
+
+      <div class="section-title">
+        Upload
+      </div>
+
+      <label class="upload-label">
+        Upload Image
+        <input id="upload" type="file" accept="image/*">
+      </label>
+
+    </div>
+
+    <div class="section">
+
+      <div class="section-title">
+        Image
+      </div>
+
+      <div class="grid">
+
+        <button onclick="resizeImage(0.1)">
+          Bigger
+        </button>
+
+        <button onclick="resizeImage(-0.1)">
+          Smaller
+        </button>
+
+        <button onclick="centerImage()">
+          Center
+        </button>
+
+        <button onclick="resetImage()">
+          Reset
+        </button>
+
+      </div>
+
+    </div>
+
+    <div class="section">
+
+      <div class="section-title">
+        Holes
+      </div>
+
+      <div class="grid">
+
+        <button onclick="addEye()">
+          Add Eye
+        </button>
+
+        <button onclick="addMouth()">
+          Add Mouth
+        </button>
+
+        <button onclick="removeLast()">
+          Undo
+        </button>
+
+        <button onclick="resetCutouts()">
+          Reset
+        </button>
+
+      </div>
+
+    </div>
+
+    <div class="section">
+
+      <div class="section-title">
+        Export
+      </div>
+
+      <button onclick="window.print()">
+        Print A4
+      </button>
+
+      <button onclick="downloadPNG()">
+        Download PNG
+      </button>
+
+    </div>
+
+  </aside>
+
+  <main class="main">
+
+    <div class="canvas-wrap">
+
+      <div class="a4-label">
+        A4 Portrait — 210mm × 297mm
+      </div>
+
+      <div id="workspace">
+
+        <div id="placeholder" class="placeholder">
+          Upload an image to start making your paper mask.
+        </div>
+
+        <img id="maskImage" alt="" draggable="false">
+
+      </div>
+
+      <div class="hint">
+        Drag image • Mouse wheel to zoom • Drag holes to align
+      </div>
+
+    </div>
+
+  </main>
+
+</div>
+
+<script>
+
+const workspace =
+  document.getElementById("workspace");
+
+const upload =
+  document.getElementById("upload");
+
+const maskImage =
+  document.getElementById("maskImage");
+
+const placeholder =
+  document.getElementById("placeholder");
+
+let imageX = 0;
+let imageY = 0;
+
+let imageScale = 1;
+
+let baseWidth = 0;
+let baseHeight = 0;
+
+let draggingImage = false;
+
+let startX = 0;
+let startY = 0;
+
+let originX = 0;
+let originY = 0;
+
+/* UPLOAD */
+
+upload.addEventListener("change", e=>{
+
+  const file = e.target.files[0];
+
+  if(!file) return;
+
+  const reader = new FileReader();
+
+  reader.onload = ()=>{
+
+    maskImage.src = reader.result;
+
+    maskImage.style.display = "block";
+
+    placeholder.style.display = "none";
+
+    maskImage.onload = ()=>{
+
+      fitImage();
+
+    };
+
+  };
+
+  reader.readAsDataURL(file);
+
+});
+
+/* FIT IMAGE */
+
+function fitImage(){
+
+  const workspaceRatio =
+    workspace.clientWidth /
+    workspace.clientHeight;
+
+  const imageRatio =
+    maskImage.naturalWidth /
+    maskImage.naturalHeight;
+
+  if(imageRatio > workspaceRatio){
+
+    baseWidth =
+      workspace.clientWidth;
+
+    baseHeight =
+      baseWidth / imageRatio;
+
+  }else{
+
+    baseHeight =
+      workspace.clientHeight;
+
+    baseWidth =
+      baseHeight * imageRatio;
+
+  }
+
+  imageScale = 1;
+
+  centerImage();
+
+}
+
+function centerImage(){
+
+  imageX =
+    (workspace.clientWidth - baseWidth) / 2;
+
+  imageY =
+    (workspace.clientHeight - baseHeight) / 2;
+
+  updateImage();
+
+}
+
+function updateImage(){
+
+  maskImage.style.width =
+    baseWidth + "px";
+
+  maskImage.style.height =
+    baseHeight + "px";
+
+  maskImage.style.transform =
+    `translate(${imageX}px, ${imageY}px) scale(${imageScale})`;
+
+  maskImage.style.transformOrigin =
+    "center center";
+
+}
+
+function resizeImage(amount){
+
+  if(!maskImage.src) return;
+
+  imageScale =
+    Math.max(
+      0.2,
+      Math.min(5,imageScale + amount)
+    );
+
+  updateImage();
+
+}
+
+function resetImage(){
+
+  if(!maskImage.src) return;
+
+  fitImage();
+
+}
+
+/* IMAGE DRAG */
+
+maskImage.addEventListener("dragstart", e=>{
+
+  e.preventDefault();
+
+});
+
+maskImage.addEventListener("pointerdown", e=>{
+
+  e.preventDefault();
+
+  draggingImage = true;
+
+  startX = e.clientX;
+  startY = e.clientY;
+
+  originX = imageX;
+  originY = imageY;
+
+  maskImage.setPointerCapture(e.pointerId);
+
+  maskImage.style.cursor = "grabbing";
+
+});
+
+maskImage.addEventListener("pointermove", e=>{
+
+  if(!draggingImage) return;
+
+  imageX =
+    originX + (e.clientX - startX);
+
+  imageY =
+    originY + (e.clientY - startY);
+
+  updateImage();
+
+});
+
+maskImage.addEventListener("pointerup", e=>{
+
+  draggingImage = false;
+
+  try{
+
+    maskImage.releasePointerCapture(e.pointerId);
+
+  }catch{}
+
+  maskImage.style.cursor = "grab";
+
+});
+
+maskImage.addEventListener("pointercancel", ()=>{
+
+  draggingImage = false;
+
+  maskImage.style.cursor = "grab";
+
+});
+
+/* ZOOM */
+
+workspace.addEventListener("wheel", e=>{
+
+  if(!maskImage.src) return;
+
+  e.preventDefault();
+
+  resizeImage(
+    e.deltaY < 0 ? 0.05 : -0.05
+  );
+
+});
+
+/* CUTOUTS */
+
+function makeCutout(type,x,y,label){
+
+  const box =
+    document.createElement("div");
+
+  box.className =
+    `cutout ${type}`;
+
+  box.style.left = x + "px";
+  box.style.top = y + "px";
+
+  box.textContent = label;
+
+  const handle =
+    document.createElement("div");
+
+  handle.className = "handle";
+
+  box.appendChild(handle);
+
+  workspace.appendChild(box);
+
+  makeDraggable(box,handle);
+
+}
+
+function addEye(){
+
+  makeCutout(
+    "eye",
+    workspace.clientWidth / 2 - 55,
+    workspace.clientHeight * 0.32,
+    "EYE"
+  );
+
+}
+
+function addMouth(){
+
+  makeCutout(
+    "mouth",
+    workspace.clientWidth / 2 - 85,
+    workspace.clientHeight * 0.52,
+    "MOUTH"
+  );
+
+}
+
+function removeLast(){
+
+  const cutouts =
+    document.querySelectorAll(".cutout");
+
+  if(cutouts.length){
+
+    cutouts[cutouts.length - 1].remove();
+
+  }
+
+}
+
+function resetCutouts(){
+
+  document
+    .querySelectorAll(".cutout")
+    .forEach(el=>el.remove());
+
+  makeCutout(
+    "eye",
+    workspace.clientWidth * 0.34 - 55,
+    workspace.clientHeight * 0.32,
+    "LEFT"
+  );
+
+  makeCutout(
+    "eye",
+    workspace.clientWidth * 0.66 - 55,
+    workspace.clientHeight * 0.32,
+    "RIGHT"
+  );
+
+  makeCutout(
+    "mouth",
+    workspace.clientWidth / 2 - 85,
+    workspace.clientHeight * 0.52,
+    "MOUTH"
+  );
+
+}
+
+/* DRAG CUTOUTS */
+
+function makeDraggable(box,handle){
+
+  let mode = null;
+
+  let sx,sy,sl,st,sw,sh;
+
+  box.addEventListener("pointerdown", e=>{
+
+    if(e.target === handle) return;
+
+    mode = "move";
+
+    start(e);
+
+  });
+
+  handle.addEventListener("pointerdown", e=>{
+
+    mode = "resize";
+
+    start(e);
+
+    e.stopPropagation();
+
+  });
+
+  function start(e){
+
+    sx = e.clientX;
+    sy = e.clientY;
+
+    sl = box.offsetLeft;
+    st = box.offsetTop;
+
+    sw = box.offsetWidth;
+    sh = box.offsetHeight;
+
+    document.addEventListener(
+      "pointermove",
+      move
+    );
+
+    document.addEventListener(
+      "pointerup",
+      stop
+    );
+
+  }
+
+  function move(e){
+
+    const dx = e.clientX - sx;
+    const dy = e.clientY - sy;
+
+    if(mode === "move"){
+
+      box.style.left =
+        sl + dx + "px";
+
+      box.style.top =
+        st + dy + "px";
+
+    }
+
+    if(mode === "resize"){
+
+      box.style.width =
+        Math.max(35,sw + dx) + "px";
+
+      box.style.height =
+        Math.max(25,sh + dy) + "px";
+
+    }
+
+  }
+
+  function stop(){
+
+    document.removeEventListener(
+      "pointermove",
+      move
+    );
+
+    document.removeEventListener(
+      "pointerup",
+      stop
+    );
+
+  }
+
+}
+
+/* EXPORT */
+
+async function downloadPNG(){
+
+  const canvas =
+    document.createElement("canvas");
+
+  canvas.width =
+    workspace.clientWidth;
+
+  canvas.height =
+    workspace.clientHeight;
+
+  const ctx =
+    canvas.getContext("2d");
+
+  ctx.fillStyle = "white";
+
+  ctx.fillRect(
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
+
+  if(maskImage.src){
+
+    const drawWidth =
+      baseWidth * imageScale;
+
+    const drawHeight =
+      baseHeight * imageScale;
+
+    const drawX =
+      imageX -
+      ((drawWidth - baseWidth) / 2);
+
+    const drawY =
+      imageY -
+      ((drawHeight - baseHeight) / 2);
+
+    ctx.drawImage(
+      maskImage,
+      drawX,
+      drawY,
+      drawWidth,
+      drawHeight
+    );
+
+  }
+
+  document
+    .querySelectorAll(".cutout")
+    .forEach(el=>{
+
+      const x = el.offsetLeft;
+      const y = el.offsetTop;
+      const w = el.offsetWidth;
+      const h = el.offsetHeight;
+
+      ctx.fillStyle = "white";
+      ctx.strokeStyle = "black";
+      ctx.lineWidth = 3;
+
+      ctx.beginPath();
+
+      if(el.classList.contains("eye")){
+
+        ctx.ellipse(
+          x + w/2,
+          y + h/2,
+          w/2,
+          h/2,
+          0,
+          0,
+          Math.PI * 2
+        );
+
+      }else{
+
+        ctx.roundRect(
+          x,
+          y,
+          w,
+          h,
+          30
+        );
+
+      }
+
+      ctx.fill();
+      ctx.stroke();
+
+    });
+
+  ctx.setLineDash([8,8]);
+
+  ctx.strokeStyle = "black";
+
+  ctx.lineWidth = 2;
+
+  ctx.strokeRect(
+    1,
+    1,
+    canvas.width - 2,
+    canvas.height - 2
+  );
+
+  const link =
+    document.createElement("a");
+
+  link.download =
+    "paper-mask-a4.png";
+
+  link.href =
+    canvas.toDataURL("image/png");
+
+  link.click();
+
+}
+
+/* RESIZE */
+
+window.addEventListener("resize", ()=>{
+
+  resetCutouts();
+
+  if(maskImage.src){
+
+    fitImage();
+
+  }
+
+});
+
+/* START */
+
+resetCutouts();
+
+</script>
+
+</body>
+</html>
