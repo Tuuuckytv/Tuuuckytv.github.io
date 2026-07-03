@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Retro Slot Random</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+
+    background:#1b1035;
+    background-image:
+        linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+    background-size:16px 16px;
+
+    color:white;
+    font-family:"Press Start 2P", monospace;
+}
+
+body.popup-open{
+    overflow:hidden;
+}
+
+.secret-button{
+    position:fixed;
+    top:0;
+    right:0;
+    width:52px;
+    height:52px;
+    opacity:0;
+    z-index:999;
+    border:none;
+    background:transparent;
+}
+
+.secret-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.88);
+    z-index:998;
+}
+
+.secret-panel{
+    display:none;
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%, -50%);
+    z-index:1000;
+
+    width:min(90vw, 320px);
+    padding:18px;
+
+    background:#09051a;
+    border:4px solid #ffdd55;
+    box-shadow:0 0 0 4px #5b2fa8, 0 0 30px #000;
+}
+
+.secret-panel input{
+    width:100%;
+    padding:12px;
+    margin-bottom:12px;
+
+    font-family:inherit;
+    font-size:.65rem;
+
+    background:#1b1035;
+    color:#ffe86d;
+    border:3px solid #6fffb0;
+    outline:none;
+}
+
+.secret-panel input:focus{
+    box-shadow:0 0 12px #6fffb0;
+}
+
+.secret-panel button{
+    width:100%;
+    padding:12px;
+    font-size:.55rem;
+}
+
+.panel{
+    width:100%;
+    max-width:420px;
+    text-align:center;
+
+    background:#2b1858;
+    border:6px solid #ffdd55;
+    border-radius:14px;
+    padding:28px;
+
+    box-shadow:
+        0 0 0 6px #5b2fa8,
+        0 0 30px rgba(0,0,0,.7);
+}
+
+h1{
+    color:#6fffb0;
+    font-size:1rem;
+    line-height:1.6;
+    margin-bottom:24px;
+    text-shadow:3px 3px #000;
+}
+
+.slot{
+    height:140px;
+    overflow:hidden;
+    border:5px solid #6fffb0;
+    background:#09051a;
+    margin-bottom:24px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    box-shadow:inset 0 0 18px #000;
+}
+
+#number{
+    font-size:4rem;
+    color:#ffe86d;
+    text-shadow:5px 5px #000;
+}
+
+.spin{
+    animation:slotSpin 0.08s linear infinite;
+}
+
+.final{
+    animation:bounce 0.55s ease;
+}
+
+@keyframes slotSpin{
+    0%{ transform:translateY(-18px); opacity:.4; }
+    50%{ transform:translateY(0); opacity:1; }
+    100%{ transform:translateY(18px); opacity:.4; }
+}
+
+@keyframes bounce{
+    0%{ transform:scale(1); }
+    35%{ transform:scale(1.35); }
+    55%{ transform:scale(.9); }
+    75%{ transform:scale(1.12); }
+    100%{ transform:scale(1); }
+}
+
+button{
+    width:100%;
+    padding:18px;
+
+    font-size:1rem;
+    line-height:1.5;
+    font-weight:bold;
+    font-family:inherit;
+
+    background:#38ff72;
+    color:#000;
+
+    border:none;
+    border-bottom:8px solid #1d8a43;
+    border-radius:8px;
+
+    cursor:pointer;
+}
+
+button:active{
+    transform:translateY(5px);
+    border-bottom-width:3px;
+}
+
+button:disabled{
+    opacity:.6;
+    cursor:not-allowed;
+}
+
+.footer{
+    margin-top:18px;
+    color:#9ddcff;
+    font-size:.55rem;
+    line-height:1.8;
+}
+
+@media (max-width:380px){
+    h1{ font-size:.8rem; }
+    #number{ font-size:3rem; }
+    .slot{ height:120px; }
+    button{ font-size:.8rem; }
+    .footer{ font-size:.5rem; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="secret-overlay" id="secretOverlay" onclick="closeSecretPanel()"></div>
+
+<button class="secret-button" onclick="toggleSecretPanel()" aria-label="Secret settings"></button>
+
+<div class="secret-panel" id="secretPanel">
+    <input id="forcedNumberInput" type="number" inputmode="numeric" placeholder="Next number">
+    <button onclick="setForcedNumber()">SET NEXT</button>
+</div>
+
+<div class="panel">
+    <h1>RANDOM NUMBER</h1>
+
+    <div class="slot">
+        <div id="number">?</div>
+    </div>
+
+    <button id="button" onclick="roll()">SPIN</button>
+
+    <div class="footer">1-100 RANDOMISER</div>
+</div>
+
+<script>
+// Change ONLY these two values
+const MIN_NUMBER = 1;
+const MAX_NUMBER = 100;
+
+const numberDisplay = document.getElementById("number");
+const button = document.getElementById("button");
+const secretPanel = document.getElementById("secretPanel");
+const secretOverlay = document.getElementById("secretOverlay");
+const forcedNumberInput = document.getElementById("forcedNumberInput");
+
+let forcedNumber = null;
+
+function getRandomNumber(){
+    return Math.floor(Math.random() * (MAX_NUMBER - MIN_NUMBER + 1)) + MIN_NUMBER;
+}
+
+function openSecretPanel(){
+    secretPanel.style.display = "block";
+    secretOverlay.style.display = "block";
+    document.body.classList.add("popup-open");
+
+    setTimeout(() => {
+        forcedNumberInput.focus();
+    }, 100);
+}
+
+function closeSecretPanel(){
+    secretPanel.style.display = "none";
+    secretOverlay.style.display = "none";
+    document.body.classList.remove("popup-open");
+    forcedNumberInput.blur();
+}
+
+function toggleSecretPanel(){
+    const isOpen = secretPanel.style.display === "block";
+
+    if(isOpen){
+        closeSecretPanel();
+    }else{
+        openSecretPanel();
+    }
+}
+
+function setForcedNumber(){
+    const chosenNumber = Number(forcedNumberInput.value);
+
+    if(chosenNumber >= MIN_NUMBER && chosenNumber <= MAX_NUMBER){
+        forcedNumber = chosenNumber;
+        forcedNumberInput.value = "";
+        closeSecretPanel();
+    }else{
+        forcedNumberInput.value = "";
+        forcedNumberInput.placeholder = MIN_NUMBER + " to " + MAX_NUMBER + " only";
+        forcedNumberInput.focus();
+    }
+}
+
+forcedNumberInput.addEventListener("keydown", function(event){
+    if(event.key === "Enter"){
+        setForcedNumber();
+    }
+});
+
+function roll(){
+    button.disabled = true;
+
+    numberDisplay.classList.remove("final");
+    numberDisplay.classList.add("spin");
+
+    const finalNumber = forcedNumber !== null ? forcedNumber : getRandomNumber();
+    forcedNumber = null;
+
+    let speed = 45;
+    let spins = 0;
+    const maxSpins = 32;
+
+    function spinLoop(){
+        numberDisplay.textContent = getRandomNumber();
+        spins++;
+
+        if(spins < maxSpins){
+            speed += 5;
+            setTimeout(spinLoop, speed);
+        }else{
+            numberDisplay.classList.remove("spin");
+            numberDisplay.textContent = finalNumber;
+
+            void numberDisplay.offsetWidth;
+            numberDisplay.classList.add("final");
+
+            button.disabled = false;
+        }
+    }
+
+    spinLoop();
+}
+</script>
+
+</body>
+</html>
