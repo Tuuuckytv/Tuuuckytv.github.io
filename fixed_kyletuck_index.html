@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>KyleTuck.com</title>
+<link rel="icon" href="spiderman.png" type="image/png" />
+
+<style>
+@font-face{
+  font-family:"Dogica";
+  src:url("dogica.ttf") format("truetype");
+  font-weight:normal;
+  font-style:normal;
+  font-display:swap;
+}
+
+:root{
+  --bg:#0a0b10;
+  --text:#f2f6ff;
+  --muted:#aeb7c9;
+  --neon:#09f911;
+  --shadow:0 18px 60px rgba(0,0,0,.45);
+  --cols:1;
+  --r:18px;
+  --ease:cubic-bezier(.2,.8,.2,1);
+  --font:"Dogica", monospace;
+
+  --vhs-green: rgba(40,255,120,.06);
+  --scanline-opacity: .18;
+  --scanline-gap: 4px;
+  --scanline-thickness: 1px;
+  --scanline-speed: 12s;
+  --band-opacity: .08;
+  --band-speed: 6.5s;
+  --noise-opacity: .04;
+  --noise-jitter-speed: 120ms;
+
+  --boot-scanline-opacity: .42;
+  --boot-noise-opacity: .12;
+  --boot-band-opacity: .20;
+
+  --boot-out-ms: 260ms;
+  --boot-loop-ms: 520ms;
+}
+
+@media (hover: none) and (pointer: coarse){
+  :root{
+    --scanline-opacity: .14;
+    --band-opacity: .06;
+    --noise-opacity: .025;
+    --noise-jitter-speed: 180ms;
+    --boot-scanline-opacity: .30;
+    --boot-noise-opacity: .08;
+    --boot-band-opacity: .14;
+  }
+}
+
+*{
+  box-sizing:border-box;
+  font-family:var(--font);
+}
+
+html,body{ height:100%; }
+
+body{
+  margin:0;
+  min-height:100svh;
+  background:var(--bg);
+  color:var(--text);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:22px 14px;
+  overflow-x:hidden;
+  line-height:1.4;
+}
+
+body.is-navigating .wrap,
+body.is-navigating .bg,
+body.is-navigating .vhs-tint,
+body.is-navigating .vhs-lines,
+body.is-navigating .vhs-band,
+body.is-navigating .vhs-noise{
+  opacity:0 !important;
+}
+
+.bg{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:-3;
+}
+.bg::before{
+  content:"";
+  position:absolute;
+  inset:-20%;
+  background:repeating-linear-gradient(
+    135deg,
+    rgba(255,255,255,.04) 0,
+    rgba(255,255,255,.04) 1px,
+    transparent 1px,
+    transparent 14px
+  );
+  opacity:.45;
+  animation:gridDrift 18s linear infinite;
+}
+.bg::after{
+  content:"";
+  position:absolute;
+  inset:-30%;
+  background:
+    radial-gradient(800px 420px at 20% 20%, rgba(9,249,17,.14), transparent 60%),
+    radial-gradient(700px 460px at 80% 30%, rgba(9,249,17,.10), transparent 62%);
+  animation:glowPulse 6.5s var(--ease) infinite alternate;
+}
+@keyframes gridDrift{ to{ transform:translate(2%,2%); } }
+@keyframes glowPulse{ to{ transform:scale(1.04); opacity:1; } }
+
+.vhs-tint,
+.vhs-lines,
+.vhs-band,
+.vhs-noise{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:9998;
+}
+
+.vhs-tint{
+  background:var(--vhs-green);
+  mix-blend-mode:soft-light;
+  opacity:.7;
+}
+
+.vhs-lines{
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,var(--scanline-opacity)) 0px,
+      rgba(255,255,255,var(--scanline-opacity)) var(--scanline-thickness),
+      rgba(0,0,0,0) var(--scanline-thickness),
+      rgba(0,0,0,0) var(--scanline-gap)
+    );
+  mix-blend-mode:overlay;
+  animation:scanUp var(--scanline-speed) linear infinite;
+  will-change:transform;
+  opacity:.8;
+}
+
+.vhs-band{
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(0,0,0,0) 0%,
+      rgba(255,255,255,var(--band-opacity)) 45%,
+      rgba(255,255,255,0) 55%,
+      rgba(0,0,0,0) 100%
+    );
+  mix-blend-mode:screen;
+  animation:bandUp var(--band-speed) linear infinite;
+  transform:translateY(110%);
+  will-change:transform;
+  opacity:.85;
+}
+
+.vhs-noise{
+  opacity:var(--noise-opacity);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='.4'/%3E%3C/svg%3E");
+  background-size:180px 180px;
+  mix-blend-mode:overlay;
+  animation:noiseJitter var(--noise-jitter-speed) steps(2) infinite;
+  will-change:transform;
+}
+
+body.boot-sync{
+  --scanline-opacity: var(--boot-scanline-opacity);
+  --noise-opacity: var(--boot-noise-opacity);
+  --band-opacity: var(--boot-band-opacity);
+}
+
+@keyframes scanUp{
+  from { transform:translateY(0); }
+  to   { transform:translateY(-140px); }
+}
+@keyframes bandUp{
+  from { transform:translateY(120%); }
+  to   { transform:translateY(-120%); }
+}
+@keyframes noiseJitter{
+  0%   { transform:translate(0,0); }
+  25%  { transform:translate(-1px,1px); }
+  50%  { transform:translate(1px,-1px); }
+  75%  { transform:translate(-1px,0); }
+  100% { transform:translate(0,0); }
+}
+
+#bootOverlay{
+  position:fixed;
+  inset:0;
+  z-index:10001;
+  pointer-events:none;
+  background:#000;
+  opacity:1;
+  visibility:hidden;
+}
+
+#bootOverlay.active{ visibility:visible; }
+
+#bootOverlay .boot-stage{
+  position:absolute;
+  inset:0;
+}
+
+#bootOverlay .boot-line{
+  position:absolute;
+  left:0; right:0;
+  top:50%;
+  height:2px;
+  transform:translateY(-50%) scaleX(.1);
+  background:linear-gradient(90deg, transparent, rgba(9,249,17,.98), transparent);
+  filter:drop-shadow(0 0 18px rgba(9,249,17,.60));
+  opacity:0;
+}
+
+#bootOverlay .boot-bloom{
+  position:absolute;
+  inset:-10%;
+  background:
+    radial-gradient(520px 240px at 50% 50%, rgba(9,249,17,.28), transparent 65%),
+    radial-gradient(900px 520px at 50% 50%, rgba(255,255,255,.07), transparent 70%),
+    radial-gradient(1200px 800px at 50% 50%, rgba(0,0,0,.80), rgba(0,0,0,1));
+  opacity:0;
+}
+
+#bootOverlay .boot-static{
+  position:absolute;
+  inset:0;
+  background:radial-gradient(1200px 800px at 50% 50%, rgba(0,0,0,.55), rgba(0,0,0,1));
+  opacity:.9;
+}
+
+#bootOverlay .boot-text{
+  position:absolute;
+  left:50%;
+  top:calc(50% + 44px);
+  transform:translateX(-50%);
+  font-size:10px;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  color:rgba(242,246,255,.86);
+  text-shadow:0 0 12px rgba(9,249,17,.25);
+  opacity:0;
+}
+
+#bootOverlay.active .boot-line{ animation:syncLine var(--boot-loop-ms) linear infinite; }
+#bootOverlay.active .boot-bloom{ animation:syncBloom var(--boot-loop-ms) linear infinite; }
+#bootOverlay.active .boot-text{ animation:syncText var(--boot-loop-ms) steps(1) infinite; }
+
+@keyframes syncText{
+  0%   { opacity:0; transform:translateX(-50%) translateY(0); }
+  20%  { opacity:1; transform:translateX(-50%) translateY(0); }
+  60%  { opacity:1; transform:translateX(-50%) translateY(-1px); }
+  100% { opacity:0; transform:translateX(-50%) translateY(0); }
+}
+
+@keyframes syncLine{
+  0%   { opacity:0; transform:translateY(-50%) scaleX(.12); }
+  12%  { opacity:1; transform:translateY(-50%) scaleX(1); }
+  35%  { opacity:.85; transform:translateY(-50%) scaleX(1); }
+  60%  { opacity:.35; transform:translateY(-50%) scaleX(1); }
+  100% { opacity:0; transform:translateY(-50%) scaleX(1); }
+}
+
+@keyframes syncBloom{
+  0%   { opacity:0; transform:scale(1.02); }
+  14%  { opacity:.18; transform:scale(1.00); }
+  32%  { opacity:.48; transform:scale(1.00); }
+  60%  { opacity:.22; transform:scale(1.01); }
+  100% { opacity:0; transform:scale(1.01); }
+}
+
+#bootOverlay.lock .boot-line{ animation:lockLine 520ms var(--ease) forwards !important; }
+#bootOverlay.lock .boot-bloom{ animation:lockBloom 680ms var(--ease) forwards !important; }
+#bootOverlay.lock .boot-text{ animation:lockText 520ms steps(1) forwards !important; }
+
+@keyframes lockLine{
+  0%   { opacity:0; transform:translateY(-50%) scaleX(.08); }
+  12%  { opacity:1; transform:translateY(-50%) scaleX(1); }
+  40%  { opacity:1; transform:translateY(-50%) scaleX(1); }
+  100% { opacity:0; transform:translateY(-50%) scaleX(1); }
+}
+@keyframes lockBloom{
+  0%   { opacity:0; transform:scale(1.02); }
+  18%  { opacity:.25; transform:scale(1.00); }
+  40%  { opacity:.68; transform:scale(1.00); }
+  70%  { opacity:.22; transform:scale(1.01); }
+  100% { opacity:0; transform:scale(1.01); }
+}
+@keyframes lockText{
+  0%   { opacity:0; }
+  10%  { opacity:1; }
+  80%  { opacity:1; }
+  100% { opacity:0; }
+}
+
+#bootOverlay.out{
+  transition:opacity var(--boot-out-ms) var(--ease);
+  opacity:0;
+}
+
+.wrap{
+  width:100%;
+  max-width:960px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:18px;
+}
+
+header{
+  text-align:center;
+}
+
+h1{
+  margin:0;
+  font-size:clamp(34px,5.2vw,64px);
+  font-weight:400;
+  letter-spacing:.38em;
+  text-transform:uppercase;
+}
+
+.sub{
+  margin-top:14px;
+  color:rgba(242,246,255,.78);
+  font-size:12px;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+}
+
+.card{
+  width:100%;
+  border-radius:var(--r);
+  background:rgba(255,255,255,.03);
+  box-shadow:var(--shadow);
+  border:1px solid rgba(9,249,17,.28);
+}
+.card-inner{ padding:16px; }
+
+.deck{
+  display:grid;
+  grid-template-columns:repeat(var(--cols),minmax(0,1fr));
+  gap:12px;
+}
+
+.btn{
+  position:relative;
+  background:rgba(255,255,255,.02);
+  border:1px solid rgba(9,249,17,.9);
+  border-radius:16px;
+  padding:18px 16px;
+  min-height:96px;
+  cursor:pointer;
+  text-align:left;
+  color:var(--text);
+  box-shadow:0 10px 24px rgba(0,0,0,.3);
+  overflow:hidden;
+  transition:
+    transform .22s var(--ease),
+    box-shadow .22s var(--ease),
+    background .22s var(--ease);
+}
+.btn::after{
+  content:"";
+  position:absolute;
+  inset:8px;
+  border-radius:12px;
+  border:1px solid rgba(9,249,17,.55);
+  opacity:.35;
+}
+.btn::before{
+  content:"";
+  position:absolute;
+  left:16px;
+  right:16px;
+  bottom:14px;
+  height:1px;
+  background:linear-gradient(90deg, transparent, rgba(9,249,17,.9), transparent);
+  transform:scaleX(0);
+  transform-origin:left;
+  transition:transform .35s var(--ease);
+}
+.btn-content{ transition:transform .22s var(--ease); }
+.btn:hover{
+  transform:translateY(-4px);
+  background:rgba(255,255,255,.04);
+}
+.btn:hover .btn-content{ transform:translateY(-3px); }
+.btn:hover::before{ transform:scaleX(1); }
+
+.btn-name{
+  font-size:14px;
+  text-transform:uppercase;
+}
+.btn-desc{
+  margin-top:10px;
+  color:var(--muted);
+  font-size:11px;
+  letter-spacing:.12em;
+  line-height:1.2;
+}
+
+.glitch{
+  position:relative;
+  display:inline-block;
+  animation:glitch 1s linear infinite;
+  transform:translateZ(0);
+  image-rendering:pixelated;
+}
+.glitch::before,
+.glitch::after{
+  content:attr(data-text);
+  position:absolute;
+  left:0;
+  top:0;
+  width:100%;
+}
+.glitch::before{
+  clip-path:polygon(0 0,100% 0,100% 33%,0 33%);
+  animation:glitchTop 1s linear infinite;
+}
+.glitch::after{
+  clip-path:polygon(0 67%,100% 67%,100% 100%,0 100%);
+  animation:glitchBottom 1.5s linear infinite;
+}
+
+@keyframes glitch{
+  2%,64%{ transform:translate(2px,0); }
+  4%,60%{ transform:translate(-2px,0); }
+  62%{ transform:translate(0,0) skew(5deg); }
+}
+@keyframes glitchTop{
+  2%,64%{ transform:translate(2px,-2px); }
+  4%,60%{ transform:translate(-2px,2px); }
+  62%{ transform:translate(12px,-1px) skew(-13deg); }
+}
+@keyframes glitchBottom{
+  2%,64%{ transform:translate(-2px,0); }
+  4%,60%{ transform:translate(-2px,0); }
+  62%{ transform:translate(-18px,5px) skew(21deg); }
+}
+
+#glitchOverlay{
+  position:fixed;
+  inset:0;
+  z-index:10000;
+  background:#000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transition:none;
+}
+#glitchOverlay.active{
+  opacity:1;
+  visibility:visible;
+  pointer-events:none;
+}
+#glitchVideo{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.footer-link{
+  position:fixed;
+  right:14px;
+  bottom:12px;
+  z-index:9999;
+  font-size:11px;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:rgba(242,246,255,.65);
+  text-decoration:none;
+  padding:8px 10px;
+  border-radius:12px;
+  border:1px solid rgba(9,249,17,.35);
+  background:rgba(0,0,0,.18);
+  box-shadow:0 10px 22px rgba(0,0,0,.25);
+  transition:transform .22s var(--ease), background .22s var(--ease), border-color .22s var(--ease), color .22s var(--ease);
+}
+.footer-link:hover{
+  transform:translateY(-2px);
+  background:rgba(0,0,0,.28);
+  border-color:rgba(9,249,17,.7);
+  color:rgba(242,246,255,.9);
+}
+.footer-link:focus-visible{
+  outline:2px solid rgba(9,249,17,.8);
+  outline-offset:3px;
+}
+
+@media (max-width: 520px){
+  body{ padding:18px 12px; }
+
+  .wrap{
+    gap:14px;
+    max-width:520px;
+  }
+
+  h1{
+    font-size:clamp(28px, 9vw, 44px);
+    letter-spacing:.18em;
+  }
+  .sub{
+    margin-top:10px;
+    font-size:10px;
+    letter-spacing:.14em;
+  }
+
+  .card-inner{ padding:12px; }
+
+  .deck{
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    gap:10px;
+  }
+
+  .btn{
+    padding:14px 12px;
+    min-height:92px;
+    border-radius:14px;
+  }
+  .btn::after{
+    inset:7px;
+    border-radius:10px;
+  }
+
+  .btn-name{
+    font-size:12px;
+    letter-spacing:.08em;
+    line-height:1.05;
+    word-break:keep-all;
+    overflow-wrap:anywhere;
+  }
+  .btn-desc{
+    margin-top:8px;
+    font-size:10px;
+    letter-spacing:.08em;
+    line-height:1.25;
+  }
+
+  .footer-link{
+    left:50%;
+    right:auto;
+    transform:translateX(-50%);
+    bottom:12px;
+    padding:8px 12px;
+    font-size:10px;
+    letter-spacing:.14em;
+  }
+  .footer-link:hover{
+    transform:translateX(-50%) translateY(-2px);
+  }
+}
+
+@media (max-width: 360px){
+  h1{ letter-spacing:.14em; }
+  .deck{ gap:8px; }
+  .btn{ padding:12px 10px; min-height:86px; }
+  .btn-name{ font-size:11px; }
+  .btn-desc{ font-size:9px; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .vhs-tint,.vhs-lines,.vhs-band,.vhs-noise, *{ animation:none !important; }
+  #bootOverlay{ display:none !important; }
+}
+</style>
+</head>
+
+<body>
+<div class="bg"></div>
+
+<div class="vhs-tint" aria-hidden="true"></div>
+<div class="vhs-lines" aria-hidden="true"></div>
+<div class="vhs-band" aria-hidden="true"></div>
+<div class="vhs-noise" aria-hidden="true"></div>
+
+<div id="bootOverlay" aria-hidden="true">
+  <div class="boot-stage">
+    <div class="boot-static"></div>
+    <div class="boot-line"></div>
+    <div class="boot-bloom"></div>
+    <div class="boot-text">Sync</div>
+  </div>
+</div>
+
+<div id="glitchOverlay" aria-hidden="true">
+  <video id="glitchVideo" src="glitch.mp4" preload="auto" playsinline muted></video>
+</div>
+
+<div class="wrap">
+  <header>
+    <h1 class="glitch" data-text="Kyle">Kyle</h1>
+    <p class="sub">Hello motherfucker.</p>
+  </header>
+
+  <div class="card">
+    <div class="card-inner">
+      <div class="deck" id="buttonDeck"></div>
+    </div>
+  </div>
+</div>
+
+<a class="footer-link" href="https://kyletuck.com" target="_blank" rel="noopener noreferrer">kyletuck.com</a>
+
+<script>
+const PAGE_BOOT_HOLD_MS  = 5000;
+const BOOT_OUT_MS        = 260;
+const BOOT_LOOP_MS       = 520;
+const FINAL_LOCK_MS      = 700;
+const GLITCH_DURATION_MS = 700;
+
+document.documentElement.style.setProperty("--boot-out-ms", `${BOOT_OUT_MS}ms`);
+document.documentElement.style.setProperty("--boot-loop-ms", `${BOOT_LOOP_MS}ms`);
+
+const pages = [
+  {name:"Timelapse Calculator",path:"timelapse",desc:"Calculate how long a timelapse will be."},
+  {name:"Pace Calculator",path:"pacecalc",desc:"Calculate your pace."},
+  {name:"Randomiser",path:"chooser",desc:"Simple randomiser."},
+  {name:"Deck Generator",path:"sk8",desc:"Add a graphic to my board."},
+  {name:"Mask Maker",path:"mask",desc:"Make a random shitty paper mask."},
+  {name:"Number",path:"numbergen",desc:"Generate a random number 1-99."}
+];
+
+const boot = document.getElementById("bootOverlay");
+const overlay = document.getElementById("glitchOverlay");
+const video = document.getElementById("glitchVideo");
+const deck = document.getElementById("buttonDeck");
+
+let navigating = false;
+
+function startBoot(){
+  if(!boot) return;
+
+  boot.style.visibility = "";
+  boot.classList.add("active");
+  document.body.classList.add("boot-sync");
+
+  const lockAt = Math.max(0, PAGE_BOOT_HOLD_MS - FINAL_LOCK_MS - BOOT_OUT_MS);
+  const fadeAt = Math.max(0, PAGE_BOOT_HOLD_MS - BOOT_OUT_MS);
+
+  setTimeout(() => {
+    boot.classList.add("lock");
+    const t = boot.querySelector(".boot-text");
+    if (t) t.textContent = "Synced";
+  }, lockAt);
+
+  setTimeout(() => {
+    boot.classList.add("out");
+  }, fadeAt);
+
+  setTimeout(() => {
+    boot.classList.remove("active", "out", "lock");
+    boot.style.visibility = "";
+    document.body.classList.remove("boot-sync");
+    const t = boot.querySelector(".boot-text");
+    if (t) t.textContent = "SYNC…";
+  }, PAGE_BOOT_HOLD_MS + 40);
+}
+
+function resetOverlay(){
+  document.body.classList.remove("is-navigating");
+  overlay.classList.remove("active");
+  try{
+    video.pause();
+    video.currentTime = 0;
+  }catch(e){}
+  navigating = false;
+}
+window.addEventListener("pageshow", resetOverlay);
+
+async function playGlitchThenGo(to){
+  if(navigating) return;
+  navigating = true;
+
+  document.body.classList.add("is-navigating");
+  overlay.classList.add("active");
+
+  try{
+    video.currentTime = 0;
+    await video.play();
+  }catch(e){}
+
+  setTimeout(() => {
+    window.location.assign(to);
+  }, GLITCH_DURATION_MS);
+}
+
+function buildButtons(){
+  if(!deck) return;
+
+  const isMobileCols = window.matchMedia("(max-width: 520px)").matches;
+
+  document.documentElement.style.setProperty(
+    "--cols",
+    isMobileCols ? "2" : String(Math.ceil(Math.sqrt(pages.length)))
+  );
+
+  deck.innerHTML = "";
+
+  pages.forEach((p)=>{
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "btn";
+
+    b.innerHTML = `
+      <div class="btn-content">
+        <div class="btn-name">${p.name}</div>
+        <div class="btn-desc">${p.desc}</div>
+      </div>`;
+
+    b.addEventListener("click", () => playGlitchThenGo(p.path));
+    deck.appendChild(b);
+  });
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  buildButtons();
+  requestAnimationFrame(startBoot);
+});
+
+window.addEventListener("resize", () => {
+  const isMobileCols = window.matchMedia("(max-width: 520px)").matches;
+  document.documentElement.style.setProperty(
+    "--cols",
+    isMobileCols ? "2" : String(Math.ceil(Math.sqrt(pages.length)))
+  );
+});
+</script>
+</body>
+</html>
