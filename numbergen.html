@@ -120,6 +120,16 @@ body.popup-open{
     color:#ffe86d;
     border:3px solid #6fffb0;
     outline:none;
+
+    appearance:textfield;
+    -moz-appearance:textfield;
+}
+
+/* Removes the up/down arrows from the hidden number input */
+.secret-panel input::-webkit-outer-spin-button,
+.secret-panel input::-webkit-inner-spin-button{
+    -webkit-appearance:none;
+    margin:0;
 }
 
 .secret-panel input:focus{
@@ -167,12 +177,23 @@ h1{
     justify-content:center;
 
     box-shadow:inset 0 0 18px #000;
+
+    user-select:none;
+    -webkit-user-select:none;
+    -ms-user-select:none;
+    -webkit-touch-callout:none;
 }
 
 #number{
     font-size:4rem;
     color:#ffe86d;
     text-shadow:5px 5px #000;
+
+    user-select:none;
+    -webkit-user-select:none;
+    -ms-user-select:none;
+    -webkit-touch-callout:none;
+    pointer-events:none;
 }
 
 .spin{
