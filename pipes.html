@@ -732,6 +732,1392 @@
       .copied-toast.play .left,
       .copied-toast.play .right { animation: none; opacity: 1; }
     }
+
+
+    /* === Visual-only 8/16-bit pixel skin ==================================
+       This block intentionally overrides presentation only.
+       No JavaScript/functions or formatter behaviour are changed.
+    ===================================================================== */
+    :root {
+      --accent: #00a6a6;
+      --accent-light: #50fff1;
+      --bg: #dff7ee;
+      --text: #16272b;
+      --glass-bg: #fff9de;
+      --shadow: 8px 8px 0 rgba(16, 39, 43, 0.28);
+      --border: #10272b;
+      --muted: #526569;
+      --panel-border: #10272b;
+      --input-bg: #fffef2;
+      --input-text: #10272b;
+      --token-hover: rgba(80, 255, 241, 0.26);
+      --footer: #10272b;
+      --pipe-opacity: 0.22;
+      --w95-border: #10272b;
+      --w95-inset1: #ffffff;
+      --w95-inset2: #4b6267;
+      --backdrop: rgba(16, 39, 43, 0.45);
+      --sb-track: #c2eadd;
+      --sb-thumb: #00a6a6;
+      --sb-thumb-hover: #007c82;
+      --sb-size: 14px;
+      --split-line: rgba(16, 39, 43, 0.8);
+      --settings-width: 198px;
+      --copied-overlay-color: rgba(16,39,43,0.42);
+      --pixel-font: "Lucida Console", "Courier New", "Consolas", monospace;
+      --pixel-yellow: #ffd85a;
+      --pixel-coral: #ff6b6b;
+      --pixel-blue: #4db8ff;
+      --pixel-ink: #10272b;
+      --pixel-paper: #fff9de;
+      --pixel-panel-top: #fffef2;
+      --pixel-panel-bottom: #f8eab6;
+    }
+
+    body.dark {
+      --accent: #50fff1;
+      --accent-light: #ffd85a;
+      --bg: #10151f;
+      --text: #e9fff9;
+      --glass-bg: #1c2430;
+      --shadow: 8px 8px 0 rgba(0, 0, 0, 0.55);
+      --border: #8fffee;
+      --muted: #a9c9c5;
+      --panel-border: #8fffee;
+      --input-bg: #10151f;
+      --input-text: #e9fff9;
+      --token-hover: rgba(255, 216, 90, 0.22);
+      --footer: #a9c9c5;
+      --pipe-opacity: 0.16;
+      --w95-border: #8fffee;
+      --w95-inset1: #334155;
+      --w95-inset2: #030712;
+      --backdrop: rgba(0,0,0,0.62);
+      --sb-track: #202a36;
+      --sb-thumb: #50fff1;
+      --sb-thumb-hover: #ffd85a;
+      --split-line: rgba(143,255,238,0.76);
+      --pixel-paper: #1c2430;
+      --pixel-panel-top: #253244;
+      --pixel-panel-bottom: #151c27;
+      --pixel-ink: #e9fff9;
+    }
+
+    html {
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+    }
+
+    body {
+      font-family: var(--pixel-font);
+      background:
+        linear-gradient(90deg, rgba(16,39,43,0.055) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(16,39,43,0.055) 1px, transparent 1px),
+        radial-gradient(circle at 18% 20%, rgba(255,216,90,0.42) 0 2px, transparent 3px),
+        radial-gradient(circle at 82% 22%, rgba(77,184,255,0.32) 0 2px, transparent 3px),
+        radial-gradient(circle at 50% 85%, rgba(255,107,107,0.28) 0 2px, transparent 3px),
+        var(--bg);
+      background-size: 24px 24px, 24px 24px, 96px 96px, 128px 128px, 112px 112px, auto;
+      letter-spacing: 0.02em;
+      transition: background-color 0.15s steps(2, end), color 0.15s steps(2, end);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      background:
+        repeating-linear-gradient(
+          0deg,
+          rgba(255,255,255,0.08) 0,
+          rgba(255,255,255,0.08) 1px,
+          transparent 1px,
+          transparent 4px
+        );
+      mix-blend-mode: overlay;
+      opacity: 0.42;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      background:
+        linear-gradient(135deg, transparent 0 92%, rgba(16,39,43,0.09) 92% 100%);
+      background-size: 16px 16px;
+      opacity: 0.28;
+    }
+
+    body.dark::before { opacity: 0.2; }
+    body.dark::after { opacity: 0.16; }
+
+    .pipe-background { z-index: 0; }
+    .pipe {
+      width: 34px;
+      image-rendering: pixelated;
+      filter: drop-shadow(4px 4px 0 rgba(16,39,43,0.35));
+      animation-timing-function: steps(48, end);
+    }
+
+    .menu-buttons,
+    .header-right,
+    .headline-scroller,
+    .container,
+    footer,
+    .copied-toast,
+    .w95-backdrop,
+    .w95-modal {
+      z-index: 3;
+    }
+
+    h2 {
+      margin-bottom: 10px;
+      color: var(--accent);
+      font-size: clamp(18px, 3vw, 25px);
+      line-height: 1.18;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      text-shadow: 2px 2px 0 rgba(255,216,90,0.8);
+    }
+
+    body.dark h2 {
+      text-shadow: 2px 2px 0 rgba(0,0,0,0.8);
+    }
+
+    p,
+    .qtyMarker,
+    .duplicateList,
+    .removeText,
+    .inputText,
+    .output-container,
+    .settings-card span,
+    footer {
+      font-family: var(--pixel-font);
+    }
+
+    p {
+      font-size: 12px;
+      line-height: 1.5;
+      opacity: 1;
+    }
+
+    .headline-scroller {
+      top: 118px;
+      height: 34px;
+      color: var(--pixel-ink);
+      background: var(--pixel-yellow);
+      border-top: 3px solid var(--pixel-ink);
+      border-bottom: 3px solid var(--pixel-ink);
+      box-shadow: 0 5px 0 rgba(16,39,43,0.25);
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      display: flex;
+      align-items: center;
+    }
+
+    body.dark .headline-scroller {
+      color: #10151f;
+      box-shadow: 0 5px 0 rgba(0,0,0,0.55);
+    }
+
+    .headline-text {
+      padding-top: 1px;
+      text-shadow: 1px 1px 0 rgba(255,255,255,0.45);
+    }
+
+    .panel-card,
+    .settings-card,
+    .remove-modal,
+    .duplicate-modal,
+    .output-container,
+    .duplicateCopyText,
+    .inputText,
+    .removeText,
+    .w95-modal {
+      border-radius: 0;
+      border: 3px solid var(--panel-border);
+      box-shadow: var(--shadow);
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+
+    .panel-card {
+      position: relative;
+      overflow: visible;
+      padding: 32px 26px 28px;
+      background:
+        linear-gradient(180deg, var(--pixel-panel-top) 0%, var(--pixel-panel-bottom) 100%);
+      outline: 3px solid rgba(255,255,255,0.52);
+      outline-offset: -8px;
+      animation: pixelCardIn 260ms steps(5, end);
+      transition: none;
+    }
+
+    .panel-card::before,
+    .settings-card::before,
+    .w95-modal::before {
+      content: "";
+      position: absolute;
+      left: -3px;
+      right: -3px;
+      top: -3px;
+      height: 10px;
+      background:
+        linear-gradient(90deg, var(--pixel-coral) 0 18%, var(--pixel-yellow) 18% 38%, var(--accent-light) 38% 64%, var(--pixel-blue) 64% 100%);
+      border: 3px solid var(--panel-border);
+      border-bottom: 0;
+      pointer-events: none;
+    }
+
+    .panel-inner {
+      position: relative;
+      width: 100%;
+    }
+
+    @keyframes pixelCardIn {
+      0% { opacity: 0; transform: translateY(-12px); }
+      60% { opacity: 1; transform: translateY(4px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .container.dual .panel.secondary.pop .panel-card {
+      animation: pixelCardIn 220ms steps(5, end) both;
+    }
+
+    .settings-card {
+      position: relative;
+      background: var(--pixel-paper);
+      padding-top: 17px;
+      transition: none;
+    }
+
+    .settings-divider {
+      border-top: 3px dashed var(--panel-border);
+      opacity: 0.6;
+    }
+
+    .toggle-container {
+      font-size: 11px;
+      line-height: 1.25;
+    }
+
+    .button,
+    .batch-copy-btn,
+    .w95-btn {
+      font-family: var(--pixel-font);
+      border-radius: 0;
+      border: 3px solid var(--pixel-ink);
+      outline: 0;
+      background: var(--pixel-yellow);
+      color: var(--pixel-ink);
+      box-shadow: 4px 4px 0 var(--pixel-ink);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: none;
+      padding: 0.82em 1.35em;
+    }
+
+    .button::before,
+    .batch-copy-btn::before {
+      display: none;
+    }
+
+    .button:hover,
+    .batch-copy-btn:hover,
+    .w95-btn:hover {
+      color: var(--pixel-ink);
+      background: var(--accent-light);
+      transform: translate(-2px, -2px);
+      outline: 0;
+      box-shadow: 6px 6px 0 var(--pixel-ink);
+    }
+
+    .button:active,
+    .batch-copy-btn:active,
+    .w95-btn:active {
+      transform: translate(3px, 3px);
+      box-shadow: 1px 1px 0 var(--pixel-ink);
+    }
+
+    .button:focus-visible,
+    .batch-copy-btn:focus-visible,
+    .w95-btn:focus-visible,
+    .inputText:focus-visible,
+    .removeText:focus-visible {
+      outline: 3px dashed var(--pixel-coral);
+      outline-offset: 4px;
+    }
+
+    .inputText,
+    .removeText {
+      background:
+        linear-gradient(90deg, rgba(16,39,43,0.045) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(16,39,43,0.045) 1px, transparent 1px),
+        var(--input-bg);
+      background-size: 12px 12px;
+      border: 3px solid var(--border);
+      box-shadow:
+        inset 4px 4px 0 rgba(16,39,43,0.16),
+        inset -4px -4px 0 rgba(255,255,255,0.52);
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      transition: none;
+    }
+
+    body.dark .inputText,
+    body.dark .removeText {
+      box-shadow:
+        inset 4px 4px 0 rgba(0,0,0,0.45),
+        inset -4px -4px 0 rgba(255,255,255,0.07);
+    }
+
+    .inputText::placeholder,
+    .removeText::placeholder {
+      color: var(--muted);
+      opacity: 1;
+    }
+
+    .inputText.secret-drag-over {
+      outline: 4px dashed var(--pixel-yellow);
+      outline-offset: 5px;
+      background:
+        linear-gradient(90deg, rgba(255,216,90,0.2) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(255,216,90,0.2) 1px, transparent 1px),
+        var(--input-bg);
+      background-size: 12px 12px;
+    }
+
+    .output-container,
+    .duplicateCopyText {
+      background: var(--input-bg);
+      border: 3px solid var(--border);
+      box-shadow:
+        inset 3px 3px 0 rgba(16,39,43,0.16),
+        inset -3px -3px 0 rgba(255,255,255,0.45);
+      color: var(--accent);
+      font-size: 14px;
+      line-height: 1.65;
+      font-weight: 800;
+    }
+
+    .remove-modal,
+    .duplicate-modal {
+      background: var(--pixel-paper);
+      border: 3px solid var(--panel-border);
+      padding: 18px 14px 14px;
+      transition: opacity 120ms steps(2, end), visibility 120ms steps(2, end);
+    }
+
+    .duplicate-modal h4 {
+      color: var(--pixel-ink);
+      background: var(--pixel-yellow);
+      border: 2px solid var(--pixel-ink);
+      padding: 5px 7px;
+      display: inline-block;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      box-shadow: 3px 3px 0 var(--pixel-ink);
+    }
+
+    .group-label,
+    .qtyMarker {
+      color: var(--pixel-ink);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    body.dark .group-label,
+    body.dark .qtyMarker,
+    body.dark .duplicate-modal h4 {
+      color: var(--text);
+    }
+
+    .split-under-main-buttons,
+    .split-sep {
+      border-top: 3px dashed var(--split-line);
+    }
+
+    .num-token,
+    .dup-token,
+    .dup-line-token {
+      border-radius: 0;
+      padding: 3px 5px;
+      transition: none;
+      font-weight: 900;
+    }
+
+    .num-token:hover,
+    .dup-token:hover,
+    .dup-line-token:hover {
+      outline: 2px solid var(--pixel-ink);
+      background-color: var(--token-hover);
+    }
+
+    .num-token.highlight,
+    .dup-token.highlight,
+    .dup-line-token.highlight {
+      background-color: var(--pixel-coral);
+      color: #fffef2;
+      outline: 2px solid var(--pixel-ink);
+      box-shadow: 2px 2px 0 var(--pixel-ink);
+    }
+
+    .switch {
+      width: 44px;
+      height: 24px;
+      flex: 0 0 auto;
+    }
+
+    .slider {
+      background-color: #b8c4bd;
+      border: 3px solid var(--pixel-ink);
+      border-radius: 0;
+      box-shadow: inset 2px 2px 0 rgba(16,39,43,0.18);
+      transition: none;
+    }
+
+    .slider:before {
+      width: 12px;
+      height: 12px;
+      left: 3px;
+      bottom: 3px;
+      background-color: var(--pixel-paper);
+      border: 2px solid var(--pixel-ink);
+      border-radius: 0;
+      transition: none;
+      box-shadow: none;
+    }
+
+    input:checked + .slider {
+      background-color: var(--accent-light);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(19px);
+      background-color: var(--pixel-yellow);
+    }
+
+    .w95-backdrop {
+      background:
+        repeating-linear-gradient(45deg, rgba(0,0,0,0.18) 0 8px, rgba(0,0,0,0.26) 8px 16px),
+        var(--backdrop);
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+
+    .w95-modal {
+      background: var(--pixel-paper);
+      padding-top: 7px;
+      border: 3px solid var(--w95-border);
+      box-shadow: 9px 9px 0 rgba(0,0,0,0.45);
+    }
+
+    .w95-titlebar {
+      background: var(--accent);
+      color: var(--pixel-ink);
+      border-bottom: 3px solid var(--w95-border);
+      padding: 8px;
+      text-transform: uppercase;
+    }
+
+    body.dark .w95-titlebar {
+      color: #10151f;
+    }
+
+    .w95-title {
+      font-size: 12px;
+      letter-spacing: 0.08em;
+    }
+
+    .w95-x {
+      border-radius: 0;
+      border: 3px solid var(--pixel-ink);
+      background: var(--pixel-coral);
+      box-shadow: 3px 3px 0 var(--pixel-ink);
+      color: #fffef2;
+      transition: none;
+    }
+
+    .w95-x:hover {
+      background: var(--pixel-yellow);
+      color: var(--pixel-ink);
+    }
+
+    .w95-message {
+      color: var(--pixel-ink);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    body.dark .w95-message {
+      color: var(--text);
+    }
+
+    .copied-toast .overlay {
+      background:
+        repeating-linear-gradient(0deg, rgba(255,255,255,0.08) 0 2px, transparent 2px 5px),
+        var(--copied-overlay-color);
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+
+    .half {
+      font-family: var(--pixel-font);
+      color: var(--pixel-yellow);
+      text-shadow:
+        4px 4px 0 var(--pixel-ink),
+        8px 8px 0 rgba(0,0,0,0.36);
+      letter-spacing: 0.08em;
+    }
+
+    .copied-toast.play .left,
+    .copied-toast.play .right {
+      animation-timing-function: steps(8, end), steps(12, end);
+    }
+
+    footer {
+      background: var(--pixel-paper);
+      border: 2px solid var(--pixel-ink);
+      box-shadow: 3px 3px 0 var(--pixel-ink);
+      padding: 5px 8px;
+      font-style: normal;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    *::-webkit-scrollbar-track {
+      border-radius: 0;
+      background: var(--sb-track);
+      border: 2px solid var(--pixel-ink);
+    }
+
+    *::-webkit-scrollbar-thumb {
+      border-radius: 0;
+      background: var(--sb-thumb);
+      border: 2px solid var(--pixel-ink);
+      background-clip: border-box;
+    }
+
+    *::-webkit-scrollbar-thumb:hover {
+      background: var(--sb-thumb-hover);
+      border: 2px solid var(--pixel-ink);
+    }
+
+    @media (max-width: 980px) {
+      .headline-scroller { top: 126px; }
+      .container { margin-top: 180px; }
+    }
+
+    @media (max-width: 520px) {
+      body { padding: 14px; }
+      .button, .batch-copy-btn { font-size: 12px; padding: 0.72em 1em; }
+      .menu-buttons { gap: 7px; flex-wrap: wrap; max-width: calc(100vw - 28px); }
+      .panel-card { padding: 30px 18px 22px; }
+      .headline-scroller { top: 170px; }
+      .container { margin-top: 220px; }
+      footer { left: 14px; right: 14px; text-align: center; }
+    }
+
+
+    /* --- Visual-only correction pass: no JS/function changes below --- */
+    body {
+      overflow: auto;
+    }
+
+    body::before,
+    body::after {
+      z-index: 0;
+    }
+
+    .pipe-background {
+      z-index: 0;
+    }
+
+    .headline-scroller {
+      top: 120px;
+      height: 30px;
+      z-index: 1;
+      background: transparent;
+      border: 0;
+      box-shadow: none;
+      color: var(--accent);
+      display: block;
+      align-items: initial;
+      text-transform: none;
+      letter-spacing: 0.04em;
+      overflow: hidden;
+    }
+
+    body.dark .headline-scroller {
+      color: var(--accent-light);
+      background: transparent;
+      border: 0;
+      box-shadow: none;
+    }
+
+    .headline-text {
+      padding-top: 0;
+      text-shadow: 1px 1px 0 rgba(255,216,90,0.55);
+    }
+
+    body.dark .headline-text {
+      text-shadow: 2px 2px 0 rgba(0,0,0,0.75);
+    }
+
+    .menu-buttons,
+    .header-right {
+      z-index: 10;
+    }
+
+    .container {
+      z-index: 2;
+    }
+
+    .container.dual {
+      top: auto;
+      left: auto;
+      transform: none;
+      margin: 175px auto 70px;
+      align-items: flex-start;
+    }
+
+    .container.dual .panel-card {
+      max-height: none;
+    }
+
+    footer {
+      z-index: 2;
+    }
+
+    .w95-backdrop {
+      z-index: 999;
+    }
+
+    .w95-modal {
+      z-index: 1000;
+    }
+
+    .copied-toast {
+      z-index: 3000;
+    }
+
+    @media (max-width: 980px) {
+      .headline-scroller { top: 126px; }
+      .container,
+      .container.dual {
+        top: 0;
+        left: 0;
+        transform: none;
+        margin: 180px auto 40px;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .headline-scroller { top: 170px; }
+      .container,
+      .container.dual { margin-top: 220px; }
+    }
+
+
+    /* --- Stable rail layout repair: visual/layout only, no JS changes --- */
+    @media (min-width: 1180px) {
+      :root {
+        --tool-w: 300px;
+        --side-pad: calc(var(--tool-w) + 54px);
+        --top-safe: 112px;
+        --bottom-safe: 58px;
+        --primary-tools-top: clamp(130px, 27vh, 220px);
+      }
+
+      body {
+        padding: 0;
+        overflow: hidden;
+      }
+
+      .menu-buttons {
+        top: 14px;
+        left: 14px;
+        z-index: 120;
+      }
+
+      .header-right {
+        top: 14px;
+        right: 14px;
+        z-index: 130;
+      }
+
+      .settings-card {
+        width: var(--settings-width);
+      }
+
+      .headline-scroller {
+        top: 34px;
+        left: calc(var(--tool-w) + 60px);
+        right: 240px;
+        height: 24px;
+        z-index: 3;
+        background: transparent !important;
+        border: 0 !important;
+        box-shadow: none !important;
+        overflow: hidden;
+      }
+
+      .headline-text {
+        text-shadow: 1px 1px 0 rgba(255,216,90,0.7);
+      }
+
+      .container,
+      .container.dual,
+      .container:not(.dual) {
+        position: fixed;
+        inset: 0;
+        top: 0;
+        left: 0;
+        transform: none;
+        width: auto;
+        max-width: none;
+        margin: 0;
+        padding: var(--top-safe) var(--side-pad) var(--bottom-safe);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 5;
+        pointer-events: none;
+      }
+
+      .panels {
+        width: min(100%, 1120px);
+        max-width: 1120px;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        gap: 22px;
+        pointer-events: auto;
+      }
+
+      .container:not(.dual) .panels {
+        width: min(100%, 520px);
+        max-width: 520px;
+      }
+
+      .panel {
+        min-width: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .panel-card {
+        width: 100%;
+        max-width: 520px;
+        max-height: calc(100vh - var(--top-safe) - var(--bottom-safe));
+        overflow: hidden;
+      }
+
+      .panel-inner {
+        width: 100%;
+        min-width: 0;
+      }
+
+      .splitOutputsMount {
+        max-height: min(320px, calc(100vh - var(--top-safe) - var(--bottom-safe) - 285px));
+      }
+
+      .output-container {
+        max-height: 135px;
+      }
+
+      .container .remove-modal,
+      .container .duplicate-modal {
+        position: fixed !important;
+        transform: none !important;
+        width: var(--tool-w) !important;
+        max-width: var(--tool-w) !important;
+        height: auto !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+        text-align: left;
+        z-index: 45;
+        pointer-events: auto;
+        opacity: 0;
+        visibility: hidden;
+      }
+
+      .container .remove-modal.visible,
+      .container .duplicate-modal.visible {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .panel.primary .remove-modal {
+        left: 14px;
+        top: var(--primary-tools-top);
+      }
+
+      .panel.primary .duplicate-modal {
+        left: 14px;
+        top: calc(var(--primary-tools-top) + 120px);
+        max-height: calc(100vh - var(--primary-tools-top) - 142px);
+        overflow: auto;
+      }
+
+      .panel.secondary .remove-modal {
+        right: 14px;
+        top: 164px;
+      }
+
+      .panel.secondary .duplicate-modal {
+        right: 14px;
+        top: 284px;
+        max-height: calc(100vh - 344px);
+        overflow: auto;
+      }
+
+      .duplicateList {
+        max-height: 112px;
+        overflow-y: auto;
+      }
+
+      .duplicateCopyText {
+        max-height: 76px;
+      }
+
+      .duplicateCopyWrapper {
+        max-width: 100%;
+      }
+
+      .removeText,
+      .duplicateCopyText {
+        width: 100%;
+        max-width: 100%;
+      }
+
+      footer {
+        z-index: 12;
+        bottom: 14px;
+        right: 18px;
+      }
+    }
+
+    @media (min-width: 1180px) and (max-width: 1599px) {
+      :root {
+        --tool-w: 245px;
+        --side-pad: calc(var(--tool-w) + 38px);
+        --top-safe: 104px;
+        --bottom-safe: 52px;
+      }
+
+      .headline-scroller {
+        left: calc(var(--tool-w) + 46px);
+        right: 222px;
+      }
+
+      .panels {
+        gap: 16px;
+        max-width: 980px;
+      }
+
+      .panel-card {
+        max-width: 480px;
+        padding: 28px 18px 22px;
+      }
+
+      .panel-card h2 {
+        font-size: clamp(20px, 1.7vw, 26px);
+      }
+
+      .inputText,
+      .output-container {
+        font-size: 15px;
+      }
+
+      .button,
+      .batch-copy-btn {
+        padding: 0.68em 1.25em;
+        font-size: 13px;
+      }
+
+      .panel.secondary .remove-modal {
+        top: 156px;
+      }
+
+      .panel.secondary .duplicate-modal {
+        top: 276px;
+        max-height: calc(100vh - 330px);
+      }
+    }
+
+    @media (min-width: 1180px) and (max-height: 720px) {
+      :root {
+        --top-safe: 86px;
+        --bottom-safe: 42px;
+        --primary-tools-top: 110px;
+      }
+
+      .headline-scroller {
+        top: 26px;
+      }
+
+      .panel.secondary .remove-modal {
+        top: 146px;
+      }
+
+      .panel.secondary .duplicate-modal {
+        top: 258px;
+        max-height: calc(100vh - 306px);
+      }
+
+      .splitOutputsMount {
+        max-height: min(260px, calc(100vh - var(--top-safe) - var(--bottom-safe) - 270px));
+      }
+    }
+
+
+    /* right-side secondary tools must clear the always-visible Options card */
+    @media (min-width: 1180px) {
+      .panel.primary .remove-modal,
+      .panel.primary .duplicate-modal {
+        right: auto !important;
+      }
+
+      .panel.secondary .remove-modal {
+        left: auto !important;
+        right: 14px !important;
+        top: 246px;
+      }
+
+      .panel.secondary .duplicate-modal {
+        left: auto !important;
+        right: 14px !important;
+        top: 366px;
+        max-height: calc(100vh - 424px);
+      }
+    }
+
+    @media (min-width: 1180px) and (max-height: 720px) {
+      .panel.secondary .remove-modal { top: 232px; }
+      .panel.secondary .duplicate-modal {
+        top: 344px;
+        max-height: calc(100vh - 392px);
+      }
+    }
+
+  
+
+    /* --- Laptop fit refinement: CSS only / no JavaScript changes ---
+       Keeps the monitor layout, but compresses gutters, cards, rails and controls
+       proportionally on common laptop widths so the panels keep breathing room. */
+    @media (min-width: 1180px) and (max-width: 1540px) {
+      :root {
+        --settings-width: clamp(152px, 11.2vw, 170px);
+        --tool-w: clamp(205px, 15.8vw, 238px);
+        --side-pad: calc(var(--tool-w) + clamp(20px, 2.2vw, 30px));
+        --top-safe: clamp(88px, 6.8vw, 104px);
+        --bottom-safe: 44px;
+      }
+
+      .menu-buttons {
+        top: 10px;
+        left: 10px;
+        gap: 7px;
+      }
+
+      .menu-buttons .button {
+        padding: 0.58em 0.9em;
+        font-size: 11px;
+        box-shadow: 3px 3px 0 var(--pixel-ink);
+      }
+
+      .header-right {
+        top: 8px;
+        right: 8px;
+      }
+
+      .settings-card {
+        width: var(--settings-width);
+        padding: 6px;
+      }
+
+      .toggle-container {
+        font-size: 10px;
+        line-height: 1.18;
+        margin-bottom: 5px !important;
+      }
+
+      .settings-divider {
+        margin: 6px 0;
+      }
+
+      .switch {
+        transform: scale(0.9);
+        transform-origin: right center;
+      }
+
+      .headline-scroller {
+        top: 28px;
+        left: calc(var(--tool-w) + 48px);
+        right: calc(var(--settings-width) + 52px);
+        height: 22px;
+        font-size: 12px;
+      }
+
+      .container,
+      .container.dual,
+      .container:not(.dual) {
+        padding: var(--top-safe) var(--side-pad) var(--bottom-safe);
+      }
+
+      .panels {
+        width: 100%;
+        max-width: calc(100vw - (var(--side-pad) * 2));
+        gap: clamp(10px, 1.1vw, 16px);
+      }
+
+      .container.dual .panel {
+        width: auto;
+        flex: 1 1 0;
+        min-width: 0;
+      }
+
+      .container.dual .panel-card {
+        max-width: min(462px, calc((100vw - (var(--side-pad) * 2) - clamp(10px, 1.1vw, 16px)) / 2));
+        padding: clamp(22px, 1.9vw, 28px) clamp(14px, 1.25vw, 18px) 18px;
+      }
+
+      .container:not(.dual) .panels {
+        max-width: min(500px, calc(100vw - (var(--side-pad) * 2)));
+      }
+
+      .container:not(.dual) .panel-card {
+        max-width: min(500px, calc(100vw - (var(--side-pad) * 2)));
+      }
+
+      .panel-card h2 {
+        font-size: clamp(18px, 1.55vw, 22px);
+        letter-spacing: 0.035em;
+      }
+
+      p { font-size: 11px; }
+
+      .qtyMarker,
+      .group-label {
+        font-size: 11px;
+      }
+
+      .inputText,
+      .output-container {
+        font-size: clamp(13px, 1.05vw, 15px);
+        line-height: 1.55;
+      }
+
+      .inputText {
+        padding: 10px;
+      }
+
+      .button-container {
+        gap: 8px;
+        margin-top: 12px;
+      }
+
+      .button,
+      .batch-copy-btn {
+        padding: 0.62em 1.1em;
+        font-size: 12px;
+      }
+
+      .output-container {
+        max-height: 120px;
+      }
+
+      .splitOutputsMount {
+        max-height: min(270px, calc(100vh - var(--top-safe) - var(--bottom-safe) - 270px));
+        padding-right: 6px;
+      }
+
+      .container .remove-modal,
+      .container .duplicate-modal {
+        width: var(--tool-w) !important;
+        max-width: var(--tool-w) !important;
+        padding: 13px 11px 11px;
+        font-size: 12px;
+      }
+
+      .panel.primary .remove-modal {
+        left: 10px;
+        top: clamp(170px, 26vh, 220px);
+      }
+
+      .panel.primary .duplicate-modal {
+        left: 10px;
+        top: calc(clamp(170px, 26vh, 220px) + 110px);
+        max-height: calc(100vh - (clamp(170px, 26vh, 220px) + 136px));
+      }
+
+      .panel.secondary .remove-modal {
+        right: 10px !important;
+        top: 158px;
+      }
+
+      .panel.secondary .duplicate-modal {
+        right: 10px !important;
+        top: 268px;
+        max-height: calc(100vh - 310px);
+      }
+
+      .duplicate-modal h4 {
+        font-size: 12px;
+      }
+
+      .duplicateList {
+        max-height: 92px;
+      }
+
+      .duplicateCopyText {
+        max-height: 58px;
+        font-size: 12px;
+        line-height: 1.45;
+      }
+
+      footer {
+        right: 12px;
+        bottom: 10px;
+        font-size: 10px;
+      }
+    }
+
+    @media (min-width: 1180px) and (max-width: 1368px) {
+      :root {
+        --settings-width: 148px;
+        --tool-w: 202px;
+        --side-pad: 228px;
+        --top-safe: 82px;
+        --bottom-safe: 34px;
+      }
+
+      .menu-buttons {
+        transform: scale(0.9);
+        transform-origin: top left;
+      }
+
+      .header-right {
+        top: 6px;
+        right: 6px;
+      }
+
+      .settings-card {
+        transform: scale(0.94);
+        transform-origin: top right;
+      }
+
+      .headline-scroller {
+        top: 24px;
+        left: calc(var(--tool-w) + 38px);
+        right: 170px;
+        height: 20px;
+        font-size: 11px;
+      }
+
+      .panels {
+        gap: 8px;
+      }
+
+      .container.dual .panel-card {
+        max-width: calc((100vw - (var(--side-pad) * 2) - 8px) / 2);
+        padding: 20px 12px 16px;
+      }
+
+      .panel-card h2 {
+        font-size: 18px;
+        letter-spacing: 0.025em;
+      }
+
+      p {
+        font-size: 10px;
+      }
+
+      .qtyMarker,
+      .group-label {
+        font-size: 10px;
+      }
+
+      .inputText,
+      .output-container {
+        font-size: 13px;
+      }
+
+      .inputText {
+        padding: 9px;
+      }
+
+      .output-container {
+        max-height: 110px;
+      }
+
+      .button,
+      .batch-copy-btn {
+        font-size: 11px;
+        padding: 0.58em 0.95em;
+      }
+
+      .container .remove-modal,
+      .container .duplicate-modal {
+        padding: 11px 9px 9px;
+        font-size: 11px;
+      }
+
+      .duplicate-modal h4 {
+        font-size: 11px;
+        padding: 4px 6px;
+      }
+
+      .duplicateList {
+        max-height: 78px;
+      }
+
+      .duplicateCopyText {
+        max-height: 50px;
+        font-size: 11px;
+      }
+
+      .panel.primary .remove-modal {
+        top: 160px;
+      }
+
+      .panel.primary .duplicate-modal {
+        top: 264px;
+        max-height: calc(100vh - 294px);
+      }
+
+      .panel.secondary .remove-modal {
+        top: 144px;
+      }
+
+      .panel.secondary .duplicate-modal {
+        top: 248px;
+        max-height: calc(100vh - 282px);
+      }
+
+      footer {
+        font-size: 9px;
+      }
+    }
+
+    @media (min-width: 1180px) and (max-width: 1240px) {
+      :root {
+        --settings-width: 142px;
+        --tool-w: 188px;
+        --side-pad: 212px;
+        --top-safe: 78px;
+      }
+
+      .panel-card h2 {
+        font-size: 17px;
+      }
+
+      .inputText,
+      .output-container {
+        font-size: 12px;
+      }
+
+      .button,
+      .batch-copy-btn {
+        font-size: 10px;
+      }
+    }
+
+  
+
+    /* --- Smaller laptop anti-overlap patch: CSS/layout only ---
+       Keeps the approved rail layout, but reserves a slightly larger gutter
+       and forces the secondary tools to start below the full Options card. */
+    @media (min-width: 1180px) and (max-width: 1540px) {
+      :root {
+        --tool-w: clamp(200px, 14.8vw, 232px);
+        --side-pad: calc(var(--tool-w) + clamp(34px, 3.2vw, 48px));
+      }
+
+      .container,
+      .container.dual,
+      .container:not(.dual) {
+        padding-left: var(--side-pad) !important;
+        padding-right: var(--side-pad) !important;
+      }
+
+      .panels {
+        max-width: calc(100vw - (var(--side-pad) * 2)) !important;
+      }
+
+      .container.dual .panel-card {
+        max-width: calc((100vw - (var(--side-pad) * 2) - 10px) / 2) !important;
+      }
+
+      .panel.secondary .remove-modal {
+        top: clamp(226px, 17.2vw, 252px) !important;
+        right: 10px !important;
+      }
+
+      .panel.secondary .duplicate-modal {
+        top: calc(clamp(226px, 17.2vw, 252px) + 112px) !important;
+        right: 10px !important;
+        max-height: calc(100vh - (clamp(226px, 17.2vw, 252px) + 156px)) !important;
+      }
+    }
+
+    @media (min-width: 1180px) and (max-width: 1368px) {
+      :root {
+        --tool-w: 198px;
+        --side-pad: 238px;
+      }
+
+      .settings-card {
+        transform: scale(0.92);
+        transform-origin: top right;
+      }
+
+      .panel.secondary .remove-modal {
+        top: 224px !important;
+      }
+
+      .panel.secondary .duplicate-modal {
+        top: 336px !important;
+        max-height: calc(100vh - 382px) !important;
+      }
+
+      .panel.primary .remove-modal {
+        top: 158px !important;
+      }
+
+      .panel.primary .duplicate-modal {
+        top: 260px !important;
+        max-height: calc(100vh - 292px) !important;
+      }
+    }
+
+    @media (min-width: 1180px) and (max-width: 1260px) {
+      :root {
+        --tool-w: 188px;
+        --side-pad: 224px;
+      }
+
+      .container.dual .panel-card {
+        padding-left: 10px;
+        padding-right: 10px;
+      }
+
+      .panel-card h2 {
+        font-size: 16px;
+      }
+    }
+
   </style>
 </head>
 
