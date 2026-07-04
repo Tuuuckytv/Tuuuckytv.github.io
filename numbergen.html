@@ -38,6 +38,40 @@ body.popup-open{
     overflow:hidden;
 }
 
+.home-button{
+    position:fixed;
+    top:12px;
+    left:12px;
+    z-index:997;
+
+    width:auto;
+    padding:10px 12px;
+
+    font-size:.55rem;
+    line-height:1.4;
+    text-decoration:none;
+    font-family:inherit;
+
+    color:#000;
+    background:#38ff72;
+
+    border:none;
+    border-bottom:6px solid #1d8a43;
+    border-radius:8px;
+
+    box-shadow:
+        0 0 0 3px #ffdd55,
+        5px 5px 0 rgba(0,0,0,.45);
+}
+
+.home-button:active{
+    transform:translateY(4px);
+    border-bottom-width:2px;
+    box-shadow:
+        0 0 0 3px #ffdd55,
+        2px 2px 0 rgba(0,0,0,.45);
+}
+
 .secret-button{
     position:fixed;
     top:0;
@@ -200,6 +234,18 @@ button:disabled{
 }
 
 @media (max-width:380px){
+    body{
+        padding:20px 14px;
+    }
+
+    .home-button{
+        top:10px;
+        left:10px;
+        padding:8px 9px;
+        font-size:.45rem;
+        border-bottom-width:5px;
+    }
+
     h1{ font-size:.8rem; }
     #number{ font-size:3rem; }
     .slot{ height:120px; }
@@ -210,6 +256,8 @@ button:disabled{
 </head>
 
 <body>
+
+<a class="home-button" href="personal.html">HOME</a>
 
 <div class="secret-overlay" id="secretOverlay" onclick="closeSecretPanel()"></div>
 
