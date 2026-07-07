@@ -2118,6 +2118,428 @@
       }
     }
 
+  
+    /* === KYLE_OS VISUAL-ONLY THEME ==========================================
+       IMPORTANT:
+       - CSS-only visual skin
+       - No JavaScript changed
+       - No formatter/export/toggle/copy functions changed
+       - No HTML/body structure changed
+       - Layout positioning intentionally mostly left alone
+    ====================================================================== */
+
+    :root {
+      --accent: #00f5ff;
+      --accent-light: #a8ff60;
+      --bg: #070812;
+      --text: #d8fff7;
+      --glass-bg: rgba(9, 18, 30, 0.90);
+      --shadow: 0 0 8px rgba(0, 245, 255, 0.75), 0 0 24px rgba(0, 245, 255, 0.26);
+      --border: rgba(0, 245, 255, 0.86);
+      --muted: #8db9b8;
+      --panel-border: rgba(0, 245, 255, 0.78);
+      --input-bg: rgba(4, 14, 22, 0.86);
+      --input-text: #d8fff7;
+      --token-hover: rgba(0, 245, 255, 0.16);
+      --footer: rgba(216, 255, 247, 0.58);
+      --pipe-opacity: 0.18;
+      --w95-border: rgba(0, 245, 255, 0.80);
+      --w95-inset1: rgba(0, 245, 255, 0.16);
+      --w95-inset2: rgba(255, 47, 214, 0.16);
+      --backdrop: rgba(5, 8, 18, 0.76);
+      --sb-track: rgba(4, 14, 22, 0.90);
+      --sb-thumb: rgba(0, 245, 255, 0.68);
+      --sb-thumb-hover: rgba(255, 47, 214, 0.78);
+      --split-line: rgba(0, 245, 255, 0.28);
+      --copied-overlay-color: rgba(5, 8, 18, 0.76);
+
+      --pixel-font: "Share Tech Mono", "Lucida Console", "Courier New", monospace;
+      --pixel-yellow: #ffd166;
+      --pixel-coral: #ff2fd6;
+      --pixel-blue: #00f5ff;
+      --pixel-ink: #d8fff7;
+      --pixel-paper: rgba(9, 18, 30, 0.90);
+      --pixel-panel-top: rgba(255, 255, 255, 0.04);
+      --pixel-panel-bottom: rgba(255, 255, 255, 0.01);
+    }
+
+    body.dark {
+      --accent: #00f5ff;
+      --accent-light: #a8ff60;
+      --bg: #070812;
+      --text: #d8fff7;
+      --glass-bg: rgba(9, 18, 30, 0.90);
+      --shadow: 0 0 8px rgba(0, 245, 255, 0.75), 0 0 24px rgba(0, 245, 255, 0.26);
+      --border: rgba(0, 245, 255, 0.86);
+      --muted: #8db9b8;
+      --panel-border: rgba(0, 245, 255, 0.78);
+      --input-bg: rgba(4, 14, 22, 0.86);
+      --input-text: #d8fff7;
+      --token-hover: rgba(0, 245, 255, 0.16);
+      --footer: rgba(216, 255, 247, 0.58);
+      --pipe-opacity: 0.18;
+      --w95-border: rgba(0, 245, 255, 0.80);
+      --w95-inset1: rgba(0, 245, 255, 0.16);
+      --w95-inset2: rgba(255, 47, 214, 0.16);
+      --backdrop: rgba(5, 8, 18, 0.76);
+      --sb-track: rgba(4, 14, 22, 0.90);
+      --sb-thumb: rgba(0, 245, 255, 0.68);
+      --sb-thumb-hover: rgba(255, 47, 214, 0.78);
+      --split-line: rgba(0, 245, 255, 0.28);
+      --pixel-paper: rgba(9, 18, 30, 0.90);
+      --pixel-panel-top: rgba(255, 255, 255, 0.04);
+      --pixel-panel-bottom: rgba(255, 255, 255, 0.01);
+      --pixel-ink: #d8fff7;
+    }
+
+    body {
+      font-family: "Share Tech Mono", "Lucida Console", "Courier New", monospace;
+      color: #d8fff7;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(255, 47, 214, 0.20), transparent 34%),
+        radial-gradient(circle at 82% 18%, rgba(0, 245, 255, 0.20), transparent 32%),
+        radial-gradient(circle at 50% 80%, rgba(168, 255, 96, 0.11), transparent 38%),
+        linear-gradient(135deg, #070812, #11152a 58%, #090714);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      background:
+        repeating-linear-gradient(
+          to bottom,
+          rgba(255, 255, 255, 0.055) 0,
+          rgba(255, 255, 255, 0.055) 1px,
+          transparent 1px,
+          transparent 4px
+        );
+      mix-blend-mode: overlay;
+      opacity: 0.50;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      background:
+        radial-gradient(circle at 50% 50%, transparent 0 58%, rgba(0, 0, 0, 0.48) 100%);
+      opacity: 1;
+    }
+
+    .pipe-background::before {
+      content: "";
+      position: fixed;
+      inset: auto -10vw -26vh -10vw;
+      height: 48vh;
+      transform: perspective(680px) rotateX(62deg);
+      transform-origin: bottom center;
+      background-image:
+        linear-gradient(rgba(0, 245, 255, 0.20) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 47, 214, 0.18) 1px, transparent 1px);
+      background-size: 48px 48px;
+      filter: drop-shadow(0 0 12px rgba(0, 245, 255, 0.28));
+      opacity: 0.62;
+      z-index: 0;
+    }
+
+    .pipe-background::after {
+      content: "";
+      position: fixed;
+      width: min(42vw, 520px);
+      aspect-ratio: 1;
+      top: 8vh;
+      left: 50%;
+      transform: translateX(-50%);
+      border-radius: 50%;
+      background:
+        repeating-linear-gradient(
+          to bottom,
+          rgba(255, 209, 102, 0.90) 0 8px,
+          rgba(255, 112, 166, 0.78) 8px 18px,
+          transparent 18px 30px
+        );
+      box-shadow: 0 0 40px rgba(255, 47, 214, 0.28), 0 0 90px rgba(255, 209, 102, 0.18);
+      opacity: 0.18;
+      z-index: 0;
+    }
+
+    .pipe {
+      filter:
+        drop-shadow(0 0 8px rgba(0, 245, 255, 0.42))
+        drop-shadow(0 0 14px rgba(255, 47, 214, 0.18));
+    }
+
+    .panel-card,
+    .settings-card,
+    .remove-modal,
+    .duplicate-modal,
+    .output-container,
+    .duplicateCopyText,
+    .inputText,
+    .removeText,
+    .w95-modal {
+      border-color: rgba(0, 245, 255, 0.78);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01)),
+        rgba(9, 18, 30, 0.90);
+      box-shadow:
+        0 0 8px rgba(0, 245, 255, 0.75),
+        0 0 24px rgba(0, 245, 255, 0.26),
+        inset 0 0 24px rgba(0, 245, 255, 0.08);
+      color: #d8fff7;
+    }
+
+    .panel-card {
+      box-shadow:
+        0 0 8px rgba(0, 245, 255, 0.75),
+        0 0 24px rgba(0, 245, 255, 0.26),
+        inset 0 0 32px rgba(0, 245, 255, 0.09),
+        12px 12px 0 rgba(255, 47, 214, 0.22);
+    }
+
+    .panel-card::before {
+      background:
+        linear-gradient(90deg, #ff2fd6 0 24%, #00f5ff 24% 58%, #a8ff60 58% 82%, #ffd166 82% 100%);
+    }
+
+    h2 {
+      color: #00f5ff;
+      font-family: "Share Tech Mono", "Lucida Console", "Courier New", monospace;
+      text-shadow:
+        3px 0 0 rgba(255, 47, 214, 0.75),
+        -3px 0 0 rgba(168, 255, 96, 0.55),
+        0 0 18px rgba(0, 245, 255, 0.58);
+    }
+
+    p,
+    .duplicateList {
+      color: #8db9b8;
+    }
+
+    .qtyMarker,
+    .group-label,
+    .duplicate-modal h4,
+    .remove-modal label {
+      color: #a8ff60;
+      text-shadow: 0 0 10px rgba(168, 255, 96, 0.42);
+    }
+
+    .headline-scroller {
+      color: #a8ff60;
+      text-shadow: 0 0 10px rgba(168, 255, 96, 0.52);
+      background: rgba(4, 14, 22, 0.42);
+      border-top: 1px solid rgba(0, 245, 255, 0.20);
+      border-bottom: 1px solid rgba(0, 245, 255, 0.20);
+      box-shadow: 0 0 18px rgba(0, 245, 255, 0.10);
+    }
+
+    .button,
+    .batch-copy-btn,
+    .w95-btn {
+      border-color: #00f5ff;
+      color: #d8fff7;
+      background:
+        linear-gradient(180deg, rgba(0, 245, 255, 0.13), rgba(255, 47, 214, 0.08)),
+        rgba(2, 7, 17, 0.86);
+      box-shadow: 6px 6px 0 rgba(0, 245, 255, 0.18);
+      font-family: "Share Tech Mono", "Lucida Console", "Courier New", monospace;
+    }
+
+    .button:hover,
+    .batch-copy-btn:hover,
+    .w95-btn:hover {
+      border-color: #ff2fd6;
+      color: #a8ff60;
+      box-shadow: 9px 9px 0 rgba(255, 47, 214, 0.28), 0 0 20px rgba(255, 47, 214, 0.25);
+    }
+
+    .button::before,
+    .batch-copy-btn::before {
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.22), transparent);
+    }
+
+    .inputText,
+    .removeText {
+      border-color: rgba(0, 245, 255, 0.86);
+      background: rgba(4, 14, 22, 0.86);
+      color: #d8fff7;
+      box-shadow:
+        0 0 8px rgba(0, 245, 255, 0.75),
+        0 0 24px rgba(0, 245, 255, 0.18),
+        inset 0 0 20px rgba(0, 245, 255, 0.08);
+    }
+
+    .inputText::placeholder,
+    .removeText::placeholder {
+      color: rgba(216, 255, 247, 0.45);
+    }
+
+    .inputText:focus,
+    .removeText:focus {
+      border-color: #ff2fd6;
+      box-shadow:
+        0 0 8px rgba(255, 47, 214, 0.75),
+        0 0 24px rgba(255, 47, 214, 0.26),
+        inset 0 0 22px rgba(255, 47, 214, 0.08);
+    }
+
+    .output-container,
+    .duplicateCopyText {
+      border-color: rgba(168, 255, 96, 0.72);
+      color: #a8ff60;
+      background:
+        linear-gradient(180deg, rgba(168, 255, 96, 0.08), rgba(0, 245, 255, 0.05)),
+        rgba(4, 14, 22, 0.86);
+      text-shadow: 0 0 10px rgba(168, 255, 96, 0.35);
+      box-shadow:
+        0 0 12px rgba(168, 255, 96, 0.26),
+        inset 0 0 22px rgba(168, 255, 96, 0.06);
+    }
+
+    .settings-card span {
+      color: #8db9b8;
+    }
+
+    .settings-divider,
+    .split-under-main-buttons,
+    .split-sep {
+      border-top-color: rgba(0, 245, 255, 0.28);
+    }
+
+    .slider {
+      background-color: rgba(141, 185, 184, 0.25);
+      border-color: #00f5ff;
+      box-shadow: inset 0 0 14px rgba(0, 245, 255, 0.16);
+    }
+
+    .slider:before {
+      background-color: #d8fff7;
+      box-shadow: 0 0 10px rgba(216, 255, 247, 0.44);
+    }
+
+    input:checked + .slider {
+      background-color: rgba(168, 255, 96, 0.26);
+      border-color: #a8ff60;
+      box-shadow: 0 0 14px rgba(168, 255, 96, 0.38), inset 0 0 12px rgba(168, 255, 96, 0.18);
+    }
+
+    input:checked + .slider:before {
+      background-color: #a8ff60;
+      box-shadow: 0 0 16px rgba(168, 255, 96, 0.65);
+    }
+
+    .remove-modal,
+    .duplicate-modal {
+      border-color: rgba(255, 47, 214, 0.78);
+      background: rgba(4, 14, 22, 0.94);
+      box-shadow:
+        0 0 8px rgba(255, 47, 214, 0.75),
+        0 0 24px rgba(255, 47, 214, 0.26),
+        inset 0 0 20px rgba(255, 47, 214, 0.06);
+    }
+
+    .num-token.highlight,
+    .dup-token.highlight,
+    .dup-line-token.highlight {
+      background-color: rgba(255, 47, 214, 0.34);
+      color: #a8ff60;
+      box-shadow: 0 0 12px rgba(255, 47, 214, 0.26);
+    }
+
+    .w95-titlebar {
+      background: rgba(4, 14, 22, 0.96);
+      color: #ffd166;
+      border-bottom-color: #00f5ff;
+    }
+
+    .w95-message {
+      color: #a8ff60;
+      text-shadow: 0 0 10px rgba(168, 255, 96, 0.35);
+    }
+
+    .half {
+      color: #00f5ff;
+      text-shadow:
+        3px 0 0 rgba(255, 47, 214, 0.75),
+        -3px 0 0 rgba(168, 255, 96, 0.55),
+        0 0 18px rgba(0, 245, 255, 0.58);
+    }
+
+    footer {
+      color: rgba(216, 255, 247, 0.58);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      body::before {
+        animation: none;
+      }
+    }
+
+  
+    /* Tiny visual polish: make the Removed Duplicates tag readable/neon */
+    .duplicate-modal h4 {
+      color: #ffd166 !important;
+      background:
+        linear-gradient(90deg, rgba(255, 47, 214, 0.22), rgba(0, 245, 255, 0.16)),
+        rgba(4, 14, 22, 0.96) !important;
+      border: 1px solid rgba(0, 245, 255, 0.75) !important;
+      box-shadow:
+        0 0 10px rgba(0, 245, 255, 0.28),
+        inset 0 0 12px rgba(255, 47, 214, 0.10) !important;
+      text-shadow:
+        0 0 8px rgba(255, 209, 102, 0.45),
+        0 0 14px rgba(255, 47, 214, 0.20) !important;
+    }
+
+  
+    /* Tiny visual polish: replace harsh lime hover fill with dark neon glow */
+    .button:hover,
+    .batch-copy-btn:hover,
+    .w95-btn:hover,
+    .button:focus-visible,
+    .batch-copy-btn:focus-visible,
+    .w95-btn:focus-visible {
+      background:
+        linear-gradient(180deg, rgba(255, 47, 214, 0.18), rgba(0, 245, 255, 0.12)),
+        rgba(4, 14, 22, 0.96) !important;
+      color: #ffd166 !important;
+      border-color: #ff2fd6 !important;
+      box-shadow:
+        7px 7px 0 rgba(255, 47, 214, 0.25),
+        0 0 14px rgba(255, 47, 214, 0.35),
+        0 0 22px rgba(0, 245, 255, 0.18) !important;
+      text-shadow:
+        0 0 8px rgba(255, 209, 102, 0.42),
+        0 0 12px rgba(0, 245, 255, 0.22) !important;
+    }
+
+    .button:active,
+    .batch-copy-btn:active,
+    .w95-btn:active {
+      background:
+        linear-gradient(180deg, rgba(0, 245, 255, 0.20), rgba(168, 255, 96, 0.10)),
+        rgba(4, 14, 22, 0.98) !important;
+      color: #a8ff60 !important;
+      box-shadow:
+        3px 3px 0 rgba(0, 245, 255, 0.22),
+        0 0 12px rgba(0, 245, 255, 0.28) !important;
+    }
+
+  
+    /* Title boot animation helpers */
+    h2.kt-title-scrambling {
+      white-space: normal;
+    }
+
+    h2.kt-title-scrambling .kt-char-done {
+      color: #00f5ff;
+    }
+
   </style>
 </head>
 
@@ -3310,6 +3732,74 @@ function startMarquee(text) {
   });
 }
 </script>
+
+
+  <script>
+    /*
+      Visual-only title animation.
+      Existing formatter functions/scripts are untouched.
+      Adds the same style of scramble boot animation used by the Welcome title.
+    */
+    (function () {
+      const glyphs = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#$%&?';
+      const animatedTitles = new WeakSet();
+
+      function scrambleTitle(titleEl) {
+        if (!titleEl || animatedTitles.has(titleEl)) return;
+
+        const finalText = (titleEl.dataset.finalTitle || titleEl.textContent || '').trim().toUpperCase();
+        if (!finalText) return;
+
+        animatedTitles.add(titleEl);
+        titleEl.dataset.finalTitle = finalText;
+        titleEl.classList.add('kt-title-scrambling');
+
+        let frame = 0;
+        const maxFrames = Math.max(28, finalText.length + 14);
+
+        const interval = setInterval(() => {
+          const output = finalText
+            .split('')
+            .map((char, index) => {
+              if (char === ' ') return ' ';
+              if (frame / 2 > index + 2) return char;
+              return glyphs[Math.floor(Math.random() * glyphs.length)];
+            })
+            .join('');
+
+          titleEl.textContent = output;
+          frame += 1;
+
+          if (frame > maxFrames) {
+            titleEl.textContent = finalText;
+            titleEl.classList.remove('kt-title-scrambling');
+            clearInterval(interval);
+          }
+        }, 46);
+      }
+
+      function animateVisibleTitles() {
+        document.querySelectorAll('.panel-card h2').forEach(titleEl => {
+          const panel = titleEl.closest('.panel');
+          const isHidden = panel && panel.classList.contains('hidden');
+          if (!isHidden) scrambleTitle(titleEl);
+        });
+      }
+
+      window.addEventListener('load', animateVisibleTitles);
+
+      const panelsWrap = document.getElementById('panelsWrap') || document.body;
+      const observer = new MutationObserver(() => {
+        animateVisibleTitles();
+      });
+
+      observer.observe(panelsWrap, {
+        subtree: true,
+        attributes: true,
+        attributeFilter: ['class']
+      });
+    })();
+  </script>
 
 </body>
 </html>
