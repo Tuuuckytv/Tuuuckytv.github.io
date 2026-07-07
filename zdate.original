@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Age Calculator</title>
+  <link rel="icon" href="pipe.png" type="image/png" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background-color: #eaf2f3;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      padding: 20px;
+    }
+
+    /* ====== Unified Button Style ====== */
+    .button {
+      padding: 0.75em 1.6em;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      color: #0f858e;
+      transition: all 0.4s ease;
+      font-size: 14px;
+      position: relative;
+      overflow: hidden;
+      outline: 2px solid #0f858e;
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(6px);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .button:hover {
+      color: #fff;
+      transform: scale(1.05);
+      outline: 2px solid #20a6b3;
+      box-shadow: 2px 4px 12px -2px #0d6c75;
+    }
+
+    .button::before {
+      content: "";
+      position: absolute;
+      left: -50px;
+      top: 0;
+      width: 0;
+      height: 100%;
+      background-color: #0f858e;
+      transform: skewX(45deg);
+      z-index: -1;
+      transition: width 0.5s ease;
+    }
+
+    .button:hover::before {
+      width: 250%;
+    }
+
+    .top-buttons {
+      position: fixed;
+      top: 16px;
+      left: 15px;
+      display: flex;
+      gap: 10px;
+      z-index: 11;
+    }
+
+    /* === VOXYBUNS SWITCH === */
+    .toggle-container {
+      position: fixed;
+      top: 16px;
+      right: 15px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 12;
+    }
+
+    .toggle-container span {
+      font-weight: bold;
+      font-size: 16px;
+      color: #0f858e;
+      transition: color 0.4s ease;
+    }
+
+    /* The switch */
+    .switch {
+      --switch_width: 2.4em;
+      --switch_height: 1.2em;
+      --thumb_color: #ffffff;
+      --track_color: #d0d0d0;
+      --track_active_color: #0f858e;
+      --outline_color: #000;
+      font-size: 18px;
+      position: relative;
+      display: inline-block;
+      width: var(--switch_width);
+      height: var(--switch_height);
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      box-sizing: border-box;
+      border: 2px solid var(--outline_color);
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: var(--track_color);
+      transition: 0.15s;
+      border-radius: var(--switch_height);
+    }
+
+    .slider:before {
+      box-sizing: border-box;
+      position: absolute;
+      content: "";
+      height: var(--switch_height);
+      width: var(--switch_height);
+      border: 2px solid var(--outline_color);
+      border-radius: 100%;
+      left: -2px;
+      bottom: -2px;
+      background-color: var(--thumb_color);
+      transform: translateY(-0.2em);
+      box-shadow: 0 0.2em 0 var(--outline_color);
+      transition: 0.15s;
+    }
+
+    input:checked + .slider {
+      background-color: var(--track_active_color);
+    }
+
+    input:focus-visible + .slider {
+      box-shadow: 0 0 0 2px var(--track_active_color);
+    }
+
+    input:hover + .slider:before {
+      transform: translateY(-0.3em);
+      box-shadow: 0 0.3em 0 var(--outline_color);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(calc(var(--switch_width) - var(--switch_height))) translateY(-0.2em);
+    }
+
+    input:hover:checked + .slider:before {
+      transform: translateX(calc(var(--switch_width) - var(--switch_height))) translateY(-0.3em);
+      box-shadow: 0 0.3em 0 var(--outline_color);
+    }
+
+    /* --- Main Container --- */
+    #container {
+      text-align: center;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(15, 133, 142, 0.2);
+      padding: 2rem 2.5rem;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 500px;
+      z-index: 1;
+    }
+
+    h2 {
+      color: #0f858e;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.5rem;
+    }
+
+    /* --- Input --- */
+    input[type="text"] {
+      padding: 0.8rem;
+      font-size: 1rem;
+      width: calc(100% - 24px);
+      margin-top: 1rem;
+      border: 1.5px solid rgba(15, 133, 142, 0.4);
+      border-radius: 8px;
+      outline: none;
+      text-align: center;
+      color: #333;
+      background-color: #fff;
+      transition: all 0.3s ease;
+      caret-color: transparent; /* hides caret */
+    }
+
+    input[type="text"]:hover {
+      border-color: #0f858e;
+    }
+
+    input[type="text"]:focus {
+      border-color: #0f858e;
+      box-shadow: 0 0 0 3px rgba(15, 133, 142, 0.15);
+    }
+
+    /* --- Output Box --- */
+    #output {
+      margin-top: 1.5rem;
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #0f858e;
+      line-height: 1.6;
+      background: #fff;
+      padding: 0.8rem;
+      border-radius: 8px;
+      border: 1px solid rgba(15, 133, 142, 0.2);
+      min-height: 2.5rem;
+      display: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    #output.show {
+      display: block;
+      opacity: 1;
+    }
+
+    footer {
+      position: fixed;
+      bottom: 10px;
+      right: 15px;
+      font-size: 12px;
+      color: #777;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <div class="top-buttons">
+    <button class="button" onclick="location.href='/'">Home</button>
+    <button class="button" onclick="location.href='date'">Dates</button>
+    <button class="button" onclick="location.href='pipes'">Pipe Formatter</button>
+  </div>
+  
+  <div class="toggle-container">
+    <span>Doing returns</span>
+    <!-- Voxybuns Switch -->
+    <label class="switch" for="orderToggle" tabindex="0">
+      <input type="checkbox" id="orderToggle">
+      <span class="slider"></span>
+    </label>
+  </div>
+
+  <div id="container">
+    <h2>Enter date</h2>
+    <input type="text" id="birthInput" placeholder="dd - mm - yyyy" />
+
+    <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 1rem;">
+      <button class="button" onclick="clearInput()">Clear</button>
+    </div>
+
+    <div id="output"></div>
+  </div>
+
+  <footer>Kyle Tuck Inc.</footer>
+
+  <script>
+    const input = document.getElementById("birthInput");
+    const orderToggle = document.getElementById("orderToggle");
+    const switchLabel = document.querySelector('.switch');
+    const toggleText = document.querySelector('.toggle-container span');
+    const output = document.getElementById("output");
+
+    function updateToggleUI(state) {
+      toggleText.textContent = state ? 'Returns: ON' : 'Returns: OFF';
+      toggleText.style.color = state ? '#0f858e' : '#777';
+    }
+
+    function triggerVibration() {
+      if ('vibrate' in navigator) navigator.vibrate(20);
+    }
+
+    function onToggleStateChange() {
+      const state = orderToggle.checked;
+      updateToggleUI(state);
+      localStorage.setItem('toggleState', state);
+      triggerVibration();
+      calculateAge();
+    }
+
+    function loadInitialState() {
+      const savedState = localStorage.getItem('toggleState') === 'true';
+      orderToggle.checked = savedState;
+      updateToggleUI(savedState);
+      input.focus();
+      calculateAge();
+    }
+
+    window.addEventListener('load', loadInitialState);
+    orderToggle.addEventListener('change', onToggleStateChange);
+
+    input.addEventListener("input", () => {
+      let val = input.value.replace(/\D/g, "").slice(0, 8);
+      let formatted = "";
+
+      if (val.length >= 1) formatted += val.slice(0, 2);
+      if (val.length >= 3) formatted += " - " + val.slice(2, 4);
+      else if (val.length > 2) formatted += " - ";
+
+      if (val.length >= 5) formatted += " - " + val.slice(4);
+      else if (val.length > 4) formatted += " - ";
+
+      input.value = formatted;
+      calculateAge();
+    });
+
+    input.addEventListener("paste", (e) => {
+      e.preventDefault();
+      let pasted = (e.clipboardData || window.clipboardData).getData("text");
+      pasted = pasted.replace(/\D/g, "").slice(0, 8);
+      let formatted = "";
+      if (pasted.length >= 1) formatted += pasted.slice(0, 2);
+      if (pasted.length >= 3) formatted += " - " + pasted.slice(2, 4);
+      if (pasted.length >= 5) formatted += " - " + pasted.slice(4);
+      input.value = formatted;
+      calculateAge();
+    });
+
+    switchLabel.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        orderToggle.click();
+      }
+    });
+
+    function clearInput() {
+      input.value = "";
+      output.classList.remove("show");
+      output.textContent = "";
+      input.focus();
+      calculateAge();
+    }
+
+    function calculateAge() {
+      const inputVal = input.value.trim();
+      const dateMatch = inputVal.match(/(\d{2})\s*[-/]\s*(\d{2})\s*[-/]\s*(\d{2,4})/);
+
+      if (!dateMatch) {
+        output.classList.remove("show");
+        output.innerHTML = "";
+        return;
+      }
+
+      output.classList.add("show");
+
+      let [_, dayStr, monthStr, yearStr] = dateMatch;
+      const day = parseInt(dayStr, 10);
+      const month = parseInt(monthStr, 10);
+      let year = parseInt(yearStr, 10);
+
+      if (yearStr.length === 2) {
+        year = year > 30 ? 1900 + year : 2000 + year;
+      }
+
+      const inputDate = new Date(year, month - 1, day);
+
+      if (isNaN(inputDate.getTime()) || inputDate.getDate() !== day || inputDate.getMonth() !== month - 1 || inputDate.getFullYear() !== year) {
+        output.textContent = "Invalid date.";
+        return;
+      }
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      let output1Text;
+      if (inputDate.getTime() === today.getTime()) {
+        output1Text = "Today";
+      } else {
+        const isPast = inputDate < today;
+        const start = isPast ? inputDate : today;
+        const end = isPast ? today : inputDate;
+
+        let yearsDiff = end.getFullYear() - start.getFullYear();
+        let monthsDiff = end.getMonth() - start.getMonth();
+        let daysDiff = end.getDate() - start.getDate();
+
+        if (daysDiff < 0) {
+          monthsDiff--;
+          const lastDayOfPrevMonth = new Date(end.getFullYear(), end.getMonth(), 0).getDate();
+          daysDiff += lastDayOfPrevMonth;
+        }
+        if (monthsDiff < 0) {
+          yearsDiff--;
+          monthsDiff += 12;
+        }
+
+        const parts = [];
+        if (yearsDiff > 0) parts.push(`${yearsDiff} year${yearsDiff === 1 ? '' : 's'}`);
+        if (monthsDiff > 0) parts.push(`${monthsDiff} month${monthsDiff === 1 ? '' : 's'}`);
+        if (daysDiff > 0) parts.push(`${daysDiff} day${daysDiff === 1 ? '' : 's'}`);
+
+        const diffString = parts.join(', ');
+        output1Text = isPast ? `${diffString} ago` : `In ${diffString}`;
+      }
+
+      if (orderToggle.checked && output1Text !== "Today" && output1Text) {
+          output1Text = `Order left: ${output1Text}`;
+      }
+
+      const futureDate = new Date(inputDate);
+      futureDate.setDate(futureDate.getDate() + 30);
+
+      const getDaySuffix = (d) => {
+        if (d > 3 && d < 21) return 'th';
+        switch (d % 10) {
+          case 1: return "st"; case 2: return "nd"; case 3: return "rd"; default: return "th";
+        }
+      };
+
+      const dayOfMonth = futureDate.getDate();
+      const monthName = futureDate.toLocaleString('en-GB', { month: 'long' });
+      const fullYear = futureDate.getFullYear();
+      const formattedFutureDate = `${dayOfMonth}${getDaySuffix(dayOfMonth)} ${monthName} ${fullYear}`;
+      const output2Text = `Expiry: ${formattedFutureDate}`;
+
+      if (orderToggle.checked && output1Text !== "Today" && output1Text) {
+        output.innerHTML = `${output1Text}<br>${output2Text}`;
+      } else {
+        output.innerHTML = output1Text;
+      }
+    }
+  </script>
+</body>
+</html>
