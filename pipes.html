@@ -6,6 +6,7 @@
   <title>Sale Pipe Formatter</title>
   <link rel="icon" href="pipe.png" type="image/png" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
   <style>
@@ -2119,428 +2120,262 @@
     }
 
   
-    /* === KYLE_OS VISUAL-ONLY THEME ==========================================
-       IMPORTANT:
-       - CSS-only visual skin
-       - No JavaScript changed
-       - No formatter/export/toggle/copy functions changed
-       - No HTML/body structure changed
-       - Layout positioning intentionally mostly left alone
-    ====================================================================== */
 
-    :root {
-      --accent: #00f5ff;
-      --accent-light: #a8ff60;
-      --bg: #070812;
-      --text: #d8fff7;
-      --glass-bg: rgba(9, 18, 30, 0.90);
-      --shadow: 0 0 8px rgba(0, 245, 255, 0.75), 0 0 24px rgba(0, 245, 255, 0.26);
-      --border: rgba(0, 245, 255, 0.86);
-      --muted: #8db9b8;
-      --panel-border: rgba(0, 245, 255, 0.78);
-      --input-bg: rgba(4, 14, 22, 0.86);
-      --input-text: #d8fff7;
-      --token-hover: rgba(0, 245, 255, 0.16);
-      --footer: rgba(216, 255, 247, 0.58);
-      --pipe-opacity: 0.18;
-      --w95-border: rgba(0, 245, 255, 0.80);
-      --w95-inset1: rgba(0, 245, 255, 0.16);
-      --w95-inset2: rgba(255, 47, 214, 0.16);
-      --backdrop: rgba(5, 8, 18, 0.76);
-      --sb-track: rgba(4, 14, 22, 0.90);
-      --sb-thumb: rgba(0, 245, 255, 0.68);
-      --sb-thumb-hover: rgba(255, 47, 214, 0.78);
-      --split-line: rgba(0, 245, 255, 0.28);
-      --copied-overlay-color: rgba(5, 8, 18, 0.76);
-
-      --pixel-font: "Share Tech Mono", "Lucida Console", "Courier New", monospace;
-      --pixel-yellow: #ffd166;
-      --pixel-coral: #ff2fd6;
-      --pixel-blue: #00f5ff;
-      --pixel-ink: #d8fff7;
-      --pixel-paper: rgba(9, 18, 30, 0.90);
-      --pixel-panel-top: rgba(255, 255, 255, 0.04);
-      --pixel-panel-bottom: rgba(255, 255, 255, 0.01);
-    }
-
-    body.dark {
-      --accent: #00f5ff;
-      --accent-light: #a8ff60;
-      --bg: #070812;
-      --text: #d8fff7;
-      --glass-bg: rgba(9, 18, 30, 0.90);
-      --shadow: 0 0 8px rgba(0, 245, 255, 0.75), 0 0 24px rgba(0, 245, 255, 0.26);
-      --border: rgba(0, 245, 255, 0.86);
-      --muted: #8db9b8;
-      --panel-border: rgba(0, 245, 255, 0.78);
-      --input-bg: rgba(4, 14, 22, 0.86);
-      --input-text: #d8fff7;
-      --token-hover: rgba(0, 245, 255, 0.16);
-      --footer: rgba(216, 255, 247, 0.58);
-      --pipe-opacity: 0.18;
-      --w95-border: rgba(0, 245, 255, 0.80);
-      --w95-inset1: rgba(0, 245, 255, 0.16);
-      --w95-inset2: rgba(255, 47, 214, 0.16);
-      --backdrop: rgba(5, 8, 18, 0.76);
-      --sb-track: rgba(4, 14, 22, 0.90);
-      --sb-thumb: rgba(0, 245, 255, 0.68);
-      --sb-thumb-hover: rgba(255, 47, 214, 0.78);
-      --split-line: rgba(0, 245, 255, 0.28);
-      --pixel-paper: rgba(9, 18, 30, 0.90);
-      --pixel-panel-top: rgba(255, 255, 255, 0.04);
-      --pixel-panel-bottom: rgba(255, 255, 255, 0.01);
-      --pixel-ink: #d8fff7;
-    }
-
-    body {
-      font-family: "Share Tech Mono", "Lucida Console", "Courier New", monospace;
-      color: #d8fff7;
-      background:
-        radial-gradient(circle at 20% 20%, rgba(255, 47, 214, 0.20), transparent 34%),
-        radial-gradient(circle at 82% 18%, rgba(0, 245, 255, 0.20), transparent 32%),
-        radial-gradient(circle at 50% 80%, rgba(168, 255, 96, 0.11), transparent 38%),
-        linear-gradient(135deg, #070812, #11152a 58%, #090714);
-    }
-
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 1;
-      background:
-        repeating-linear-gradient(
-          to bottom,
-          rgba(255, 255, 255, 0.055) 0,
-          rgba(255, 255, 255, 0.055) 1px,
-          transparent 1px,
-          transparent 4px
-        );
-      mix-blend-mode: overlay;
-      opacity: 0.50;
-    }
-
-    body::after {
-      content: "";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 1;
-      background:
-        radial-gradient(circle at 50% 50%, transparent 0 58%, rgba(0, 0, 0, 0.48) 100%);
-      opacity: 1;
-    }
-
-    .pipe-background::before {
-      content: "";
-      position: fixed;
-      inset: auto -10vw -26vh -10vw;
-      height: 48vh;
-      transform: perspective(680px) rotateX(62deg);
-      transform-origin: bottom center;
-      background-image:
-        linear-gradient(rgba(0, 245, 255, 0.20) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 47, 214, 0.18) 1px, transparent 1px);
-      background-size: 48px 48px;
-      filter: drop-shadow(0 0 12px rgba(0, 245, 255, 0.28));
-      opacity: 0.62;
-      z-index: 0;
-    }
-
-    .pipe-background::after {
-      content: "";
-      position: fixed;
-      width: min(42vw, 520px);
-      aspect-ratio: 1;
-      top: 8vh;
-      left: 50%;
-      transform: translateX(-50%);
-      border-radius: 50%;
-      background:
-        repeating-linear-gradient(
-          to bottom,
-          rgba(255, 209, 102, 0.90) 0 8px,
-          rgba(255, 112, 166, 0.78) 8px 18px,
-          transparent 18px 30px
-        );
-      box-shadow: 0 0 40px rgba(255, 47, 214, 0.28), 0 0 90px rgba(255, 209, 102, 0.18);
-      opacity: 0.18;
-      z-index: 0;
-    }
-
-    .pipe {
-      filter:
-        drop-shadow(0 0 8px rgba(0, 245, 255, 0.42))
-        drop-shadow(0 0 14px rgba(255, 47, 214, 0.18));
-    }
-
-    .panel-card,
-    .settings-card,
-    .remove-modal,
-    .duplicate-modal,
-    .output-container,
-    .duplicateCopyText,
-    .inputText,
-    .removeText,
-    .w95-modal {
-      border-color: rgba(0, 245, 255, 0.78);
-      background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01)),
-        rgba(9, 18, 30, 0.90);
-      box-shadow:
-        0 0 8px rgba(0, 245, 255, 0.75),
-        0 0 24px rgba(0, 245, 255, 0.26),
-        inset 0 0 24px rgba(0, 245, 255, 0.08);
-      color: #d8fff7;
-    }
-
+    /* KYLE_OS title tab - VISUAL ONLY. No JavaScript or formatter behaviour changed. */
     .panel-card {
-      box-shadow:
-        0 0 8px rgba(0, 245, 255, 0.75),
-        0 0 24px rgba(0, 245, 255, 0.26),
-        inset 0 0 32px rgba(0, 245, 255, 0.09),
-        12px 12px 0 rgba(255, 47, 214, 0.22);
+      position: relative;
+      overflow: visible;
     }
 
-    .panel-card::before {
+    .kyle-os-module-label {
+      position: absolute;
+      top: -17px;
+      left: 18px;
+      z-index: 20;
+      pointer-events: none;
+      padding: 0 10px;
+      background: var(--glass-bg);
+      color: var(--pixel-yellow, var(--accent));
+      font-family: var(--pixel-font, "Lucida Console", "Courier New", monospace);
+      font-size: clamp(10px, 1.2vw, 13px);
+      font-weight: 900;
+      line-height: 1.2;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      text-shadow: 1px 1px 0 rgba(0,0,0,0.45);
+      white-space: nowrap;
+    }
+
+
+    /* KYLE_OS title tab polish + heading animation - VISUAL ONLY. */
+    .kyle-os-module-label {
+      top: -21px !important;
+      left: 18px !important;
+      padding: 3px 18px 4px 12px !important;
+      color: var(--pixel-yellow, #ffd166) !important;
       background:
-        linear-gradient(90deg, #ff2fd6 0 24%, #00f5ff 24% 58%, #a8ff60 58% 82%, #ffd166 82% 100%);
-    }
-
-    h2 {
-      color: #00f5ff;
-      font-family: "Share Tech Mono", "Lucida Console", "Courier New", monospace;
+        linear-gradient(180deg, rgba(7, 8, 18, 0.98), rgba(9, 18, 30, 0.96)) !important;
+      border: 1px solid rgba(0, 245, 255, 0.78) !important;
+      border-bottom: 0 !important;
+      box-shadow:
+        0 0 10px rgba(0, 245, 255, 0.36),
+        inset 0 0 14px rgba(0, 245, 255, 0.09) !important;
+      clip-path: polygon(0 0, calc(100% - 11px) 0, 100% 100%, 0 100%) !important;
       text-shadow:
-        3px 0 0 rgba(255, 47, 214, 0.75),
-        -3px 0 0 rgba(168, 255, 96, 0.55),
-        0 0 18px rgba(0, 245, 255, 0.58);
+        1px 0 0 rgba(255, 47, 214, 0.62),
+        0 0 8px rgba(255, 209, 102, 0.42) !important;
     }
 
-    p,
-    .duplicateList {
-      color: #8db9b8;
+    .kyle-os-module-label::before {
+      content: "";
+      position: absolute;
+      left: 7px;
+      right: 15px;
+      bottom: 0;
+      height: 1px;
+      background: linear-gradient(90deg, var(--pixel-coral, #ff2fd6), var(--accent, #00f5ff), var(--accent-light, #a8ff60));
+      opacity: 0.92;
+      pointer-events: none;
     }
 
-    .qtyMarker,
-    .group-label,
-    .duplicate-modal h4,
-    .remove-modal label {
-      color: #a8ff60;
-      text-shadow: 0 0 10px rgba(168, 255, 96, 0.42);
+    .kyle-os-module-label::after {
+      content: "";
+      position: absolute;
+      top: 5px;
+      right: 7px;
+      width: 4px;
+      height: 4px;
+      background: var(--accent-light, #a8ff60);
+      box-shadow: 0 0 8px rgba(168, 255, 96, 0.8);
+      animation: ktOsBlink 1.4s steps(2, end) infinite;
+      pointer-events: none;
     }
 
-    .headline-scroller {
-      color: #a8ff60;
-      text-shadow: 0 0 10px rgba(168, 255, 96, 0.52);
-      background: rgba(4, 14, 22, 0.42);
-      border-top: 1px solid rgba(0, 245, 255, 0.20);
-      border-bottom: 1px solid rgba(0, 245, 255, 0.20);
-      box-shadow: 0 0 18px rgba(0, 245, 255, 0.10);
+    @keyframes ktOsBlink {
+      0%, 44% { opacity: 1; }
+      45%, 100% { opacity: 0.35; }
     }
 
-    .button,
-    .batch-copy-btn,
-    .w95-btn {
-      border-color: #00f5ff;
-      color: #d8fff7;
-      background:
-        linear-gradient(180deg, rgba(0, 245, 255, 0.13), rgba(255, 47, 214, 0.08)),
-        rgba(2, 7, 17, 0.86);
-      box-shadow: 6px 6px 0 rgba(0, 245, 255, 0.18);
-      font-family: "Share Tech Mono", "Lucida Console", "Courier New", monospace;
+    .panel-card h2 {
+      position: relative;
+      animation:
+        ktTitleGlow 2.7s ease-in-out infinite alternate,
+        ktTitleMicroGlitch 4.8s infinite steps(1);
+      will-change: transform, text-shadow;
     }
 
-    .button:hover,
-    .batch-copy-btn:hover,
-    .w95-btn:hover {
-      border-color: #ff2fd6;
-      color: #a8ff60;
-      box-shadow: 9px 9px 0 rgba(255, 47, 214, 0.28), 0 0 20px rgba(255, 47, 214, 0.25);
+    .panel-card h2.kt-title-animated::before,
+    .panel-card h2.kt-title-animated::after {
+      content: attr(data-kt-title);
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0;
+      mix-blend-mode: screen;
     }
 
-    .button::before,
-    .batch-copy-btn::before {
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.22), transparent);
+    .panel-card h2.kt-title-animated::before {
+      color: var(--pixel-coral, #ff2fd6);
+      transform: translate(2px, 0);
+      clip-path: inset(0 0 56% 0);
+      animation: ktTitleSlicePink 4.8s infinite steps(1);
     }
 
-    .inputText,
-    .removeText {
-      border-color: rgba(0, 245, 255, 0.86);
-      background: rgba(4, 14, 22, 0.86);
-      color: #d8fff7;
-      box-shadow:
-        0 0 8px rgba(0, 245, 255, 0.75),
-        0 0 24px rgba(0, 245, 255, 0.18),
-        inset 0 0 20px rgba(0, 245, 255, 0.08);
+    .panel-card h2.kt-title-animated::after {
+      color: var(--accent-light, #a8ff60);
+      transform: translate(-2px, 0);
+      clip-path: inset(48% 0 0 0);
+      animation: ktTitleSliceLime 4.8s infinite steps(1);
     }
 
-    .inputText::placeholder,
-    .removeText::placeholder {
-      color: rgba(216, 255, 247, 0.45);
-    }
-
-    .inputText:focus,
-    .removeText:focus {
-      border-color: #ff2fd6;
-      box-shadow:
-        0 0 8px rgba(255, 47, 214, 0.75),
-        0 0 24px rgba(255, 47, 214, 0.26),
-        inset 0 0 22px rgba(255, 47, 214, 0.08);
-    }
-
-    .output-container,
-    .duplicateCopyText {
-      border-color: rgba(168, 255, 96, 0.72);
-      color: #a8ff60;
-      background:
-        linear-gradient(180deg, rgba(168, 255, 96, 0.08), rgba(0, 245, 255, 0.05)),
-        rgba(4, 14, 22, 0.86);
-      text-shadow: 0 0 10px rgba(168, 255, 96, 0.35);
-      box-shadow:
-        0 0 12px rgba(168, 255, 96, 0.26),
-        inset 0 0 22px rgba(168, 255, 96, 0.06);
-    }
-
-    .settings-card span {
-      color: #8db9b8;
-    }
-
-    .settings-divider,
-    .split-under-main-buttons,
-    .split-sep {
-      border-top-color: rgba(0, 245, 255, 0.28);
-    }
-
-    .slider {
-      background-color: rgba(141, 185, 184, 0.25);
-      border-color: #00f5ff;
-      box-shadow: inset 0 0 14px rgba(0, 245, 255, 0.16);
-    }
-
-    .slider:before {
-      background-color: #d8fff7;
-      box-shadow: 0 0 10px rgba(216, 255, 247, 0.44);
-    }
-
-    input:checked + .slider {
-      background-color: rgba(168, 255, 96, 0.26);
-      border-color: #a8ff60;
-      box-shadow: 0 0 14px rgba(168, 255, 96, 0.38), inset 0 0 12px rgba(168, 255, 96, 0.18);
-    }
-
-    input:checked + .slider:before {
-      background-color: #a8ff60;
-      box-shadow: 0 0 16px rgba(168, 255, 96, 0.65);
-    }
-
-    .remove-modal,
-    .duplicate-modal {
-      border-color: rgba(255, 47, 214, 0.78);
-      background: rgba(4, 14, 22, 0.94);
-      box-shadow:
-        0 0 8px rgba(255, 47, 214, 0.75),
-        0 0 24px rgba(255, 47, 214, 0.26),
-        inset 0 0 20px rgba(255, 47, 214, 0.06);
-    }
-
-    .num-token.highlight,
-    .dup-token.highlight,
-    .dup-line-token.highlight {
-      background-color: rgba(255, 47, 214, 0.34);
-      color: #a8ff60;
-      box-shadow: 0 0 12px rgba(255, 47, 214, 0.26);
-    }
-
-    .w95-titlebar {
-      background: rgba(4, 14, 22, 0.96);
-      color: #ffd166;
-      border-bottom-color: #00f5ff;
-    }
-
-    .w95-message {
-      color: #a8ff60;
-      text-shadow: 0 0 10px rgba(168, 255, 96, 0.35);
-    }
-
-    .half {
-      color: #00f5ff;
-      text-shadow:
-        3px 0 0 rgba(255, 47, 214, 0.75),
-        -3px 0 0 rgba(168, 255, 96, 0.55),
-        0 0 18px rgba(0, 245, 255, 0.58);
-    }
-
-    footer {
-      color: rgba(216, 255, 247, 0.58);
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      body::before {
-        animation: none;
+    @keyframes ktTitleGlow {
+      from {
+        text-shadow:
+          2px 0 0 rgba(255, 47, 214, 0.64),
+          -2px 0 0 rgba(168, 255, 96, 0.48),
+          0 0 10px rgba(0, 245, 255, 0.40);
+      }
+      to {
+        text-shadow:
+          3px 0 0 rgba(255, 47, 214, 0.78),
+          -3px 0 0 rgba(168, 255, 96, 0.56),
+          0 0 18px rgba(0, 245, 255, 0.68);
       }
     }
 
-  
-    /* Tiny visual polish: make the Removed Duplicates tag readable/neon */
-    .duplicate-modal h4 {
-      color: #ffd166 !important;
-      background:
-        linear-gradient(90deg, rgba(255, 47, 214, 0.22), rgba(0, 245, 255, 0.16)),
-        rgba(4, 14, 22, 0.96) !important;
-      border: 1px solid rgba(0, 245, 255, 0.75) !important;
-      box-shadow:
-        0 0 10px rgba(0, 245, 255, 0.28),
-        inset 0 0 12px rgba(255, 47, 214, 0.10) !important;
-      text-shadow:
-        0 0 8px rgba(255, 209, 102, 0.45),
-        0 0 14px rgba(255, 47, 214, 0.20) !important;
+    @keyframes ktTitleMicroGlitch {
+      0%, 90%, 100% { transform: translate(0); }
+      91% { transform: translate(-2px, 1px); }
+      92% { transform: translate(2px, -1px); }
+      93% { transform: translate(-1px, -1px); }
+      94% { transform: translate(0); }
     }
 
-  
-    /* Tiny visual polish: replace harsh lime hover fill with dark neon glow */
-    .button:hover,
-    .batch-copy-btn:hover,
-    .w95-btn:hover,
-    .button:focus-visible,
-    .batch-copy-btn:focus-visible,
-    .w95-btn:focus-visible {
-      background:
-        linear-gradient(180deg, rgba(255, 47, 214, 0.18), rgba(0, 245, 255, 0.12)),
-        rgba(4, 14, 22, 0.96) !important;
-      color: #ffd166 !important;
-      border-color: #ff2fd6 !important;
-      box-shadow:
-        7px 7px 0 rgba(255, 47, 214, 0.25),
-        0 0 14px rgba(255, 47, 214, 0.35),
-        0 0 22px rgba(0, 245, 255, 0.18) !important;
-      text-shadow:
-        0 0 8px rgba(255, 209, 102, 0.42),
-        0 0 12px rgba(0, 245, 255, 0.22) !important;
+    @keyframes ktTitleSlicePink {
+      0%, 90%, 100% { opacity: 0; transform: translate(0, 0); }
+      91%, 92% { opacity: 0.85; transform: translate(3px, -1px); }
+      93% { opacity: 0.35; transform: translate(-2px, 1px); }
     }
 
-    .button:active,
-    .batch-copy-btn:active,
-    .w95-btn:active {
+    @keyframes ktTitleSliceLime {
+      0%, 90%, 100% { opacity: 0; transform: translate(0, 0); }
+      91%, 92% { opacity: 0.72; transform: translate(-3px, 1px); }
+      93% { opacity: 0.30; transform: translate(2px, -1px); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .kyle-os-module-label::after,
+      .panel-card h2,
+      .panel-card h2.kt-title-animated::before,
+      .panel-card h2.kt-title-animated::after {
+        animation: none !important;
+      }
+    }
+
+
+
+    /* Title polish pass - VISUAL ONLY. No formatter behaviour changed. */
+    .panel-card h2 {
+      display: inline-grid !important;
+      place-items: center !important;
+      width: min(100%, 430px) !important;
+      margin: 8px auto 20px !important;
+      padding: 13px 16px 11px !important;
+      position: relative !important;
+      isolation: isolate !important;
+      color: #00f5ff !important;
+      font-family: 'Press Start 2P', var(--pixel-font), monospace !important;
+      font-size: clamp(18px, 3.4vw, 30px) !important;
+      line-height: 1.35 !important;
+      letter-spacing: 0.075em !important;
+      word-spacing: 0.18em !important;
+      text-align: center !important;
+      text-transform: uppercase !important;
+      border: 1px solid rgba(0, 245, 255, 0.38) !important;
+      border-left: 0 !important;
+      border-right: 0 !important;
       background:
-        linear-gradient(180deg, rgba(0, 245, 255, 0.20), rgba(168, 255, 96, 0.10)),
-        rgba(4, 14, 22, 0.98) !important;
+        linear-gradient(90deg, transparent, rgba(0, 245, 255, 0.13), rgba(255, 47, 214, 0.10), transparent),
+        repeating-linear-gradient(to bottom, rgba(255,255,255,0.08) 0 1px, transparent 1px 5px),
+        linear-gradient(180deg, rgba(0, 245, 255, 0.06), rgba(255, 47, 214, 0.045));
+      background-size: 220% 100%, 100% 5px, 100% 100% !important;
+      box-shadow:
+        0 0 16px rgba(0, 245, 255, 0.16),
+        inset 0 0 22px rgba(0, 245, 255, 0.08) !important;
+      -webkit-text-stroke: 1px rgba(216, 255, 247, 0.20);
+      text-shadow:
+        4px 0 0 rgba(255, 47, 214, 0.78),
+        -4px 0 0 rgba(168, 255, 96, 0.58),
+        0 0 10px rgba(0, 245, 255, 0.78),
+        0 0 26px rgba(0, 245, 255, 0.35) !important;
+      animation:
+        ktTitleGlow 2.7s ease-in-out infinite alternate,
+        ktTitleMicroGlitch 4.8s infinite steps(1),
+        ktTitleSheen 6.5s linear infinite !important;
+    }
+
+    .panel-card h2::selection {
+      background: rgba(255, 47, 214, 0.35);
+    }
+
+    .panel-card h2.kt-title-animated::before,
+    .panel-card h2.kt-title-animated::after {
+      display: grid !important;
+      place-items: center !important;
+      padding: inherit !important;
+      font-family: inherit !important;
+      font-size: inherit !important;
+      font-weight: inherit !important;
+      line-height: inherit !important;
+      letter-spacing: inherit !important;
+      word-spacing: inherit !important;
+      text-align: center !important;
+      -webkit-text-stroke: inherit !important;
+    }
+
+    .panel-card h2.kt-title-animated::before {
+      color: #ff2fd6 !important;
+      opacity: 0;
+      text-shadow: 0 0 14px rgba(255, 47, 214, 0.65) !important;
+    }
+
+    .panel-card h2.kt-title-animated::after {
       color: #a8ff60 !important;
+      opacity: 0;
+      text-shadow: 0 0 14px rgba(168, 255, 96, 0.58) !important;
+    }
+
+    @keyframes ktTitleSheen {
+      0% { background-position: -160% 0, 0 0, 0 0; }
+      100% { background-position: 160% 0, 0 0, 0 0; }
+    }
+
+    body:not(.dark) .panel-card h2 {
+      color: #00a6a6 !important;
+      background:
+        linear-gradient(90deg, transparent, rgba(0, 166, 166, 0.12), rgba(255, 107, 107, 0.10), transparent),
+        repeating-linear-gradient(to bottom, rgba(16,39,43,0.045) 0 1px, transparent 1px 5px),
+        linear-gradient(180deg, rgba(255,255,255,0.36), rgba(80,255,241,0.10));
+      text-shadow:
+        3px 0 0 rgba(255, 107, 107, 0.72),
+        -3px 0 0 rgba(80, 255, 241, 0.62),
+        0 0 10px rgba(0, 166, 166, 0.34) !important;
+      border-color: rgba(0, 166, 166, 0.42) !important;
       box-shadow:
-        3px 3px 0 rgba(0, 245, 255, 0.22),
-        0 0 12px rgba(0, 245, 255, 0.28) !important;
+        0 8px 18px rgba(16, 39, 43, 0.08),
+        inset 0 0 18px rgba(0, 166, 166, 0.08) !important;
     }
 
-  
-    /* Title boot animation helpers */
-    h2.kt-title-scrambling {
-      white-space: normal;
+    @media (max-width: 520px) {
+      .panel-card h2 {
+        width: 100% !important;
+        padding: 11px 10px 10px !important;
+        font-size: clamp(15px, 5.5vw, 22px) !important;
+        letter-spacing: 0.04em !important;
+        word-spacing: 0.08em !important;
+      }
     }
-
-    h2.kt-title-scrambling .kt-char-done {
-      color: #00f5ff;
-    }
-
-  </style>
+</style>
 </head>
 
 <body>
@@ -2618,6 +2453,8 @@
 
       <div class="panel primary" id="panelPrimary">
         <div class="panel-card">
+          <div class="kyle-os-module-label" aria-hidden="true">KYLE_OS // PIPE MODULE</div>
+          
           <div class="panel-inner">
 
             <div class="remove-modal" id="removeModal">
@@ -2659,6 +2496,8 @@
 
       <div class="panel secondary hidden" id="panelSecondary">
         <div class="panel-card">
+          <div class="kyle-os-module-label" aria-hidden="true">KYLE_OS // PIPE MODULE</div>
+          
           <div class="panel-inner">
 
             <div class="remove-modal" id="removeModal2">
@@ -3734,31 +3573,25 @@ function startMarquee(text) {
 </script>
 
 
-  <script>
-    /*
-      Visual-only title animation.
-      Existing formatter functions/scripts are untouched.
-      Adds the same style of scramble boot animation used by the Welcome title.
-    */
-    (function () {
-      const glyphs = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#$%&?';
-      const animatedTitles = new WeakSet();
 
-      function scrambleTitle(titleEl) {
-        if (!titleEl || animatedTitles.has(titleEl)) return;
+<script>
+  /* Visual-only boot scramble for the formatter title. Formatter functions are untouched. */
+  (function () {
+    const glyphs = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#$%&?';
 
-        const finalText = (titleEl.dataset.finalTitle || titleEl.textContent || '').trim().toUpperCase();
-        if (!finalText) return;
+    function scrambleTitle(titleEl, offsetFrames) {
+      const finalText = (titleEl.textContent || '').trim();
+      if (!finalText) return;
 
-        animatedTitles.add(titleEl);
-        titleEl.dataset.finalTitle = finalText;
-        titleEl.classList.add('kt-title-scrambling');
+      titleEl.dataset.ktTitle = finalText.toUpperCase();
+      titleEl.classList.add('kt-title-animated', 'kt-title-scrambling');
 
-        let frame = 0;
-        const maxFrames = Math.max(28, finalText.length + 14);
+      let frame = 0 - offsetFrames;
+      const maxFrames = Math.max(30, finalText.length + 18);
 
-        const interval = setInterval(() => {
-          const output = finalText
+      const interval = setInterval(() => {
+        if (frame >= 0) {
+          titleEl.textContent = finalText
             .split('')
             .map((char, index) => {
               if (char === ' ') return ' ';
@@ -3766,40 +3599,31 @@ function startMarquee(text) {
               return glyphs[Math.floor(Math.random() * glyphs.length)];
             })
             .join('');
+        }
 
-          titleEl.textContent = output;
-          frame += 1;
+        frame += 1;
 
-          if (frame > maxFrames) {
-            titleEl.textContent = finalText;
-            titleEl.classList.remove('kt-title-scrambling');
-            clearInterval(interval);
-          }
-        }, 46);
-      }
+        if (frame > maxFrames) {
+          titleEl.textContent = finalText;
+          titleEl.classList.remove('kt-title-scrambling');
+          clearInterval(interval);
+        }
+      }, 46);
+    }
 
-      function animateVisibleTitles() {
-        document.querySelectorAll('.panel-card h2').forEach(titleEl => {
-          const panel = titleEl.closest('.panel');
-          const isHidden = panel && panel.classList.contains('hidden');
-          if (!isHidden) scrambleTitle(titleEl);
-        });
-      }
-
-      window.addEventListener('load', animateVisibleTitles);
-
-      const panelsWrap = document.getElementById('panelsWrap') || document.body;
-      const observer = new MutationObserver(() => {
-        animateVisibleTitles();
+    function bootTitles() {
+      document.querySelectorAll('.panel-card h2').forEach((titleEl, index) => {
+        scrambleTitle(titleEl, index * 3);
       });
+    }
 
-      observer.observe(panelsWrap, {
-        subtree: true,
-        attributes: true,
-        attributeFilter: ['class']
-      });
-    })();
-  </script>
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', bootTitles, { once: true });
+    } else {
+      bootTitles();
+    }
+  })();
+</script>
 
 </body>
 </html>
