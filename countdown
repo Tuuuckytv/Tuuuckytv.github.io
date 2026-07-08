@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Countdown19112026</title>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&display=swap');
+
+    :root {
+      --tear-top: 0px;
+      --tear-bottom: 0px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      font-family: 'Orbitron', sans-serif;
+      background:
+        radial-gradient(circle at 50% 18%, rgba(255, 0, 180, 0.38), transparent 34%),
+        linear-gradient(180deg, #160021 0%, #090013 52%, #020008 100%);
+      color: white;
+    }
+
+    /* Neon perspective grid */
+    body::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+      background-size: 42px 42px;
+      transform: perspective(650px) rotateX(62deg) translateY(190px);
+      transform-origin: bottom;
+      animation: gridMove 7s linear infinite;
+      z-index: 0;
+    }
+
+    /* Soft permanent scan lines */
+    .scanlines {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 8;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.04) 0px,
+        rgba(255, 255, 255, 0.04) 1px,
+        rgba(0, 0, 0, 0.12) 2px,
+        rgba(0, 0, 0, 0.12) 5px
+      );
+      mix-blend-mode: overlay;
+      opacity: 0.45;
+    }
+
+    /* Static noise, only visible during the scan pass */
+    .noise {
+      position: fixed;
+      inset: -50%;
+      pointer-events: none;
+      z-index: 9;
+      opacity: 0;
+      background-image:
+        radial-gradient(circle, rgba(255,255,255,0.9) 1px, transparent 1px);
+      background-size: 3px 3px;
+      mix-blend-mode: screen;
+    }
+
+    body.scanning .noise {
+      opacity: 0.12;
+      animation: noiseShift 0.18s steps(2) infinite;
+    }
+
+    /*
+      This whole pass is moved by JavaScript from bottom to top over exactly 6.7s.
+      The bar and distortion live inside the same moving element, so they stay synced.
+    */
+    .scan-pass {
+      position: fixed;
+      left: -6%;
+      top: 0;
+      width: 112%;
+      height: 120px;
+      pointer-events: none;
+      z-index: 12;
+      opacity: 0;
+      transform: translate3d(0, 110vh, 0);
+      will-change: transform, opacity;
+    }
+
+    body.scanning .scan-pass {
+      opacity: 1;
+    }
+
+    .vhs-bar {
+      position: absolute;
+      left: 0;
+      top: 39px;
+      width: 100%;
+      height: 46px;
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(0, 245, 255, 0.28) 22%,
+        rgba(255, 255, 255, 0.25) 48%,
+        rgba(255, 47, 179, 0.32) 70%,
+        transparent 100%
+      );
+      filter: blur(1px);
+      mix-blend-mode: screen;
+    }
+
+    .vhs-distortion {
+      position: absolute;
+      inset: 0;
+      background:
+        repeating-linear-gradient(
+          to bottom,
+          transparent 0px,
+          rgba(255, 255, 255, 0.13) 2px,
+          transparent 5px,
+          rgba(0, 245, 255, 0.18) 8px,
+          transparent 13px
+        ),
+        linear-gradient(
+          to bottom,
+          transparent 0%,
+          rgba(255, 255, 255, 0.10) 18%,
+          rgba(0, 245, 255, 0.26) 42%,
+          rgba(255, 47, 179, 0.36) 58%,
+          rgba(255, 255, 255, 0.12) 76%,
+          transparent 100%
+        );
+      filter: blur(1px) contrast(1.7);
+      mix-blend-mode: screen;
+      animation: violentWarp 0.16s steps(2) infinite;
+    }
+
+    .vhs-distortion::before,
+    .vhs-distortion::after {
+      content: "";
+      position: absolute;
+      left: -4%;
+      width: 108%;
+      height: 22px;
+      background: rgba(255, 255, 255, 0.18);
+      mix-blend-mode: overlay;
+      filter: blur(2px);
+    }
+
+    .vhs-distortion::before {
+      top: 20px;
+      animation: tearLeft 0.14s steps(2) infinite;
+    }
+
+    .vhs-distortion::after {
+      bottom: 22px;
+      animation: tearRight 0.19s steps(2) infinite;
+    }
+
+    .sun {
+      position: absolute;
+      width: 370px;
+      height: 370px;
+      border-radius: 50%;
+      background: linear-gradient(#ffed4a, #ff3cac, #784ba0);
+      top: 9%;
+      box-shadow: 0 0 95px #ff2fb3;
+      opacity: 0.88;
+      z-index: 1;
+    }
+
+    .sun::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent 22px,
+        rgba(10, 0, 20, 0.95) 23px,
+        rgba(10, 0, 20, 0.95) 31px
+      );
+      border-radius: 50%;
+    }
+
+    .countdown-wrap {
+      position: relative;
+      z-index: 3;
+      text-align: center;
+      padding: 42px 58px;
+      border: 2px solid rgba(255, 255, 255, 0.25);
+      background: rgba(10, 0, 25, 0.52);
+      backdrop-filter: blur(10px);
+      box-shadow:
+        0 0 28px rgba(255, 0, 200, 0.7),
+        inset 0 0 30px rgba(0, 255, 255, 0.2);
+      border-radius: 26px;
+    }
+
+    body.scan-hit .countdown-wrap {
+      animation: boxGlitch 0.28s steps(2) infinite;
+    }
+
+    .title {
+      font-size: clamp(1rem, 2vw, 1.5rem);
+      letter-spacing: 0.38em;
+      margin-bottom: 24px;
+      color: #00f5ff;
+      text-shadow:
+        0 0 8px #00f5ff,
+        0 0 18px #00f5ff,
+        2px 0 0 #ff2fb3;
+    }
+
+    body.scan-hit .title {
+      animation: titleJitter 0.28s steps(2) infinite;
+    }
+
+    .countdown {
+      position: relative;
+      font-size: clamp(2.4rem, 9vw, 7.5rem);
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      color: #fff;
+      text-shadow:
+        3px 3px 0 #ff2fb3,
+        -3px -3px 0 #00f5ff,
+        0 0 22px rgba(255, 255, 255, 0.85),
+        0 0 60px rgba(255, 0, 200, 0.95);
+    }
+
+    /*
+      These two layers only appear inside the exact moving slice where
+      the scan line is passing over the clock.
+    */
+    .countdown::before,
+    .countdown::after {
+      content: attr(data-text);
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0;
+      clip-path: inset(
+        var(--tear-top)
+        0
+        calc(100% - var(--tear-bottom))
+        0
+      );
+    }
+
+    .countdown.slice-hit::before,
+    .countdown.slice-hit::after {
+      opacity: 0.95;
+    }
+
+    .countdown::before {
+      color: #00f5ff;
+      text-shadow:
+        -6px 0 0 rgba(0, 245, 255, 0.85),
+        0 0 16px rgba(0, 245, 255, 0.9);
+      animation: glitchSliceA 0.12s steps(2) infinite;
+    }
+
+    .countdown::after {
+      color: #ff2fb3;
+      text-shadow:
+        6px 0 0 rgba(255, 47, 179, 0.85),
+        0 0 18px rgba(255, 47, 179, 0.9);
+      animation: glitchSliceB 0.15s steps(2) infinite;
+    }
+
+    .countdown.slice-hit {
+      animation: localClockWarp 0.2s steps(2) infinite;
+    }
+
+    .labels {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      margin-top: 18px;
+      font-size: clamp(0.6rem, 1.5vw, 0.9rem);
+      letter-spacing: 0.25em;
+      color: #ffd1fb;
+      text-shadow: 0 0 10px #ff2fb3;
+    }
+
+    @keyframes gridMove {
+      from { background-position: 0 0; }
+      to { background-position: 0 42px; }
+    }
+
+    @keyframes noiseShift {
+      0% { transform: translate(0, 0); }
+      25% { transform: translate(-4%, 3%); }
+      50% { transform: translate(5%, -2%); }
+      75% { transform: translate(-2%, 5%); }
+      100% { transform: translate(3%, -4%); }
+    }
+
+    @keyframes violentWarp {
+      0% {
+        transform: translateX(0) skewX(-8deg) scaleX(1);
+        filter: blur(1px) contrast(1.5);
+      }
+      20% {
+        transform: translateX(-38px) skewX(18deg) scaleX(1.1);
+        filter: blur(2px) contrast(2.1);
+      }
+      40% {
+        transform: translateX(42px) skewX(-24deg) scaleX(0.94);
+        filter: blur(0.5px) contrast(2.4);
+      }
+      60% {
+        transform: translateX(-50px) skewX(26deg) scaleX(1.14);
+        filter: blur(2.5px) contrast(1.8);
+      }
+      80% {
+        transform: translateX(30px) skewX(-20deg) scaleX(0.98);
+        filter: blur(1px) contrast(2.2);
+      }
+      100% {
+        transform: translateX(0) skewX(-8deg) scaleX(1);
+        filter: blur(1px) contrast(1.5);
+      }
+    }
+
+    @keyframes tearLeft {
+      0% { transform: translateX(-45px) scaleX(1.2); opacity: 0.25; }
+      50% { transform: translateX(38px) scaleX(0.75); opacity: 0.55; }
+      100% { transform: translateX(-20px) scaleX(1.1); opacity: 0.2; }
+    }
+
+    @keyframes tearRight {
+      0% { transform: translateX(42px) scaleX(0.85); opacity: 0.2; }
+      50% { transform: translateX(-52px) scaleX(1.25); opacity: 0.6; }
+      100% { transform: translateX(24px) scaleX(1); opacity: 0.25; }
+    }
+
+    @keyframes glitchSliceA {
+      0% { transform: translate(-8px, -2px) skewX(4deg); }
+      33% { transform: translate(14px, 2px) skewX(-5deg); }
+      66% { transform: translate(-18px, 1px) skewX(7deg); }
+      100% { transform: translate(6px, -1px) skewX(-3deg); }
+    }
+
+    @keyframes glitchSliceB {
+      0% { transform: translate(10px, 2px) skewX(-5deg); }
+      33% { transform: translate(-16px, -2px) skewX(6deg); }
+      66% { transform: translate(22px, 1px) skewX(-8deg); }
+      100% { transform: translate(-8px, 2px) skewX(4deg); }
+    }
+
+    @keyframes localClockWarp {
+      0% {
+        transform: translate(0, 0);
+        filter: none;
+      }
+      30% {
+        transform: translate(-4px, 1px);
+        filter: hue-rotate(20deg) contrast(1.2);
+      }
+      60% {
+        transform: translate(5px, -1px);
+        filter: blur(0.4px) contrast(1.45);
+      }
+      100% {
+        transform: translate(0, 0);
+        filter: none;
+      }
+    }
+
+    @keyframes titleJitter {
+      0% { transform: translateX(0); }
+      30% { transform: translateX(-2px); }
+      60% { transform: translateX(3px); }
+      100% { transform: translateX(0); }
+    }
+
+    @keyframes boxGlitch {
+      0% {
+        transform: translate(0, 0);
+        filter: none;
+      }
+      50% {
+        transform: translate(2px, -1px);
+        filter: hue-rotate(12deg);
+      }
+      100% {
+        transform: translate(0, 0);
+        filter: none;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .countdown-wrap {
+        padding: 30px 22px;
+      }
+
+      .countdown {
+        letter-spacing: 0.02em;
+      }
+
+      .labels {
+        gap: 6px;
+        letter-spacing: 0.12em;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      body::before,
+      .noise,
+      .vhs-distortion,
+      .vhs-distortion::before,
+      .vhs-distortion::after,
+      .countdown::before,
+      .countdown::after,
+      .countdown.slice-hit,
+      body.scan-hit .countdown-wrap,
+      body.scan-hit .title {
+        animation: none !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="sun"></div>
+  <div class="scanlines"></div>
+  <div class="noise"></div>
+
+  <div class="scan-pass" id="scanPass">
+    <div class="vhs-distortion"></div>
+    <div class="vhs-bar"></div>
+  </div>
+
+  <main class="countdown-wrap">
+    <div class="title">COUNTDOWN</div>
+
+    <div class="countdown" id="countdown" data-text="00 : 00 : 00 : 00">
+      00 : 00 : 00 : 00
+    </div>
+
+    <div class="labels">
+      <span>DAYS</span>
+      <span>HRS</span>
+      <span>MIN</span>
+      <span>SEC</span>
+    </div>
+  </main>
+
+  <script>
+    const targetDate = new Date("2026-11-19T00:00:00").getTime();
+
+    const countdown = document.getElementById("countdown");
+    const scanPass = document.getElementById("scanPass");
+
+    const SCAN_DURATION = 6700;
+    const SCAN_HEIGHT = 120;
+
+    function pad(number) {
+      return String(number).padStart(2, "0");
+    }
+
+    function clamp(value, min, max) {
+      return Math.min(Math.max(value, min), max);
+    }
+
+    function updateCountdown() {
+      const now = new Date().getTime();
+      const distance = targetDate - now;
+
+      let display = "00 : 00 : 00 : 00";
+
+      if (distance > 0) {
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance / (1000 * 60 * 60)) % 24);
+        const minutes = Math.floor((distance / (1000 * 60)) % 60);
+        const seconds = Math.floor((distance / 1000) % 60);
+
+        display = `${pad(days)} : ${pad(hours)} : ${pad(minutes)} : ${pad(seconds)}`;
+      }
+
+      countdown.textContent = display;
+      countdown.setAttribute("data-text", display);
+    }
+
+    function setMovingClockTear(scanTop) {
+      const clockRect = countdown.getBoundingClientRect();
+      const scanBottom = scanTop + SCAN_HEIGHT;
+
+      const overlapTop = clamp(scanTop - clockRect.top, 0, clockRect.height);
+      const overlapBottom = clamp(scanBottom - clockRect.top, 0, clockRect.height);
+      const isOverClock = overlapBottom > overlapTop;
+
+      countdown.style.setProperty("--tear-top", `${overlapTop}px`);
+      countdown.style.setProperty("--tear-bottom", `${overlapBottom}px`);
+
+      countdown.classList.toggle("slice-hit", isOverClock);
+      document.body.classList.toggle("scan-hit", isOverClock);
+    }
+
+    function clearMovingClockTear() {
+      countdown.classList.remove("slice-hit");
+      document.body.classList.remove("scan-hit");
+      countdown.style.setProperty("--tear-top", "0px");
+      countdown.style.setProperty("--tear-bottom", "0px");
+    }
+
+    function startScanPass() {
+      const startTime = performance.now();
+      const viewportHeight = window.innerHeight;
+
+      const startY = viewportHeight + SCAN_HEIGHT;
+      const endY = -SCAN_HEIGHT * 1.4;
+      const travelDistance = startY - endY;
+
+      document.body.classList.add("scanning");
+
+      function animateScan(now) {
+        const elapsed = now - startTime;
+        const progress = clamp(elapsed / SCAN_DURATION, 0, 1);
+
+        const y = startY - travelDistance * progress;
+
+        scanPass.style.transform = `translate3d(0, ${y}px, 0)`;
+        setMovingClockTear(y);
+
+        if (progress < 1) {
+          requestAnimationFrame(animateScan);
+        } else {
+          document.body.classList.remove("scanning");
+          scanPass.style.transform = `translate3d(0, ${endY}px, 0)`;
+          clearMovingClockTear();
+
+          const nextScan = Math.random() * 7000 + 5000;
+          setTimeout(startScanPass, nextScan);
+        }
+      }
+
+      requestAnimationFrame(animateScan);
+    }
+
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+
+    setTimeout(startScanPass, 2500);
+  </script>
+</body>
+</html>
