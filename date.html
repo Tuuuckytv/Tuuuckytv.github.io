@@ -256,6 +256,18 @@
       letter-spacing: 1px;
     }
 
+    .toggle-container {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
     .toggle-container span {
       font-weight: 700;
       font-size: 17px;
@@ -645,11 +657,20 @@
   </div>
 
   <div class="toggle-container">
-    <span>Doing returns</span>
-    <label class="switch" for="orderToggle" tabindex="0">
-      <input type="checkbox" id="orderToggle">
-      <span class="slider"></span>
-    </label>
+    <div class="toggle-row">
+      <span id="returnToggleText">Doing returns</span>
+      <label class="switch" for="orderToggle" tabindex="0">
+        <input type="checkbox" id="orderToggle">
+        <span class="slider"></span>
+      </label>
+    </div>
+    <div class="toggle-row">
+      <span id="totalDaysToggleText">Tom cried now this exists</span>
+      <label class="switch" for="totalDaysToggle" tabindex="0">
+        <input type="checkbox" id="totalDaysToggle">
+        <span class="slider"></span>
+      </label>
+    </div>
   </div>
 
   <main id="container" aria-label="Date checker module">
@@ -680,8 +701,10 @@
   <script>
 const input = document.getElementById("birthInput");
     const orderToggle = document.getElementById("orderToggle");
-    const switchLabel = document.querySelector('.switch');
-    const toggleText = document.querySelector('.toggle-container span');
+    const totalDaysToggle = document.getElementById("totalDaysToggle");
+    const switchLabels = document.querySelectorAll('.switch');
+    const toggleText = document.getElementById('returnToggleText');
+    const totalDaysToggleText = document.getElementById('totalDaysToggleText');
     const output = document.getElementById("output");
 
     function updateToggleUI(state) {
@@ -693,24 +716,42 @@ const input = document.getElementById("birthInput");
       if ('vibrate' in navigator) navigator.vibrate(20);
     }
 
+    function updateTotalDaysToggleUI(state) {
+      totalDaysToggleText.style.color = state ? 'var(--lime)' : 'var(--muted)';
+    }
+
     function onToggleStateChange() {
       const state = orderToggle.checked;
       updateToggleUI(state);
       localStorage.setItem('toggleState', state);
       triggerVibration();
       calculateAge();
+    
+      input.focus();
+    }
+
+    function onTotalDaysToggleStateChange() {
+      const state = totalDaysToggle.checked;
+      updateTotalDaysToggleUI(state);
+      localStorage.setItem('totalDaysToggleState', state);
+      triggerVibration();
+      calculateAge();
     }
 
     function loadInitialState() {
       const savedState = localStorage.getItem('toggleState') === 'true';
+      const savedTotalDaysState = localStorage.getItem('totalDaysToggleState') === 'true';
       orderToggle.checked = savedState;
+      totalDaysToggle.checked = savedTotalDaysState;
       updateToggleUI(savedState);
+      updateTotalDaysToggleUI(savedTotalDaysState);
       input.focus();
       calculateAge();
     }
 
     window.addEventListener('load', loadInitialState);
     orderToggle.addEventListener('change', onToggleStateChange);
+    totalDaysToggle.addEventListener('change', onTotalDaysToggleStateChange);
 
     input.addEventListener("input", () => {
       let val = input.value.replace(/\D/g, "").slice(0, 8);
@@ -739,11 +780,14 @@ const input = document.getElementById("birthInput");
       calculateAge();
     });
 
-    switchLabel.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        orderToggle.click();
-      }
+    switchLabels.forEach((switchLabel) => {
+      switchLabel.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          const checkbox = switchLabel.querySelector('input[type="checkbox"]');
+          if (checkbox) checkbox.click();
+        }
+      });
     });
 
     function clearInput() {
@@ -812,8 +856,12 @@ const input = document.getElementById("birthInput");
         if (monthsDiff > 0) parts.push(`${monthsDiff} month${monthsDiff === 1 ? '' : 's'}`);
         if (daysDiff > 0) parts.push(`${daysDiff} day${daysDiff === 1 ? '' : 's'}`);
 
-        const diffString = parts.join(', ');
-        output1Text = isPast ? `${diffString} ago` : `In ${diffString}`;
+        let diffString = parts.join(', ');
+        if (totalDaysToggle.checked) {
+          const totalDays = Math.round((end - start) / 86400000);
+          diffString += ` (${totalDays} day${totalDays === 1 ? '' : 's'})`;
+        }
+        output1Text = isPast ? `${diffString} ` : `In ${diffString}`;
       }
 
       if (orderToggle.checked && output1Text !== "Today" && output1Text) {
