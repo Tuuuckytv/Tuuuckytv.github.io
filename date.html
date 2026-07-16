@@ -462,7 +462,7 @@
       font-family: 'Share Tech Mono', monospace;
       font-size: clamp(18px, 4vw, 23px);
       letter-spacing: 0.08em;
-      caret-color: var(--lime);
+      caret-color: transparent;
       text-align: center;
       text-transform: uppercase;
     }
@@ -634,6 +634,18 @@
     /* Title boot animation helpers */
     h2.kt-title-scrambling {
       white-space: normal;
+    }
+
+    /* Keep the input focused without showing any caret or prompt marker. */
+    #birthInput,
+    #birthInput:focus,
+    #birthInput:active {
+      caret-color: transparent !important;
+    }
+
+    .input-wrap::before {
+      display: none !important;
+      content: none !important;
     }
 
   </style>
