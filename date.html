@@ -720,14 +720,21 @@ const input = document.getElementById("birthInput");
       totalDaysToggleText.style.color = state ? 'var(--lime)' : 'var(--muted)';
     }
 
+    function refocusDateInput() {
+      requestAnimationFrame(() => {
+        input.focus({ preventScroll: true });
+        const caretPosition = input.value.length;
+        input.setSelectionRange(caretPosition, caretPosition);
+      });
+    }
+
     function onToggleStateChange() {
       const state = orderToggle.checked;
       updateToggleUI(state);
       localStorage.setItem('toggleState', state);
       triggerVibration();
       calculateAge();
-    
-      input.focus();
+      refocusDateInput();
     }
 
     function onTotalDaysToggleStateChange() {
@@ -736,6 +743,7 @@ const input = document.getElementById("birthInput");
       localStorage.setItem('totalDaysToggleState', state);
       triggerVibration();
       calculateAge();
+      refocusDateInput();
     }
 
     function loadInitialState() {
@@ -781,11 +789,20 @@ const input = document.getElementById("birthInput");
     });
 
     switchLabels.forEach((switchLabel) => {
+      switchLabel.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+      });
+
+      switchLabel.addEventListener('click', () => {
+        refocusDateInput();
+      });
+
       switchLabel.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
           e.preventDefault();
           const checkbox = switchLabel.querySelector('input[type="checkbox"]');
           if (checkbox) checkbox.click();
+          refocusDateInput();
         }
       });
     });
