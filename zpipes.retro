@@ -6,6 +6,7 @@
   <title>Sale Pipe Formatter</title>
   <link rel="icon" href="pipe.png" type="image/png" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
   <style>
@@ -2118,7 +2119,263 @@
       }
     }
 
-  </style>
+  
+
+    /* KYLE_OS title tab - VISUAL ONLY. No JavaScript or formatter behaviour changed. */
+    .panel-card {
+      position: relative;
+      overflow: visible;
+    }
+
+    .kyle-os-module-label {
+      position: absolute;
+      top: -17px;
+      left: 18px;
+      z-index: 20;
+      pointer-events: none;
+      padding: 0 10px;
+      background: var(--glass-bg);
+      color: var(--pixel-yellow, var(--accent));
+      font-family: var(--pixel-font, "Lucida Console", "Courier New", monospace);
+      font-size: clamp(10px, 1.2vw, 13px);
+      font-weight: 900;
+      line-height: 1.2;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      text-shadow: 1px 1px 0 rgba(0,0,0,0.45);
+      white-space: nowrap;
+    }
+
+
+    /* KYLE_OS title tab polish + heading animation - VISUAL ONLY. */
+    .kyle-os-module-label {
+      top: -21px !important;
+      left: 18px !important;
+      padding: 3px 18px 4px 12px !important;
+      color: var(--pixel-yellow, #ffd166) !important;
+      background:
+        linear-gradient(180deg, rgba(7, 8, 18, 0.98), rgba(9, 18, 30, 0.96)) !important;
+      border: 1px solid rgba(0, 245, 255, 0.78) !important;
+      border-bottom: 0 !important;
+      box-shadow:
+        0 0 10px rgba(0, 245, 255, 0.36),
+        inset 0 0 14px rgba(0, 245, 255, 0.09) !important;
+      clip-path: polygon(0 0, calc(100% - 11px) 0, 100% 100%, 0 100%) !important;
+      text-shadow:
+        1px 0 0 rgba(255, 47, 214, 0.62),
+        0 0 8px rgba(255, 209, 102, 0.42) !important;
+    }
+
+    .kyle-os-module-label::before {
+      content: "";
+      position: absolute;
+      left: 7px;
+      right: 15px;
+      bottom: 0;
+      height: 1px;
+      background: linear-gradient(90deg, var(--pixel-coral, #ff2fd6), var(--accent, #00f5ff), var(--accent-light, #a8ff60));
+      opacity: 0.92;
+      pointer-events: none;
+    }
+
+    .kyle-os-module-label::after {
+      content: "";
+      position: absolute;
+      top: 5px;
+      right: 7px;
+      width: 4px;
+      height: 4px;
+      background: var(--accent-light, #a8ff60);
+      box-shadow: 0 0 8px rgba(168, 255, 96, 0.8);
+      animation: ktOsBlink 1.4s steps(2, end) infinite;
+      pointer-events: none;
+    }
+
+    @keyframes ktOsBlink {
+      0%, 44% { opacity: 1; }
+      45%, 100% { opacity: 0.35; }
+    }
+
+    .panel-card h2 {
+      position: relative;
+      animation:
+        ktTitleGlow 2.7s ease-in-out infinite alternate,
+        ktTitleMicroGlitch 4.8s infinite steps(1);
+      will-change: transform, text-shadow;
+    }
+
+    .panel-card h2.kt-title-animated::before,
+    .panel-card h2.kt-title-animated::after {
+      content: attr(data-kt-title);
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0;
+      mix-blend-mode: screen;
+    }
+
+    .panel-card h2.kt-title-animated::before {
+      color: var(--pixel-coral, #ff2fd6);
+      transform: translate(2px, 0);
+      clip-path: inset(0 0 56% 0);
+      animation: ktTitleSlicePink 4.8s infinite steps(1);
+    }
+
+    .panel-card h2.kt-title-animated::after {
+      color: var(--accent-light, #a8ff60);
+      transform: translate(-2px, 0);
+      clip-path: inset(48% 0 0 0);
+      animation: ktTitleSliceLime 4.8s infinite steps(1);
+    }
+
+    @keyframes ktTitleGlow {
+      from {
+        text-shadow:
+          2px 0 0 rgba(255, 47, 214, 0.64),
+          -2px 0 0 rgba(168, 255, 96, 0.48),
+          0 0 10px rgba(0, 245, 255, 0.40);
+      }
+      to {
+        text-shadow:
+          3px 0 0 rgba(255, 47, 214, 0.78),
+          -3px 0 0 rgba(168, 255, 96, 0.56),
+          0 0 18px rgba(0, 245, 255, 0.68);
+      }
+    }
+
+    @keyframes ktTitleMicroGlitch {
+      0%, 90%, 100% { transform: translate(0); }
+      91% { transform: translate(-2px, 1px); }
+      92% { transform: translate(2px, -1px); }
+      93% { transform: translate(-1px, -1px); }
+      94% { transform: translate(0); }
+    }
+
+    @keyframes ktTitleSlicePink {
+      0%, 90%, 100% { opacity: 0; transform: translate(0, 0); }
+      91%, 92% { opacity: 0.85; transform: translate(3px, -1px); }
+      93% { opacity: 0.35; transform: translate(-2px, 1px); }
+    }
+
+    @keyframes ktTitleSliceLime {
+      0%, 90%, 100% { opacity: 0; transform: translate(0, 0); }
+      91%, 92% { opacity: 0.72; transform: translate(-3px, 1px); }
+      93% { opacity: 0.30; transform: translate(2px, -1px); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .kyle-os-module-label::after,
+      .panel-card h2,
+      .panel-card h2.kt-title-animated::before,
+      .panel-card h2.kt-title-animated::after {
+        animation: none !important;
+      }
+    }
+
+
+
+    /* Title polish pass - VISUAL ONLY. No formatter behaviour changed. */
+    .panel-card h2 {
+      display: inline-grid !important;
+      place-items: center !important;
+      width: min(100%, 430px) !important;
+      margin: 8px auto 20px !important;
+      padding: 13px 16px 11px !important;
+      position: relative !important;
+      isolation: isolate !important;
+      color: #00f5ff !important;
+      font-family: 'Press Start 2P', var(--pixel-font), monospace !important;
+      font-size: clamp(18px, 3.4vw, 30px) !important;
+      line-height: 1.35 !important;
+      letter-spacing: 0.075em !important;
+      word-spacing: 0.18em !important;
+      text-align: center !important;
+      text-transform: uppercase !important;
+      border: 1px solid rgba(0, 245, 255, 0.38) !important;
+      border-left: 0 !important;
+      border-right: 0 !important;
+      background:
+        linear-gradient(90deg, transparent, rgba(0, 245, 255, 0.13), rgba(255, 47, 214, 0.10), transparent),
+        repeating-linear-gradient(to bottom, rgba(255,255,255,0.08) 0 1px, transparent 1px 5px),
+        linear-gradient(180deg, rgba(0, 245, 255, 0.06), rgba(255, 47, 214, 0.045));
+      background-size: 220% 100%, 100% 5px, 100% 100% !important;
+      box-shadow:
+        0 0 16px rgba(0, 245, 255, 0.16),
+        inset 0 0 22px rgba(0, 245, 255, 0.08) !important;
+      -webkit-text-stroke: 1px rgba(216, 255, 247, 0.20);
+      text-shadow:
+        4px 0 0 rgba(255, 47, 214, 0.78),
+        -4px 0 0 rgba(168, 255, 96, 0.58),
+        0 0 10px rgba(0, 245, 255, 0.78),
+        0 0 26px rgba(0, 245, 255, 0.35) !important;
+      animation:
+        ktTitleGlow 2.7s ease-in-out infinite alternate,
+        ktTitleMicroGlitch 4.8s infinite steps(1),
+        ktTitleSheen 6.5s linear infinite !important;
+    }
+
+    .panel-card h2::selection {
+      background: rgba(255, 47, 214, 0.35);
+    }
+
+    .panel-card h2.kt-title-animated::before,
+    .panel-card h2.kt-title-animated::after {
+      display: grid !important;
+      place-items: center !important;
+      padding: inherit !important;
+      font-family: inherit !important;
+      font-size: inherit !important;
+      font-weight: inherit !important;
+      line-height: inherit !important;
+      letter-spacing: inherit !important;
+      word-spacing: inherit !important;
+      text-align: center !important;
+      -webkit-text-stroke: inherit !important;
+    }
+
+    .panel-card h2.kt-title-animated::before {
+      color: #ff2fd6 !important;
+      opacity: 0;
+      text-shadow: 0 0 14px rgba(255, 47, 214, 0.65) !important;
+    }
+
+    .panel-card h2.kt-title-animated::after {
+      color: #a8ff60 !important;
+      opacity: 0;
+      text-shadow: 0 0 14px rgba(168, 255, 96, 0.58) !important;
+    }
+
+    @keyframes ktTitleSheen {
+      0% { background-position: -160% 0, 0 0, 0 0; }
+      100% { background-position: 160% 0, 0 0, 0 0; }
+    }
+
+    body:not(.dark) .panel-card h2 {
+      color: #00a6a6 !important;
+      background:
+        linear-gradient(90deg, transparent, rgba(0, 166, 166, 0.12), rgba(255, 107, 107, 0.10), transparent),
+        repeating-linear-gradient(to bottom, rgba(16,39,43,0.045) 0 1px, transparent 1px 5px),
+        linear-gradient(180deg, rgba(255,255,255,0.36), rgba(80,255,241,0.10));
+      text-shadow:
+        3px 0 0 rgba(255, 107, 107, 0.72),
+        -3px 0 0 rgba(80, 255, 241, 0.62),
+        0 0 10px rgba(0, 166, 166, 0.34) !important;
+      border-color: rgba(0, 166, 166, 0.42) !important;
+      box-shadow:
+        0 8px 18px rgba(16, 39, 43, 0.08),
+        inset 0 0 18px rgba(0, 166, 166, 0.08) !important;
+    }
+
+    @media (max-width: 520px) {
+      .panel-card h2 {
+        width: 100% !important;
+        padding: 11px 10px 10px !important;
+        font-size: clamp(15px, 5.5vw, 22px) !important;
+        letter-spacing: 0.04em !important;
+        word-spacing: 0.08em !important;
+      }
+    }
+</style>
 </head>
 
 <body>
@@ -2196,6 +2453,8 @@
 
       <div class="panel primary" id="panelPrimary">
         <div class="panel-card">
+          <div class="kyle-os-module-label" aria-hidden="true">KYLE_OS // PIPE MODULE</div>
+          
           <div class="panel-inner">
 
             <div class="remove-modal" id="removeModal">
@@ -2237,6 +2496,8 @@
 
       <div class="panel secondary hidden" id="panelSecondary">
         <div class="panel-card">
+          <div class="kyle-os-module-label" aria-hidden="true">KYLE_OS // PIPE MODULE</div>
+          
           <div class="panel-inner">
 
             <div class="remove-modal" id="removeModal2">
@@ -3309,6 +3570,59 @@ function startMarquee(text) {
     );
   });
 }
+</script>
+
+
+
+<script>
+  /* Visual-only boot scramble for the formatter title. Formatter functions are untouched. */
+  (function () {
+    const glyphs = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#$%&?';
+
+    function scrambleTitle(titleEl, offsetFrames) {
+      const finalText = (titleEl.textContent || '').trim();
+      if (!finalText) return;
+
+      titleEl.dataset.ktTitle = finalText.toUpperCase();
+      titleEl.classList.add('kt-title-animated', 'kt-title-scrambling');
+
+      let frame = 0 - offsetFrames;
+      const maxFrames = Math.max(30, finalText.length + 18);
+
+      const interval = setInterval(() => {
+        if (frame >= 0) {
+          titleEl.textContent = finalText
+            .split('')
+            .map((char, index) => {
+              if (char === ' ') return ' ';
+              if (frame / 2 > index + 2) return char;
+              return glyphs[Math.floor(Math.random() * glyphs.length)];
+            })
+            .join('');
+        }
+
+        frame += 1;
+
+        if (frame > maxFrames) {
+          titleEl.textContent = finalText;
+          titleEl.classList.remove('kt-title-scrambling');
+          clearInterval(interval);
+        }
+      }, 46);
+    }
+
+    function bootTitles() {
+      document.querySelectorAll('.panel-card h2').forEach((titleEl, index) => {
+        scrambleTitle(titleEl, index * 3);
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', bootTitles, { once: true });
+    } else {
+      bootTitles();
+    }
+  })();
 </script>
 
 </body>
