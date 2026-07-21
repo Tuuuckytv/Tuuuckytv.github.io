@@ -990,6 +990,51 @@
       }
     }
 
+    /* === Stable secondary-panel entrance ================================
+       One transform/opacity transition only. No blur, sheen, glow pulse,
+       or competing card animation, which prevents flashing and repaint
+       glitches when the secondary panel becomes visible.
+    ===================================================================== */
+    .panel.secondary .panel-card {
+      animation: none;
+      backface-visibility: hidden;
+      transform: translateZ(0);
+    }
+
+    .panel.secondary.secondary-enter .panel-card {
+      opacity: 0;
+      transform: translate3d(28px, 0, 0) scale(0.985);
+      transition: none;
+      will-change: transform, opacity;
+    }
+
+    .panel.secondary.secondary-enter.secondary-enter-active .panel-card {
+      opacity: 1;
+      transform: translate3d(0, 0, 0) scale(1);
+      transition:
+        transform 420ms cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 180ms ease-out;
+    }
+
+    @media (max-width: 980px) {
+      .panel.secondary.secondary-enter .panel-card {
+        transform: translate3d(0, 18px, 0) scale(0.99);
+      }
+
+      .panel.secondary.secondary-enter.secondary-enter-active .panel-card {
+        transform: translate3d(0, 0, 0) scale(1);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .panel.secondary.secondary-enter .panel-card,
+      .panel.secondary.secondary-enter.secondary-enter-active .panel-card {
+        opacity: 1;
+        transform: none;
+        transition: none;
+      }
+    }
+
   </style>
 </head>
 
@@ -1212,19 +1257,34 @@ function toggleSecondary() {
   const on = isSecondaryOn();
   const panel = document.getElementById('panelSecondary');
   const container = document.getElementById('mainContainer');
+  if (!panel || !container) return;
+
+  clearTimeout(toggleSecondary._cleanupT);
 
   if (on) {
+    // Apply the hidden start state before exposing the panel. The two RAFs
+    // give the browser one clean layout frame before transitioning to rest.
+    panel.classList.remove('secondary-enter-active');
+    panel.classList.add('secondary-enter');
     panel.classList.remove('hidden');
     container.classList.add('dual');
-    panel.classList.add('pop');
-    clearTimeout(toggleSecondary._popT);
-    toggleSecondary._popT = setTimeout(() => panel.classList.remove('pop'), 320);
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        panel.classList.add('secondary-enter-active');
+      });
+    });
+
+    toggleSecondary._cleanupT = setTimeout(() => {
+      panel.classList.remove('secondary-enter', 'secondary-enter-active');
+    }, 480);
+
     try { localStorage.setItem('sp_secondary', '1'); } catch {}
     formatText();
-    setTimeout(() => document.getElementById('inputText2')?.focus(), 0);
+    setTimeout(() => document.getElementById('inputText2')?.focus(), 440);
   } else {
+    panel.classList.remove('secondary-enter', 'secondary-enter-active');
     panel.classList.add('hidden');
-    panel.classList.remove('pop');
     container.classList.remove('dual');
     try { localStorage.setItem('sp_secondary', '0'); } catch {}
     formatText();
