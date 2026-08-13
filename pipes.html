@@ -1209,6 +1209,93 @@
       line-height: 1.35;
     }
 
+
+    /* === Number Queue smart validation ====================================== */
+    .queue-smart-check {
+      width: 100%;
+      margin-top: 10px;
+      display: none;
+    }
+
+    .queue-smart-check.visible { display: block; }
+
+    .queue-smart-summary {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 7px;
+      color: var(--muted);
+      font-size: 11px;
+      text-align: left;
+    }
+
+    .queue-smart-summary strong {
+      color: var(--accent);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .queue-smart-preview {
+      width: 100%;
+      max-height: 118px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 9px;
+      border: 1px solid var(--panel-border);
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--input-bg) 96%, var(--accent) 4%);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: center;
+    }
+
+    .queue-smart-token {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      max-width: 100%;
+      padding: 4px 7px;
+      border: 1px solid var(--panel-border);
+      border-radius: 6px;
+      background: var(--input-bg);
+      color: var(--text);
+      font-size: 11px;
+      line-height: 1.2;
+      overflow-wrap: anywhere;
+    }
+
+    .queue-smart-token.seed {
+      border-color: color-mix(in srgb, var(--accent) 38%, var(--panel-border));
+      color: var(--accent);
+    }
+
+    .queue-smart-token.bad {
+      border-color: #c74343;
+      background: color-mix(in srgb, var(--input-bg) 86%, #c74343 14%);
+      color: #b42323;
+      font-weight: 700;
+    }
+
+    body.dark .queue-smart-token.bad {
+      color: #ffb1b1;
+      border-color: #d86767;
+      background: color-mix(in srgb, var(--input-bg) 84%, #b42323 16%);
+    }
+
+    .queue-smart-length {
+      opacity: .72;
+      font-size: 9px;
+      white-space: nowrap;
+    }
+
+    .queue-input-length-warning {
+      border-color: #c74343 !important;
+      box-shadow: 0 0 0 3px rgba(199,67,67,.08);
+    }
+
     /* === Exclusive tool view ==============================================
        Pipe Formatter is the default. Number Queue is only shown when the
        Number Queue option is enabled. This keeps one main tool on screen.
@@ -1423,10 +1510,20 @@
               <textarea class="queue-textarea" id="queueInput" spellcheck="false"
                 placeholder="Paste one number per line"></textarea>
 
+              <div id="queueSmartCheck" class="queue-smart-check" aria-live="polite">
+                <div class="queue-smart-summary">
+                  <span id="queueSmartSummaryText">Learning number length…</span>
+                  <strong id="queueSmartIssueCount"></strong>
+                </div>
+                <div id="queueSmartPreview" class="queue-smart-preview"></div>
+              </div>
+
               <div class="button-container">
                 <button class="button" type="button" id="queueStartBtn">Start Queue</button>
+                <button class="button" type="button" id="queuePreviousBtn">Previous Queue</button>
                 <button class="button" type="button" id="queueCopyListBtn">Copy List</button>
                 <button class="button" type="button" id="queueCopyPipesBtn">Copy With Pipes</button>
+                <button class="button" type="button" id="queueCleanCharsBtn">Remove Special Characters</button>
                 <button class="button" type="button" id="queueDedupeBtn">Remove Duplicates</button>
                 <button class="button" type="button" id="queueClearBtn">Clear</button>
               </div>
@@ -2659,6 +2756,129 @@ function queueParseValues(text) {
   return ordered;
 }
 
+
+function queueDigitLength(value) {
+  return String(value ?? '').replace(/\D/g, '').length;
+}
+
+function queueInferExpectedLength(values) {
+  if (!Array.isArray(values) || values.length < 3) return null;
+
+  const firstThree = values.slice(0, 3).map(queueDigitLength);
+  const counts = new Map();
+
+  for (const len of firstThree) {
+    counts.set(len, (counts.get(len) || 0) + 1);
+  }
+
+  let bestLength = null;
+  let bestCount = 0;
+
+  for (const [len, count] of counts.entries()) {
+    if (count > bestCount) {
+      bestLength = len;
+      bestCount = count;
+    }
+  }
+
+  // Learn only when at least 2 of the first 3 agree.
+  return bestCount >= 2 ? bestLength : null;
+}
+
+function queueRenderSmartCheck() {
+  const input = document.getElementById('queueInput');
+  const wrap = document.getElementById('queueSmartCheck');
+  const summary = document.getElementById('queueSmartSummaryText');
+  const issueCount = document.getElementById('queueSmartIssueCount');
+  const preview = document.getElementById('queueSmartPreview');
+
+  if (!input || !wrap || !summary || !issueCount || !preview) return;
+
+  const values = queueParseValues(input.value);
+
+  if (values.length < 3) {
+    wrap.classList.remove('visible');
+    input.classList.remove('queue-input-length-warning');
+    preview.replaceChildren();
+    return;
+  }
+
+  wrap.classList.add('visible');
+  preview.replaceChildren();
+
+  const expected = queueInferExpectedLength(values);
+
+  if (expected == null) {
+    summary.textContent = 'First 3 numbers do not establish a clear length.';
+    issueCount.textContent = 'No rule yet';
+    input.classList.remove('queue-input-length-warning');
+
+    values.slice(0, 100).forEach((value, index) => {
+      const token = document.createElement('span');
+      token.className = 'queue-smart-token' + (index < 3 ? ' seed' : '');
+      token.append(document.createTextNode(value));
+
+      const length = document.createElement('span');
+      length.className = 'queue-smart-length';
+      length.textContent = `${queueDigitLength(value)} digits`;
+      token.appendChild(length);
+      preview.appendChild(token);
+    });
+    return;
+  }
+
+  let issues = 0;
+
+  values.slice(0, 200).forEach((value, index) => {
+    const len = queueDigitLength(value);
+    const isSeed = index < 3;
+    const bad = !isSeed && len !== expected;
+    if (bad) issues += 1;
+
+    const token = document.createElement('span');
+    token.className = 'queue-smart-token' + (isSeed ? ' seed' : '') + (bad ? ' bad' : '');
+    token.append(document.createTextNode(value));
+
+    const length = document.createElement('span');
+    length.className = 'queue-smart-length';
+    length.textContent = `${len} digits`;
+    token.appendChild(length);
+    preview.appendChild(token);
+  });
+
+  summary.textContent = `Expected length learned from first 3: ${expected} digits`;
+  issueCount.textContent = issues ? `${issues} ${issues === 1 ? 'mismatch' : 'mismatches'}` : 'All good';
+  input.classList.toggle('queue-input-length-warning', issues > 0);
+}
+
+function queueRemoveSpecialCharacters() {
+  const input = document.getElementById('queueInput');
+  if (!input) return;
+
+  const originalLines = String(input.value ?? '').split(/\r?\n/);
+  let changed = 0;
+
+  const cleanedLines = originalLines.map(line => {
+    const trimmed = line.trim();
+    const cleaned = trimmed.replace(/\D/g, '');
+    if (cleaned !== trimmed) changed += 1;
+    return cleaned;
+  });
+
+  input.value = cleanedLines.filter(Boolean).join('\n');
+  queueUpdateQty();
+
+  queueSetStatus(
+    'queueSetupStatus',
+    changed
+      ? `Special characters removed from ${changed} ${changed === 1 ? 'line' : 'lines'}.`
+      : 'No special characters found.',
+    changed ? 'success' : ''
+  );
+
+  input.focus();
+}
+
 function queueSetStatus(id, message, type = "") {
   const el = document.getElementById(id);
   if (!el) return;
@@ -2671,6 +2891,7 @@ function queueUpdateQty() {
   const qty = document.getElementById('queueQty');
   if (!input || !qty) return;
   qty.textContent = `Qty: ${queueParseValues(input.value).length}`;
+  queueRenderSmartCheck();
 }
 
 function queueSyncFullListToPrimary(values) {
@@ -2722,6 +2943,58 @@ function queueShowSetup() {
   document.getElementById('queueSetup')?.classList.remove('hidden');
 }
 
+
+const QUEUE_PREVIOUS_STORAGE_KEY = 'sp_number_queue_previous';
+
+function queueSavePrevious(values) {
+  if (!Array.isArray(values) || !values.length) return;
+
+  try {
+    localStorage.setItem(
+      QUEUE_PREVIOUS_STORAGE_KEY,
+      JSON.stringify(values.slice())
+    );
+    const previousBtn = document.getElementById('queuePreviousBtn');
+    if (previousBtn) previousBtn.disabled = false;
+  } catch {}
+}
+
+function queueLoadPrevious() {
+  const input = document.getElementById('queueInput');
+  if (!input) return;
+
+  let values = [];
+
+  try {
+    const raw = localStorage.getItem(QUEUE_PREVIOUS_STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        values = parsed
+          .map(v => String(v ?? '').trim())
+          .filter(Boolean);
+      }
+    }
+  } catch {}
+
+  if (!values.length) {
+    queueSetStatus('queueSetupStatus', 'No previous queue has been saved yet.', 'warn');
+    return;
+  }
+
+  // Restore exactly in the order previously started.
+  input.value = values.join('\n');
+  queueUpdateQty();
+
+  queueSetStatus(
+    'queueSetupStatus',
+    `Previous queue restored — ${values.length} number${values.length === 1 ? '' : 's'}.`,
+    'success'
+  );
+
+  input.focus();
+}
+
 function queueStartFrom(values) {
   // Copy the incoming sequence without sorting, grouping or reformatting it.
   const ordered = Array.isArray(values) ? values.filter(Boolean).slice() : [];
@@ -2731,6 +3004,9 @@ function queueStartFrom(values) {
     document.getElementById('queueInput')?.focus();
     return;
   }
+
+  // Persist the last started queue locally, like the Options toggles.
+  queueSavePrevious(ordered);
 
   // Safety snapshot: exact original entry order, never shifted or edited.
   numberQueueState.fullSnapshot = ordered.slice();
@@ -2997,8 +3273,10 @@ function queueDedupe() {
 function initIntegratedNumberQueue() {
   const input = document.getElementById('queueInput');
   const start = document.getElementById('queueStartBtn');
+  const previous = document.getElementById('queuePreviousBtn');
   const copyList = document.getElementById('queueCopyListBtn');
   const copyPipes = document.getElementById('queueCopyPipesBtn');
+  const cleanChars = document.getElementById('queueCleanCharsBtn');
   const dedupe = document.getElementById('queueDedupeBtn');
   const clear = document.getElementById('queueClearBtn');
   const copyNext = document.getElementById('queueCopyNextBtn');
@@ -3011,8 +3289,10 @@ function initIntegratedNumberQueue() {
 
   input?.addEventListener('input', queueUpdateQty);
   start?.addEventListener('click', () => queueStartFrom(queueParseValues(input?.value)));
+  previous?.addEventListener('click', queueLoadPrevious);
   copyList?.addEventListener('click', queueCopySetupList);
   copyPipes?.addEventListener('click', queueCopySetupListWithPipes);
+  cleanChars?.addEventListener('click', queueRemoveSpecialCharacters);
   dedupe?.addEventListener('click', queueDedupe);
   clear?.addEventListener('click', () => {
     if (input) input.value = '';
@@ -3041,6 +3321,12 @@ function initIntegratedNumberQueue() {
       queueCopyCurrentAndNext();
     }
   });
+
+  try {
+    const previousBtn = document.getElementById('queuePreviousBtn');
+    const rawPrevious = localStorage.getItem(QUEUE_PREVIOUS_STORAGE_KEY);
+    if (previousBtn) previousBtn.disabled = !rawPrevious;
+  } catch {}
 
   queueUpdateQty();
 }
