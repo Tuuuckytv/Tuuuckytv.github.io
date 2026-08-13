@@ -2645,10 +2645,18 @@ const numberQueueState = {
 };
 
 function queueParseValues(text) {
-  return String(text ?? "")
-    .split(/\s+/)
-    .map(v => v.trim())
-    .filter(Boolean);
+  // STRICT ORDER PRESERVATION:
+  // values are returned in exactly the same sequence they were entered.
+  // Nothing in the Number Queue sorts or reorders this array.
+  const raw = String(text ?? "").split(/\s+/);
+  const ordered = [];
+
+  for (const part of raw) {
+    const value = part.trim();
+    if (value) ordered.push(value);
+  }
+
+  return ordered;
 }
 
 function queueSetStatus(id, message, type = "") {
@@ -2715,26 +2723,28 @@ function queueShowSetup() {
 }
 
 function queueStartFrom(values) {
-  const clean = Array.isArray(values) ? values.filter(Boolean) : [];
-  if (!clean.length) {
+  // Copy the incoming sequence without sorting, grouping or reformatting it.
+  const ordered = Array.isArray(values) ? values.filter(Boolean).slice() : [];
+
+  if (!ordered.length) {
     queueSetStatus('queueSetupStatus', 'Enter at least one number first.', 'warn');
     document.getElementById('queueInput')?.focus();
     return;
   }
 
-  // Safety snapshot: this array is not shifted or edited as the queue advances.
-  numberQueueState.fullSnapshot = clean.slice();
-  numberQueueState.working = clean.slice();
+  // Safety snapshot: exact original entry order, never shifted or edited.
+  numberQueueState.fullSnapshot = ordered.slice();
+  numberQueueState.working = ordered.slice();
   numberQueueState.current = numberQueueState.working.shift() || '';
   numberQueueState.copied = 0;
-  numberQueueState.total = clean.length;
+  numberQueueState.total = ordered.length;
   numberQueueState.history = [];
 
   queueSyncFullListToPrimary(numberQueueState.fullSnapshot);
   queueShowRun();
   queueSetStatus(
     'queueRunStatus',
-    `Queue started. Full ${numberQueueState.total}-number list loaded into Primary Pipe Formatter.`,
+    `Queue started in original entry order. Full ${numberQueueState.total}-number list loaded into Primary Pipe Formatter.`,
     'success'
   );
   queueRender();
@@ -2962,7 +2972,17 @@ function queueDedupe() {
   if (!input) return;
 
   const values = queueParseValues(input.value);
-  const unique = [...new Set(values)];
+
+  // Stable de-duplication: keep the FIRST occurrence in its original position.
+  const seen = new Set();
+  const unique = [];
+
+  for (const value of values) {
+    if (seen.has(value)) continue;
+    seen.add(value);
+    unique.push(value);
+  }
+
   const removed = values.length - unique.length;
   input.value = unique.join('\n');
   queueUpdateQty();
