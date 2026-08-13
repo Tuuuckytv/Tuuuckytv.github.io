@@ -1425,7 +1425,8 @@
 
               <div class="button-container">
                 <button class="button" type="button" id="queueStartBtn">Start Queue</button>
-                <button class="button" type="button" id="queueUsePipeBtn">Use Pipe List</button>
+                <button class="button" type="button" id="queueCopyListBtn">Copy List</button>
+                <button class="button" type="button" id="queueCopyPipesBtn">Copy With Pipes</button>
                 <button class="button" type="button" id="queueDedupeBtn">Remove Duplicates</button>
                 <button class="button" type="button" id="queueClearBtn">Clear</button>
               </div>
@@ -1455,13 +1456,16 @@
               <textarea class="queue-textarea" id="queueRemaining" readonly spellcheck="false"></textarea>
 
               <div class="button-container">
+                <button class="button" type="button" id="queueCopyFullBtn">Copy Full List</button>
                 <button class="button" type="button" id="queueCopyFullPipedBtn">Copy Full Piped List</button>
+                <button class="button" type="button" id="queueUndoBtn">Undo</button>
+                <button class="button" type="button" id="queueStartOverBtn">Start Over</button>
                 <button class="button" type="button" id="queueBackBtn">Back to List</button>
                 <button class="button" type="button" id="queueNewBtn">New Queue</button>
               </div>
 
               <div class="queue-inline-note">
-                Full Piped List always uses the complete snapshot taken when Start Queue was pressed — not the remaining queue.
+                Full List and Full Piped List always use the complete snapshot taken when Start Queue was pressed — not the remaining queue.
               </div>
 
               <div class="queue-status" id="queueRunStatus">
@@ -2636,7 +2640,8 @@ const numberQueueState = {
   working: [],
   current: "",
   copied: 0,
-  total: 0
+  total: 0,
+  history: []
 };
 
 function queueParseValues(text) {
@@ -2723,6 +2728,7 @@ function queueStartFrom(values) {
   numberQueueState.current = numberQueueState.working.shift() || '';
   numberQueueState.copied = 0;
   numberQueueState.total = clean.length;
+  numberQueueState.history = [];
 
   queueSyncFullListToPrimary(numberQueueState.fullSnapshot);
   queueShowRun();
@@ -2735,20 +2741,60 @@ function queueStartFrom(values) {
   document.getElementById('queueCopyNextBtn')?.focus();
 }
 
-function queueUsePrimaryList() {
-  const primary = document.getElementById('inputText');
+async function queueCopySetupList() {
   const input = document.getElementById('queueInput');
-  if (!primary || !input) return;
+  if (!input) return;
 
-  const values = queueParseValues(primary.value);
+  const values = queueParseValues(input.value);
+
   if (!values.length) {
-    queueSetStatus('queueSetupStatus', 'Primary Pipe Formatter is empty.', 'warn');
+    queueSetStatus('queueSetupStatus', 'Enter at least one number first.', 'warn');
+    input.focus();
     return;
   }
 
-  input.value = values.join('\n');
-  queueUpdateQty();
-  queueSetStatus('queueSetupStatus', `Loaded ${values.length} number${values.length === 1 ? '' : 's'} from Primary.`, 'success');
+  // Plain copy preserves one number per line.
+  const text = values.join('\n');
+
+  try {
+    await queueCopyToClipboard(text);
+    queueSetStatus(
+      'queueSetupStatus',
+      `Copied ${values.length} number${values.length === 1 ? '' : 's'} as a normal list.`,
+      'success'
+    );
+  } catch (err) {
+    queueSetStatus('queueSetupStatus', 'Chrome blocked clipboard access for the list.', 'warn');
+  }
+}
+
+async function queueCopySetupListWithPipes() {
+  const input = document.getElementById('queueInput');
+  if (!input) return;
+
+  const values = queueParseValues(input.value);
+
+  if (!values.length) {
+    queueSetStatus('queueSetupStatus', 'Enter at least one number first.', 'warn');
+    input.focus();
+    return;
+  }
+
+  // Copy exactly what is currently in the queue list, in its current order,
+  // with a pipe inserted between every number. This does not start, alter,
+  // remove from, or advance the queue.
+  const text = values.join('|');
+
+  try {
+    await queueCopyToClipboard(text);
+    queueSetStatus(
+      'queueSetupStatus',
+      `Copied ${values.length} number${values.length === 1 ? '' : 's'} with pipes.`,
+      'success'
+    );
+  } catch (err) {
+    queueSetStatus('queueSetupStatus', 'Chrome blocked clipboard access for the piped list.', 'warn');
+  }
 }
 
 function queueFallbackCopy(text) {
@@ -2780,6 +2826,9 @@ async function queueCopyCurrentAndNext() {
 
   try {
     await queueCopyToClipboard(value);
+
+    // Keep a reversible history so Undo can restore exactly what was copied.
+    numberQueueState.history.push(value);
     numberQueueState.copied += 1;
     numberQueueState.current = numberQueueState.working.shift() || '';
     queueRender();
@@ -2787,9 +2836,29 @@ async function queueCopyCurrentAndNext() {
     if (numberQueueState.current) {
       queueSetStatus('queueRunStatus', `Copied ${value} — next number ready.`, 'success');
     }
-    showCopiedToast('Copied');
   } catch (err) {
     queueSetStatus('queueRunStatus', 'Chrome blocked clipboard access. Select the current number and use Ctrl+C.', 'warn');
+  }
+}
+
+async function queueCopyFullList() {
+  if (!numberQueueState.fullSnapshot.length) {
+    queueSetStatus('queueRunStatus', 'No full queue snapshot is available.', 'warn');
+    return;
+  }
+
+  // Always copy the protected complete original list, one number per line.
+  const text = numberQueueState.fullSnapshot.join('\n');
+
+  try {
+    await queueCopyToClipboard(text);
+    queueSetStatus(
+      'queueRunStatus',
+      `Full original list copied — ${numberQueueState.fullSnapshot.length} number${numberQueueState.fullSnapshot.length === 1 ? '' : 's'}.`,
+      'success'
+    );
+  } catch (err) {
+    queueSetStatus('queueRunStatus', 'Chrome blocked clipboard access for the full list.', 'warn');
   }
 }
 
@@ -2810,10 +2879,52 @@ async function queueCopyFullPipedList() {
       `Full original list copied with pipes — ${numberQueueState.fullSnapshot.length} number${numberQueueState.fullSnapshot.length === 1 ? '' : 's'}.`,
       'success'
     );
-    showCopiedToast('Full List Copied');
   } catch (err) {
     queueSetStatus('queueRunStatus', 'Chrome blocked clipboard access for the full piped list.', 'warn');
   }
+}
+
+function queueUndo() {
+  if (!numberQueueState.history.length) {
+    queueSetStatus('queueRunStatus', 'Nothing to undo yet.', 'warn');
+    return;
+  }
+
+  const previous = numberQueueState.history.pop();
+
+  // Whatever is currently in the big box becomes first in "Up next".
+  // Then the most recently copied number is restored to the big box.
+  if (numberQueueState.current) {
+    numberQueueState.working.unshift(numberQueueState.current);
+  }
+
+  numberQueueState.current = previous;
+  numberQueueState.copied = Math.max(0, numberQueueState.copied - 1);
+
+  queueRender();
+  queueSetStatus('queueRunStatus', `Restored ${previous} to the current-number box.`, 'success');
+
+  setTimeout(() => document.getElementById('queueCopyNextBtn')?.focus(), 0);
+}
+
+function queueStartOver() {
+  if (!numberQueueState.fullSnapshot.length) {
+    queueSetStatus('queueRunStatus', 'No original queue is available to restart.', 'warn');
+    return;
+  }
+
+  // Rebuild only the working queue from the untouched original snapshot.
+  // The original snapshot and Primary Pipe Formatter remain unchanged.
+  numberQueueState.working = numberQueueState.fullSnapshot.slice();
+  numberQueueState.current = numberQueueState.working.shift() || '';
+  numberQueueState.copied = 0;
+  numberQueueState.total = numberQueueState.fullSnapshot.length;
+  numberQueueState.history = [];
+
+  queueRender();
+  queueSetStatus('queueRunStatus', 'Restarted from the first number.', 'success');
+
+  setTimeout(() => document.getElementById('queueCopyNextBtn')?.focus(), 0);
 }
 
 function queueBackToList() {
@@ -2836,6 +2947,7 @@ function queueNew() {
   numberQueueState.current = '';
   numberQueueState.copied = 0;
   numberQueueState.total = 0;
+  numberQueueState.history = [];
 
   const input = document.getElementById('queueInput');
   if (input) input.value = '';
@@ -2865,17 +2977,22 @@ function queueDedupe() {
 function initIntegratedNumberQueue() {
   const input = document.getElementById('queueInput');
   const start = document.getElementById('queueStartBtn');
-  const usePipe = document.getElementById('queueUsePipeBtn');
+  const copyList = document.getElementById('queueCopyListBtn');
+  const copyPipes = document.getElementById('queueCopyPipesBtn');
   const dedupe = document.getElementById('queueDedupeBtn');
   const clear = document.getElementById('queueClearBtn');
   const copyNext = document.getElementById('queueCopyNextBtn');
-  const copyFull = document.getElementById('queueCopyFullPipedBtn');
+  const copyFull = document.getElementById('queueCopyFullBtn');
+  const copyFullPiped = document.getElementById('queueCopyFullPipedBtn');
+  const undo = document.getElementById('queueUndoBtn');
+  const startOver = document.getElementById('queueStartOverBtn');
   const back = document.getElementById('queueBackBtn');
   const fresh = document.getElementById('queueNewBtn');
 
   input?.addEventListener('input', queueUpdateQty);
   start?.addEventListener('click', () => queueStartFrom(queueParseValues(input?.value)));
-  usePipe?.addEventListener('click', queueUsePrimaryList);
+  copyList?.addEventListener('click', queueCopySetupList);
+  copyPipes?.addEventListener('click', queueCopySetupListWithPipes);
   dedupe?.addEventListener('click', queueDedupe);
   clear?.addEventListener('click', () => {
     if (input) input.value = '';
@@ -2884,7 +3001,10 @@ function initIntegratedNumberQueue() {
     input?.focus();
   });
   copyNext?.addEventListener('click', queueCopyCurrentAndNext);
-  copyFull?.addEventListener('click', queueCopyFullPipedList);
+  copyFull?.addEventListener('click', queueCopyFullList);
+  copyFullPiped?.addEventListener('click', queueCopyFullPipedList);
+  undo?.addEventListener('click', queueUndo);
+  startOver?.addEventListener('click', queueStartOver);
   back?.addEventListener('click', queueBackToList);
   fresh?.addEventListener('click', queueNew);
 
