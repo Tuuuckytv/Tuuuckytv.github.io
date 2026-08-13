@@ -1210,90 +1210,125 @@
     }
 
 
-    /* === Number Queue smart validation ====================================== */
-    .queue-smart-check {
+    /* === Number Queue inline length highlighting ============================
+       The textarea stays fully editable. A synced text layer underneath
+       colours only mismatched entries red, directly inside the input box.
+    ===================================================================== */
+    .queue-input-wrap {
+      position: relative;
       width: 100%;
-      margin-top: 10px;
-      display: none;
     }
 
-    .queue-smart-check.visible { display: block; }
-
-    .queue-smart-summary {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 7px;
-      color: var(--muted);
-      font-size: 11px;
-      text-align: left;
-    }
-
-    .queue-smart-summary strong {
-      color: var(--accent);
-      font-weight: 700;
-      white-space: nowrap;
-    }
-
-    .queue-smart-preview {
-      width: 100%;
-      max-height: 118px;
-      overflow-y: auto;
-      overflow-x: hidden;
-      padding: 9px;
-      border: 1px solid var(--panel-border);
+    .queue-input-highlight {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      overflow: hidden;
+      pointer-events: none;
+      padding: 12px;
+      border: 1px solid transparent;
       border-radius: 8px;
-      background: color-mix(in srgb, var(--input-bg) 96%, var(--accent) 4%);
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      justify-content: center;
-    }
-
-    .queue-smart-token {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      max-width: 100%;
-      padding: 4px 7px;
-      border: 1px solid var(--panel-border);
-      border-radius: 6px;
       background: var(--input-bg);
-      color: var(--text);
-      font-size: 11px;
-      line-height: 1.2;
+      color: var(--input-text);
+      font-family: "Inter", sans-serif;
+      font-size: 15px;
+      line-height: 1.45;
+      text-align: center;
+      white-space: pre-wrap;
       overflow-wrap: anywhere;
+      word-break: break-word;
     }
 
-    .queue-smart-token.seed {
-      border-color: color-mix(in srgb, var(--accent) 38%, var(--panel-border));
-      color: var(--accent);
+    .queue-input-highlight .queue-highlight-line {
+      display: block;
+      min-height: 1.45em;
     }
 
-    .queue-smart-token.bad {
-      border-color: #c74343;
-      background: color-mix(in srgb, var(--input-bg) 86%, #c74343 14%);
-      color: #b42323;
+    .queue-input-highlight .queue-bad-line {
+      color: #d33131;
       font-weight: 700;
     }
 
-    body.dark .queue-smart-token.bad {
-      color: #ffb1b1;
-      border-color: #d86767;
-      background: color-mix(in srgb, var(--input-bg) 84%, #b42323 16%);
+    body.dark .queue-input-highlight .queue-bad-line {
+      color: #ff8585;
     }
 
-    .queue-smart-length {
+    .queue-textarea.queue-inline-highlight {
+      position: relative;
+      z-index: 2;
+      background: transparent !important;
+      color: transparent !important;
+      -webkit-text-fill-color: transparent;
+      caret-color: var(--input-text) !important;
+    }
+
+    .queue-textarea.queue-inline-highlight::placeholder {
+      color: var(--muted);
+      -webkit-text-fill-color: var(--muted);
       opacity: .72;
-      font-size: 9px;
-      white-space: nowrap;
     }
 
-    .queue-input-length-warning {
-      border-color: #c74343 !important;
-      box-shadow: 0 0 0 3px rgba(199,67,67,.08);
+    .queue-textarea.queue-inline-highlight::selection {
+      background: rgba(15,133,142,.24);
+    }
+
+
+    /* === Number Queue action spacing ========================================
+       Queue-only button grid. Keeps actions visually paired and consistent
+       without changing the original Pipe Formatter controls.
+    ===================================================================== */
+    .queue-tool .queue-actions {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 9px 10px;
+      margin: 14px 0 0;
+      align-items: stretch;
+    }
+
+    .queue-tool .queue-actions .button {
+      width: 100%;
+      min-width: 0;
+      min-height: 48px;
+      margin: 0;
+      padding: 9px 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      white-space: normal;
+      line-height: 1.15;
+      letter-spacing: 1.15px;
+    }
+
+    /* Keep disabled Undo occupying its full grid space for symmetry. */
+    .queue-tool .queue-actions .button:disabled {
+      min-height: 48px;
+    }
+
+    /* The main Copy & Next control should visually match the action sizing. */
+    .queue-tool #queueCopyNextBtn {
+      min-height: 48px;
+      padding-left: 12px;
+      padding-right: 12px;
+    }
+
+    /* Keep status/note spacing consistent below the action grid. */
+    .queue-tool .queue-actions + .queue-inline-note,
+    .queue-tool .queue-actions + .queue-status {
+      margin-top: 12px;
+    }
+
+    @media (max-width: 430px) {
+      .queue-tool .queue-actions {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      .queue-tool .queue-actions .button,
+      .queue-tool .queue-actions .button:disabled {
+        min-height: 44px;
+      }
     }
 
     /* === Exclusive tool view ==============================================
@@ -1507,20 +1542,16 @@
 
             <div id="queueSetup">
               <div class="qtyMarker" id="queueQty">Qty: 0</div>
-              <textarea class="queue-textarea" id="queueInput" spellcheck="false"
-                placeholder="Paste one number per line"></textarea>
-
-              <div id="queueSmartCheck" class="queue-smart-check" aria-live="polite">
-                <div class="queue-smart-summary">
-                  <span id="queueSmartSummaryText">Learning number length…</span>
-                  <strong id="queueSmartIssueCount"></strong>
-                </div>
-                <div id="queueSmartPreview" class="queue-smart-preview"></div>
+              <div class="queue-input-wrap">
+                <div id="queueInputHighlight" class="queue-input-highlight" aria-hidden="true"></div>
+                <textarea class="queue-textarea queue-inline-highlight" id="queueInput" spellcheck="false"
+                  placeholder="Paste one number per line"></textarea>
               </div>
 
-              <div class="button-container">
+              <div class="button-container queue-actions queue-actions-setup">
                 <button class="button" type="button" id="queueStartBtn">Start Queue</button>
                 <button class="button" type="button" id="queuePreviousBtn">Previous Queue</button>
+                <button class="button" type="button" id="queueSetupUndoBtn" disabled>Undo</button>
                 <button class="button" type="button" id="queueCopyListBtn">Copy List</button>
                 <button class="button" type="button" id="queueCopyPipesBtn">Copy With Pipes</button>
                 <button class="button" type="button" id="queueCleanCharsBtn">Remove Special Characters</button>
@@ -1552,7 +1583,7 @@
               <div class="group-label queue-upnext-label">Up next · <span id="queueRemainingCount">0</span> remaining</div>
               <textarea class="queue-textarea" id="queueRemaining" readonly spellcheck="false"></textarea>
 
-              <div class="button-container">
+              <div class="button-container queue-actions queue-actions-run">
                 <button class="button" type="button" id="queueCopyFullBtn">Copy Full List</button>
                 <button class="button" type="button" id="queueCopyFullPipedBtn">Copy Full Piped List</button>
                 <button class="button" type="button" id="queueUndoBtn">Undo</button>
@@ -2787,75 +2818,53 @@ function queueInferExpectedLength(values) {
 
 function queueRenderSmartCheck() {
   const input = document.getElementById('queueInput');
-  const wrap = document.getElementById('queueSmartCheck');
-  const summary = document.getElementById('queueSmartSummaryText');
-  const issueCount = document.getElementById('queueSmartIssueCount');
-  const preview = document.getElementById('queueSmartPreview');
-
-  if (!input || !wrap || !summary || !issueCount || !preview) return;
+  const highlight = document.getElementById('queueInputHighlight');
+  if (!input || !highlight) return;
 
   const values = queueParseValues(input.value);
-
-  if (values.length < 3) {
-    wrap.classList.remove('visible');
-    input.classList.remove('queue-input-length-warning');
-    preview.replaceChildren();
-    return;
-  }
-
-  wrap.classList.add('visible');
-  preview.replaceChildren();
-
   const expected = queueInferExpectedLength(values);
 
-  if (expected == null) {
-    summary.textContent = 'First 3 numbers do not establish a clear length.';
-    issueCount.textContent = 'No rule yet';
-    input.classList.remove('queue-input-length-warning');
+  highlight.replaceChildren();
 
-    values.slice(0, 100).forEach((value, index) => {
-      const token = document.createElement('span');
-      token.className = 'queue-smart-token' + (index < 3 ? ' seed' : '');
-      token.append(document.createTextNode(value));
+  // The Queue is designed as one item per line, so mirror each typed line
+  // directly behind the textarea. The first 3 entries teach the expected
+  // length. From the 4th onward, mismatches are coloured red in place.
+  const rawLines = String(input.value ?? '').split(/\r?\n/);
+  let itemIndex = 0;
 
-      const length = document.createElement('span');
-      length.className = 'queue-smart-length';
-      length.textContent = `${queueDigitLength(value)} digits`;
-      token.appendChild(length);
-      preview.appendChild(token);
-    });
-    return;
-  }
+  rawLines.forEach(rawLine => {
+    const line = document.createElement('span');
+    line.className = 'queue-highlight-line';
 
-  let issues = 0;
+    const trimmed = rawLine.trim();
 
-  values.slice(0, 200).forEach((value, index) => {
-    const len = queueDigitLength(value);
-    const isSeed = index < 3;
-    const bad = !isSeed && len !== expected;
-    if (bad) issues += 1;
+    if (trimmed) {
+      const bad =
+        expected != null &&
+        itemIndex >= 3 &&
+        queueDigitLength(trimmed) !== expected;
 
-    const token = document.createElement('span');
-    token.className = 'queue-smart-token' + (isSeed ? ' seed' : '') + (bad ? ' bad' : '');
-    token.append(document.createTextNode(value));
+      if (bad) line.classList.add('queue-bad-line');
 
-    const length = document.createElement('span');
-    length.className = 'queue-smart-length';
-    length.textContent = `${len} digits`;
-    token.appendChild(length);
-    preview.appendChild(token);
+      line.textContent = rawLine;
+      itemIndex += 1;
+    } else {
+      // Preserve blank lines visually so the mirror stays aligned.
+      line.textContent = '\u00a0';
+    }
+
+    highlight.appendChild(line);
   });
 
-  summary.textContent = `Expected length learned from first 3: ${expected} digits`;
-  issueCount.textContent = issues ? `${issues} ${issues === 1 ? 'mismatch' : 'mismatches'}` : 'All good';
-  input.classList.toggle('queue-input-length-warning', issues > 0);
+  highlight.scrollTop = input.scrollTop;
+  highlight.scrollLeft = input.scrollLeft;
 }
-
 function queueRemoveSpecialCharacters() {
   const input = document.getElementById('queueInput');
   if (!input) return;
 
-  const originalLines = String(input.value ?? '').split(/\r?\n/);
+  const beforeValue = String(input.value ?? '');
+  const originalLines = beforeValue.split(/\r?\n/);
   let changed = 0;
 
   const cleanedLines = originalLines.map(line => {
@@ -2865,7 +2874,13 @@ function queueRemoveSpecialCharacters() {
     return cleaned;
   });
 
-  input.value = cleanedLines.filter(Boolean).join('\n');
+  const cleanedValue = cleanedLines.filter(Boolean).join('\n');
+
+  if (cleanedValue !== beforeValue) {
+    queueRememberSetupState();
+    input.value = cleanedValue;
+  }
+
   queueUpdateQty();
 
   queueSetStatus(
@@ -2944,6 +2959,61 @@ function queueShowSetup() {
 }
 
 
+
+const queueSetupUndoHistory = [];
+const QUEUE_SETUP_UNDO_LIMIT = 20;
+
+function queueRefreshSetupUndoButton() {
+  const btn = document.getElementById('queueSetupUndoBtn');
+  if (btn) btn.disabled = queueSetupUndoHistory.length === 0;
+}
+
+function queueRememberSetupState() {
+  const input = document.getElementById('queueInput');
+  if (!input) return;
+
+  const value = String(input.value ?? '');
+
+  // Avoid stacking the same state repeatedly.
+  if (
+    queueSetupUndoHistory.length &&
+    queueSetupUndoHistory[queueSetupUndoHistory.length - 1] === value
+  ) {
+    return;
+  }
+
+  queueSetupUndoHistory.push(value);
+
+  if (queueSetupUndoHistory.length > QUEUE_SETUP_UNDO_LIMIT) {
+    queueSetupUndoHistory.shift();
+  }
+
+  queueRefreshSetupUndoButton();
+}
+
+function queueSetupUndo() {
+  const input = document.getElementById('queueInput');
+  if (!input) return;
+
+  if (!queueSetupUndoHistory.length) {
+    queueSetStatus('queueSetupStatus', 'Nothing to undo.', 'warn');
+    queueRefreshSetupUndoButton();
+    return;
+  }
+
+  input.value = queueSetupUndoHistory.pop();
+  queueUpdateQty();
+  queueRefreshSetupUndoButton();
+
+  queueSetStatus(
+    'queueSetupStatus',
+    'Previous queue-list state restored.',
+    'success'
+  );
+
+  input.focus();
+}
+
 const QUEUE_PREVIOUS_STORAGE_KEY = 'sp_number_queue_previous';
 
 function queueSavePrevious(values) {
@@ -2982,8 +3052,13 @@ function queueLoadPrevious() {
     return;
   }
 
+  // Protect whatever is currently in the box before Previous Queue
+  // replaces it, so setup Undo can bring it straight back.
+  const nextValue = values.join('\n');
+  if (input.value !== nextValue) queueRememberSetupState();
+
   // Restore exactly in the order previously started.
-  input.value = values.join('\n');
+  input.value = nextValue;
   queueUpdateQty();
 
   queueSetStatus(
@@ -3260,7 +3335,13 @@ function queueDedupe() {
   }
 
   const removed = values.length - unique.length;
-  input.value = unique.join('\n');
+  const dedupedValue = unique.join('\n');
+
+  if (dedupedValue !== input.value) {
+    queueRememberSetupState();
+    input.value = dedupedValue;
+  }
+
   queueUpdateQty();
 
   queueSetStatus(
@@ -3274,6 +3355,7 @@ function initIntegratedNumberQueue() {
   const input = document.getElementById('queueInput');
   const start = document.getElementById('queueStartBtn');
   const previous = document.getElementById('queuePreviousBtn');
+  const setupUndo = document.getElementById('queueSetupUndoBtn');
   const copyList = document.getElementById('queueCopyListBtn');
   const copyPipes = document.getElementById('queueCopyPipesBtn');
   const cleanChars = document.getElementById('queueCleanCharsBtn');
@@ -3288,14 +3370,24 @@ function initIntegratedNumberQueue() {
   const fresh = document.getElementById('queueNewBtn');
 
   input?.addEventListener('input', queueUpdateQty);
+  input?.addEventListener('scroll', () => {
+    const highlight = document.getElementById('queueInputHighlight');
+    if (!highlight || !input) return;
+    highlight.scrollTop = input.scrollTop;
+    highlight.scrollLeft = input.scrollLeft;
+  });
   start?.addEventListener('click', () => queueStartFrom(queueParseValues(input?.value)));
   previous?.addEventListener('click', queueLoadPrevious);
+  setupUndo?.addEventListener('click', queueSetupUndo);
   copyList?.addEventListener('click', queueCopySetupList);
   copyPipes?.addEventListener('click', queueCopySetupListWithPipes);
   cleanChars?.addEventListener('click', queueRemoveSpecialCharacters);
   dedupe?.addEventListener('click', queueDedupe);
   clear?.addEventListener('click', () => {
-    if (input) input.value = '';
+    if (input && input.value) {
+      queueRememberSetupState();
+      input.value = '';
+    }
     queueUpdateQty();
     queueSetStatus('queueSetupStatus', 'Queue list cleared.');
     input?.focus();
@@ -3321,6 +3413,8 @@ function initIntegratedNumberQueue() {
       queueCopyCurrentAndNext();
     }
   });
+
+  queueRefreshSetupUndoButton();
 
   try {
     const previousBtn = document.getElementById('queuePreviousBtn');
