@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sale Pipe Formatter</title>
+  <title>Sale Pipe Formatter + Number Queue</title>
   <link rel="icon" href="pipe.png" type="image/png" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -1035,6 +1035,252 @@
       }
     }
 
+  
+
+    /* === Integrated Number Queue ==========================================
+       Uses the Pipe Formatter's existing colour variables, card style and
+       buttons so both tools feel like one page.
+    ===================================================================== */
+    :root {
+      --merged-card-max: 480px;
+      --merged-wide-max: 1020px;
+      --merged-three-max: 1480px;
+    }
+
+    .queue-tool .panel-card {
+      max-width: var(--merged-card-max);
+    }
+
+    .queue-tool .panel-inner {
+      width: 100%;
+      min-width: 0;
+    }
+
+    .queue-source-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin: 0 auto 12px;
+      padding: 5px 8px;
+      border: 1px solid var(--panel-border);
+      border-radius: 999px;
+      color: var(--muted);
+      background: color-mix(in srgb, var(--glass-bg) 92%, var(--accent) 8%);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .8px;
+      text-transform: uppercase;
+      user-select: none;
+    }
+
+    .queue-source-badge::before {
+      content: "↔";
+      color: var(--accent);
+      font-size: 12px;
+    }
+
+    .queue-textarea {
+      width: 100%;
+      min-height: 118px;
+      max-height: 210px;
+      padding: 12px;
+      resize: vertical;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      outline: none;
+      background: var(--input-bg);
+      color: var(--input-text);
+      text-align: center;
+      font-family: "Inter", sans-serif;
+      font-size: 15px;
+      line-height: 1.45;
+      transition: background-color .25s ease, color .25s ease, border-color .25s ease;
+    }
+
+    .queue-textarea:focus {
+      border-color: var(--accent);
+    }
+
+    .queue-current-row {
+      width: 100%;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 132px;
+      gap: 10px;
+      align-items: stretch;
+      margin-top: 4px;
+    }
+
+    .queue-current {
+      width: 100%;
+      min-width: 0;
+      min-height: 58px;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      outline: none;
+      background: var(--input-bg);
+      color: var(--accent);
+      text-align: center;
+      font-family: "Inter", sans-serif;
+      font-size: clamp(23px, 3vw, 34px);
+      font-weight: 700;
+      caret-color: transparent;
+      transition: background-color .25s ease, color .25s ease, border-color .25s ease;
+    }
+
+    .queue-current-row .button {
+      min-height: 58px;
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+
+    .queue-progress-wrap {
+      width: 100%;
+      margin-top: 13px;
+    }
+
+    .queue-progress-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .queue-progress {
+      width: 100%;
+      height: 6px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: var(--sb-track);
+    }
+
+    .queue-progress > div {
+      width: 0;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--accent);
+      transition: width 180ms ease;
+    }
+
+    .queue-status {
+      width: 100%;
+      min-height: 34px;
+      margin-top: 13px;
+      padding: 8px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--panel-border);
+      border-radius: 8px;
+      color: var(--muted);
+      background: color-mix(in srgb, var(--glass-bg) 94%, var(--accent) 6%);
+      text-align: center;
+      font-size: 11px;
+      line-height: 1.35;
+    }
+
+    .queue-status.success { color: var(--accent); }
+    .queue-status.warn { color: #b45b00; }
+    body.dark .queue-status.warn { color: #f5b65f; }
+
+    .queue-run .group-label {
+      margin-top: 0;
+    }
+
+    .queue-run .queue-upnext-label {
+      margin-top: 14px;
+    }
+
+    .queue-run .queue-textarea {
+      min-height: 96px;
+      max-height: 150px;
+      color: var(--accent);
+      font-weight: 600;
+      resize: vertical;
+    }
+
+    .queue-inline-note {
+      width: 100%;
+      margin-top: 9px;
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.35;
+    }
+
+    /* === Exclusive tool view ==============================================
+       Pipe Formatter is the default. Number Queue is only shown when the
+       Number Queue option is enabled. This keeps one main tool on screen.
+    ===================================================================== */
+
+    .panel.queue-tool {
+      display: none;
+    }
+
+    body.queue-mode .panel.primary,
+    body.queue-mode .panel.secondary {
+      display: none !important;
+    }
+
+    body.queue-mode .panel.queue-tool {
+      display: block !important;
+      width: 100%;
+      max-width: 520px;
+      flex: 0 1 520px;
+    }
+
+    body.queue-mode .container,
+    body.queue-mode .container:not(.dual),
+    body.queue-mode .container.dual {
+      width: min(92vw, 520px);
+      max-width: 520px;
+    }
+
+    body.queue-mode .panels,
+    body.queue-mode .container .panels,
+    body.queue-mode .container:not(.dual) .panels,
+    body.queue-mode .container.dual .panels {
+      width: 100%;
+      max-width: 520px;
+      justify-content: center;
+      align-items: center;
+    }
+
+    body.queue-mode .queue-tool .panel-card {
+      width: 100%;
+      max-width: 520px;
+    }
+
+    body.queue-mode #exportCsvBtn {
+      display: none;
+    }
+
+    @media (max-width: 980px) {
+      body.queue-mode .container,
+      body.queue-mode .container:not(.dual),
+      body.queue-mode .container.dual {
+        width: min(92vw, 520px);
+        max-width: 520px;
+      }
+
+      body.queue-mode .panel.queue-tool,
+      body.queue-mode .queue-tool .panel-card {
+        width: 100%;
+        max-width: 520px;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .queue-current-row {
+        grid-template-columns: 1fr;
+      }
+
+      .queue-current-row .button {
+        min-height: 42px;
+      }
+    }
+
   </style>
 </head>
 
@@ -1047,7 +1293,7 @@
   </div>
 
   <div class="header-right">
-    <button class="button" onclick="exportCSV()">Export CSV</button>
+    <button class="button" id="exportCsvBtn" onclick="exportCSV()">Export CSV</button>
 
     <div class="settings-card" aria-label="Settings">
       <div class="toggle-container" style="border-bottom:none; padding-bottom:0; margin-bottom:6px;">
@@ -1099,6 +1345,16 @@
           <span class="slider"></span>
         </label>
       </div>
+
+      <div class="settings-divider"></div>
+
+      <div class="toggle-container" style="margin-bottom: 0; border-bottom:none; padding-bottom:0;">
+        <span class="toggle-label">Number Queue</span>
+        <label class="switch">
+          <input type="checkbox" id="queueModeToggle" onchange="toggleNumberQueue()">
+          <span class="slider"></span>
+        </label>
+      </div>
     </div>
   </div>
 
@@ -1145,6 +1401,71 @@
                 <button class="button" type="button" style="padding:4px 10px; font-size:11px;" onclick="copyDuplicatesFor('')">
                   Copy duplicates
                 </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+
+
+      <div class="panel queue-tool" id="panelQueue">
+        <div class="panel-card">
+          <div class="panel-inner">
+
+            <h2>Number Queue</h2>
+            <p>Work through a list one number at a time</p>
+            <div class="queue-source-badge">Linked to Primary Pipe Formatter</div>
+
+            <div id="queueSetup">
+              <div class="qtyMarker" id="queueQty">Qty: 0</div>
+              <textarea class="queue-textarea" id="queueInput" spellcheck="false"
+                placeholder="Paste one number per line"></textarea>
+
+              <div class="button-container">
+                <button class="button" type="button" id="queueStartBtn">Start Queue</button>
+                <button class="button" type="button" id="queueUsePipeBtn">Use Pipe List</button>
+                <button class="button" type="button" id="queueDedupeBtn">Remove Duplicates</button>
+                <button class="button" type="button" id="queueClearBtn">Clear</button>
+              </div>
+
+              <div class="queue-status" id="queueSetupStatus">
+                Starting a queue keeps the complete list ready in the Primary Pipe Formatter.
+              </div>
+            </div>
+
+            <div id="queueRun" class="queue-run hidden">
+              <div class="group-label">Current number</div>
+
+              <div class="queue-current-row">
+                <input class="queue-current" id="queueCurrent" type="text" readonly aria-label="Current number" />
+                <button class="button" type="button" id="queueCopyNextBtn">Copy &amp; Next</button>
+              </div>
+
+              <div class="queue-progress-wrap">
+                <div class="queue-progress-head">
+                  <span><span id="queueCopiedCount">0</span> copied</span>
+                  <span id="queueProgressText">0%</span>
+                </div>
+                <div class="queue-progress"><div id="queueProgressBar"></div></div>
+              </div>
+
+              <div class="group-label queue-upnext-label">Up next · <span id="queueRemainingCount">0</span> remaining</div>
+              <textarea class="queue-textarea" id="queueRemaining" readonly spellcheck="false"></textarea>
+
+              <div class="button-container">
+                <button class="button" type="button" id="queueCopyFullPipedBtn">Copy Full Piped List</button>
+                <button class="button" type="button" id="queueBackBtn">Back to List</button>
+                <button class="button" type="button" id="queueNewBtn">New Queue</button>
+              </div>
+
+              <div class="queue-inline-note">
+                Full Piped List always uses the complete snapshot taken when Start Queue was pressed — not the remaining queue.
+              </div>
+
+              <div class="queue-status" id="queueRunStatus">
+                Copy the current number to move to the next one.
               </div>
             </div>
 
@@ -1253,6 +1574,50 @@ function isSecondaryOn() {
   return !!document.getElementById('secondaryToggle')?.checked;
 }
 
+function isQueueModeOn() {
+  return !!document.getElementById('queueModeToggle')?.checked;
+}
+
+function applyNumberQueueMode(shouldFocus = true) {
+  const on = isQueueModeOn();
+  const container = document.getElementById('mainContainer');
+  const secondary = document.getElementById('panelSecondary');
+
+  document.body.classList.toggle('queue-mode', on);
+
+  try { localStorage.setItem('sp_queue_mode', on ? '1' : '0'); } catch {}
+
+  if (on) {
+    // Queue owns the workspace: hide both pipe panels and remove dual sizing.
+    secondary?.classList.add('hidden');
+    container?.classList.remove('dual');
+
+    if (shouldFocus) {
+      setTimeout(() => {
+        const run = document.getElementById('queueRun');
+        if (run && !run.classList.contains('hidden')) {
+          document.getElementById('queueCopyNextBtn')?.focus();
+        } else {
+          document.getElementById('queueInput')?.focus();
+        }
+      }, 0);
+    }
+    return;
+  }
+
+  // Returning to Pipe Formatter restores the Secondary preference exactly
+  // as it was left in the Options panel.
+  toggleSecondary();
+
+  if (shouldFocus) {
+    setTimeout(() => document.getElementById('inputText')?.focus(), 0);
+  }
+}
+
+function toggleNumberQueue() {
+  applyNumberQueueMode(true);
+}
+
 function toggleSecondary() {
   const on = isSecondaryOn();
   const panel = document.getElementById('panelSecondary');
@@ -1260,6 +1625,15 @@ function toggleSecondary() {
   if (!panel || !container) return;
 
   clearTimeout(toggleSecondary._cleanupT);
+
+  // Secondary is a Pipe Formatter preference. Remember it while Queue mode
+  // is open, but do not show a Pipe panel until Queue mode is switched off.
+  if (isQueueModeOn()) {
+    try { localStorage.setItem('sp_secondary', on ? '1' : '0'); } catch {}
+    panel.classList.add('hidden');
+    container.classList.remove('dual');
+    return;
+  }
 
   if (on) {
     // Apply the hidden start state before exposing the panel. The two RAFs
@@ -1341,6 +1715,11 @@ function _resetOptionsPanelToDefault() {
   const slo = document.getElementById('sloToggle');
   if (slo) slo.checked = false;
 
+  const queueMode = document.getElementById('queueModeToggle');
+  if (queueMode) queueMode.checked = false;
+  document.body.classList.remove('queue-mode');
+  try { localStorage.setItem('sp_queue_mode', '0'); } catch {}
+
   const sec = document.getElementById('secondaryToggle');
   const wasOn = !!sec?.checked;
   if (sec) sec.checked = false;
@@ -1369,6 +1748,9 @@ function _clearInputsDueToInactivity() {
   if (remove2) remove2.value = "";
 
   formatText();
+
+  // Keep the merged Number Queue under the same five-minute inactivity clear.
+  if (typeof queueNew === 'function') queueNew();
 }
 
 ['pointerdown','keydown','wheel','touchstart','scroll'].forEach(evt => {
@@ -2167,16 +2549,15 @@ window.onload = () => {
     if (t) t.checked = on;
   } catch {}
 
-  const on = isSecondaryOn();
-  const panel = document.getElementById('panelSecondary');
-  const container = document.getElementById('mainContainer');
-  if (on) {
-    panel.classList.remove('hidden');
-    container.classList.add('dual');
-  } else {
-    panel.classList.add('hidden');
-    container.classList.remove('dual');
-  }
+  try {
+    const q = localStorage.getItem('sp_queue_mode');
+    const queueOn = (q === '1');
+    const t = document.getElementById('queueModeToggle');
+    if (t) t.checked = queueOn;
+  } catch {}
+
+  // Queue view takes precedence over Pipe/Secondary visibility.
+  applyNumberQueueMode(false);
 
   const containerPipes = document.getElementById('pipeBackground');
   for (let i = 0; i < 50; i++) {
@@ -2242,6 +2623,295 @@ function startMarquee(text) {
     );
   });
 }
+
+
+/* ========================================================================
+   Integrated Number Queue
+   - Working queue advances independently.
+   - Full snapshot never changes during a run.
+   - Starting a queue synchronises the complete original list into Primary.
+   ======================================================================== */
+const numberQueueState = {
+  fullSnapshot: [],
+  working: [],
+  current: "",
+  copied: 0,
+  total: 0
+};
+
+function queueParseValues(text) {
+  return String(text ?? "")
+    .split(/\s+/)
+    .map(v => v.trim())
+    .filter(Boolean);
+}
+
+function queueSetStatus(id, message, type = "") {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = message;
+  el.className = "queue-status" + (type ? ` ${type}` : "");
+}
+
+function queueUpdateQty() {
+  const input = document.getElementById('queueInput');
+  const qty = document.getElementById('queueQty');
+  if (!input || !qty) return;
+  qty.textContent = `Qty: ${queueParseValues(input.value).length}`;
+}
+
+function queueSyncFullListToPrimary(values) {
+  const primary = document.getElementById('inputText');
+  if (!primary) return;
+
+  // Primary deliberately receives the complete snapshot and is never changed
+  // by queue progress, so the Pipe Formatter always retains the full list.
+  primary.value = values.join(' ');
+  formatText();
+}
+
+function queueRender() {
+  const current = document.getElementById('queueCurrent');
+  const remaining = document.getElementById('queueRemaining');
+  const remainCount = document.getElementById('queueRemainingCount');
+  const copiedCount = document.getElementById('queueCopiedCount');
+  const progressText = document.getElementById('queueProgressText');
+  const progressBar = document.getElementById('queueProgressBar');
+  const copyNext = document.getElementById('queueCopyNextBtn');
+
+  if (!current || !remaining || !remainCount || !copiedCount || !progressText || !progressBar || !copyNext) return;
+
+  current.value = numberQueueState.current || 'Finished';
+  remaining.value = numberQueueState.working.join('\n');
+  remainCount.textContent = String(numberQueueState.working.length);
+  copiedCount.textContent = String(numberQueueState.copied);
+
+  const pct = numberQueueState.total
+    ? Math.round((numberQueueState.copied / numberQueueState.total) * 100)
+    : 0;
+
+  progressText.textContent = `${pct}%`;
+  progressBar.style.width = `${pct}%`;
+  copyNext.disabled = !numberQueueState.current;
+
+  if (!numberQueueState.current) {
+    queueSetStatus('queueRunStatus', 'All numbers have been copied.', 'success');
+  }
+}
+
+function queueShowRun() {
+  document.getElementById('queueSetup')?.classList.add('hidden');
+  document.getElementById('queueRun')?.classList.remove('hidden');
+}
+
+function queueShowSetup() {
+  document.getElementById('queueRun')?.classList.add('hidden');
+  document.getElementById('queueSetup')?.classList.remove('hidden');
+}
+
+function queueStartFrom(values) {
+  const clean = Array.isArray(values) ? values.filter(Boolean) : [];
+  if (!clean.length) {
+    queueSetStatus('queueSetupStatus', 'Enter at least one number first.', 'warn');
+    document.getElementById('queueInput')?.focus();
+    return;
+  }
+
+  // Safety snapshot: this array is not shifted or edited as the queue advances.
+  numberQueueState.fullSnapshot = clean.slice();
+  numberQueueState.working = clean.slice();
+  numberQueueState.current = numberQueueState.working.shift() || '';
+  numberQueueState.copied = 0;
+  numberQueueState.total = clean.length;
+
+  queueSyncFullListToPrimary(numberQueueState.fullSnapshot);
+  queueShowRun();
+  queueSetStatus(
+    'queueRunStatus',
+    `Queue started. Full ${numberQueueState.total}-number list loaded into Primary Pipe Formatter.`,
+    'success'
+  );
+  queueRender();
+  document.getElementById('queueCopyNextBtn')?.focus();
+}
+
+function queueUsePrimaryList() {
+  const primary = document.getElementById('inputText');
+  const input = document.getElementById('queueInput');
+  if (!primary || !input) return;
+
+  const values = queueParseValues(primary.value);
+  if (!values.length) {
+    queueSetStatus('queueSetupStatus', 'Primary Pipe Formatter is empty.', 'warn');
+    return;
+  }
+
+  input.value = values.join('\n');
+  queueUpdateQty();
+  queueSetStatus('queueSetupStatus', `Loaded ${values.length} number${values.length === 1 ? '' : 's'} from Primary.`, 'success');
+}
+
+function queueFallbackCopy(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.setAttribute('readonly', '');
+  ta.style.position = 'fixed';
+  ta.style.left = '-9999px';
+  ta.style.top = '-9999px';
+  document.body.appendChild(ta);
+  ta.select();
+  ta.setSelectionRange(0, ta.value.length);
+  const ok = document.execCommand('copy');
+  ta.remove();
+  if (!ok) throw new Error('Copy failed');
+}
+
+async function queueCopyToClipboard(text) {
+  if (navigator.clipboard && window.isSecureContext) {
+    await navigator.clipboard.writeText(text);
+  } else {
+    queueFallbackCopy(text);
+  }
+}
+
+async function queueCopyCurrentAndNext() {
+  if (!numberQueueState.current) return;
+  const value = numberQueueState.current;
+
+  try {
+    await queueCopyToClipboard(value);
+    numberQueueState.copied += 1;
+    numberQueueState.current = numberQueueState.working.shift() || '';
+    queueRender();
+
+    if (numberQueueState.current) {
+      queueSetStatus('queueRunStatus', `Copied ${value} — next number ready.`, 'success');
+    }
+    showCopiedToast('Copied');
+  } catch (err) {
+    queueSetStatus('queueRunStatus', 'Chrome blocked clipboard access. Select the current number and use Ctrl+C.', 'warn');
+  }
+}
+
+async function queueCopyFullPipedList() {
+  if (!numberQueueState.fullSnapshot.length) {
+    queueSetStatus('queueRunStatus', 'No full queue snapshot is available.', 'warn');
+    return;
+  }
+
+  // Critical safety behaviour: copy from the untouched full snapshot, never
+  // current + remaining. SLO prefix follows the Pipe Formatter toggle.
+  const text = joinWithPrefix(numberQueueState.fullSnapshot, '|');
+
+  try {
+    await queueCopyToClipboard(text);
+    queueSetStatus(
+      'queueRunStatus',
+      `Full original list copied with pipes — ${numberQueueState.fullSnapshot.length} number${numberQueueState.fullSnapshot.length === 1 ? '' : 's'}.`,
+      'success'
+    );
+    showCopiedToast('Full List Copied');
+  } catch (err) {
+    queueSetStatus('queueRunStatus', 'Chrome blocked clipboard access for the full piped list.', 'warn');
+  }
+}
+
+function queueBackToList() {
+  const input = document.getElementById('queueInput');
+  if (!input) return;
+
+  const remaining = numberQueueState.current
+    ? [numberQueueState.current, ...numberQueueState.working]
+    : numberQueueState.working.slice();
+
+  input.value = remaining.join('\n');
+  queueUpdateQty();
+  queueShowSetup();
+  queueSetStatus('queueSetupStatus', 'Queue paused. The Primary Pipe Formatter still holds the complete original list.');
+}
+
+function queueNew() {
+  numberQueueState.fullSnapshot = [];
+  numberQueueState.working = [];
+  numberQueueState.current = '';
+  numberQueueState.copied = 0;
+  numberQueueState.total = 0;
+
+  const input = document.getElementById('queueInput');
+  if (input) input.value = '';
+  queueUpdateQty();
+  queueShowSetup();
+  queueSetStatus('queueSetupStatus', 'Starting a queue also loads the complete list into the Primary Pipe Formatter.');
+  if (isQueueModeOn()) input?.focus();
+}
+
+function queueDedupe() {
+  const input = document.getElementById('queueInput');
+  if (!input) return;
+
+  const values = queueParseValues(input.value);
+  const unique = [...new Set(values)];
+  const removed = values.length - unique.length;
+  input.value = unique.join('\n');
+  queueUpdateQty();
+
+  queueSetStatus(
+    'queueSetupStatus',
+    removed ? `${removed} duplicate${removed === 1 ? '' : 's'} removed.` : 'No duplicates found.',
+    removed ? 'success' : ''
+  );
+}
+
+function initIntegratedNumberQueue() {
+  const input = document.getElementById('queueInput');
+  const start = document.getElementById('queueStartBtn');
+  const usePipe = document.getElementById('queueUsePipeBtn');
+  const dedupe = document.getElementById('queueDedupeBtn');
+  const clear = document.getElementById('queueClearBtn');
+  const copyNext = document.getElementById('queueCopyNextBtn');
+  const copyFull = document.getElementById('queueCopyFullPipedBtn');
+  const back = document.getElementById('queueBackBtn');
+  const fresh = document.getElementById('queueNewBtn');
+
+  input?.addEventListener('input', queueUpdateQty);
+  start?.addEventListener('click', () => queueStartFrom(queueParseValues(input?.value)));
+  usePipe?.addEventListener('click', queueUsePrimaryList);
+  dedupe?.addEventListener('click', queueDedupe);
+  clear?.addEventListener('click', () => {
+    if (input) input.value = '';
+    queueUpdateQty();
+    queueSetStatus('queueSetupStatus', 'Queue list cleared.');
+    input?.focus();
+  });
+  copyNext?.addEventListener('click', queueCopyCurrentAndNext);
+  copyFull?.addEventListener('click', queueCopyFullPipedList);
+  back?.addEventListener('click', queueBackToList);
+  fresh?.addEventListener('click', queueNew);
+
+  document.addEventListener('keydown', e => {
+    // Never let Enter advance a queue while the Pipe Formatter is the visible tool.
+    if (!isQueueModeOn()) return;
+
+    const run = document.getElementById('queueRun');
+    if (!run || run.classList.contains('hidden')) return;
+    if (lt99ModalOpen || clearModalOpen) return;
+
+    if (e.key === 'Enter' && !copyNext?.disabled) {
+      e.preventDefault();
+      queueCopyCurrentAndNext();
+    }
+  });
+
+  queueUpdateQty();
+}
+
+// The existing page owns window.onload, so initialise without replacing it.
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initIntegratedNumberQueue, { once: true });
+} else {
+  initIntegratedNumberQueue();
+}
+
 </script>
 
 
