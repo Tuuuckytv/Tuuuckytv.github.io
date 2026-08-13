@@ -1403,6 +1403,334 @@
       }
     }
 
+  
+    /* === Final workspace / responsive spacing ===============================
+       Keeps the workspace compact on large screens and turns the fixed top
+       controls into normal document flow before they can overlap on narrower
+       screens.
+    ===================================================================== */
+
+    :root {
+      --workspace-wide-max: 940px;
+      --workspace-single-max: 480px;
+      --workspace-card-max: 455px;
+    }
+
+    /* Desktop: keep breathing room around the tools instead of stretching
+       across most of the browser window. */
+    .container {
+      width: min(90vw, var(--workspace-wide-max));
+      max-width: var(--workspace-wide-max);
+    }
+
+    .container:not(.dual) {
+      width: min(90vw, var(--workspace-single-max));
+      max-width: var(--workspace-single-max);
+    }
+
+    .panels {
+      width: 100%;
+      max-width: var(--workspace-wide-max);
+      margin-left: auto;
+      margin-right: auto;
+      gap: 18px;
+    }
+
+    .panel,
+    .container.dual .panel {
+      flex-basis: var(--workspace-card-max);
+      max-width: var(--workspace-card-max);
+    }
+
+    .panel-card,
+    .container.dual .panel-card {
+      max-width: var(--workspace-card-max);
+    }
+
+    /* Dual Pipe mode should not create two full-height columns. */
+    @media (min-width: 981px) {
+      .container.dual {
+        padding-top: clamp(205px, 22vh, 235px);
+        padding-left: clamp(28px, 4vw, 56px);
+        padding-right: clamp(28px, 4vw, 56px);
+        padding-bottom: 42px;
+      }
+
+      .container.dual .panels {
+        width: min(100%, var(--workspace-wide-max));
+        max-width: var(--workspace-wide-max);
+        height: auto;
+      }
+
+      .container.dual .panel {
+        height: auto;
+      }
+
+      .container.dual .panel-card {
+        max-height: min(620px, calc(100vh - 260px));
+      }
+
+      /* A short desktop/laptop viewport needs scrolling rather than allowing
+         the centred workspace to collide with the fixed header controls. */
+      @media (max-height: 790px) {
+        body {
+          overflow-y: auto;
+          overflow-x: hidden;
+        }
+
+        .container,
+        .container:not(.dual),
+        .container.dual {
+          position: relative;
+          inset: auto;
+          top: auto;
+          left: auto;
+          transform: none;
+          margin: 225px auto 44px;
+          padding-top: 0;
+          padding-bottom: 0;
+        }
+
+        .container.dual .panel-card {
+          max-height: none;
+        }
+      }
+    }
+
+    /* Queue mode stays deliberately compact even on very wide displays. */
+    body.queue-mode .container,
+    body.queue-mode .container:not(.dual),
+    body.queue-mode .container.dual,
+    body.queue-mode .panels,
+    body.queue-mode .panel.queue-tool,
+    body.queue-mode .queue-tool .panel-card {
+      width: min(90vw, var(--workspace-single-max));
+      max-width: var(--workspace-single-max);
+    }
+
+    /* Tablet / narrow laptop:
+       stop using fixed top chrome entirely. Once the available width starts
+       getting tight, every header element participates in normal page flow. */
+    @media (max-width: 900px) {
+      body,
+      body.dark {
+        height: auto;
+        min-height: 100vh;
+        overflow-x: hidden;
+        overflow-y: auto;
+        padding:
+          max(14px, env(safe-area-inset-top))
+          clamp(14px, 4vw, 24px)
+          34px;
+      }
+
+      .menu-buttons {
+        position: relative;
+        top: auto;
+        left: auto;
+        right: auto;
+        width: min(100%, 520px);
+        max-width: 520px;
+        margin: 0 auto 12px;
+        display: flex;
+        justify-content: center;
+        align-items: stretch;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .menu-buttons .button {
+        min-height: 38px;
+        margin: 0;
+      }
+
+      .header-right {
+        position: relative;
+        top: auto;
+        right: auto;
+        left: auto;
+        width: min(100%, 520px);
+        max-width: 520px;
+        margin: 0 auto 14px;
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .header-right > .button {
+        margin: 0;
+      }
+
+      .settings-card {
+        width: min(var(--settings-width), 100%);
+        max-width: 190px;
+        margin: 0;
+      }
+
+      .headline-scroller {
+        position: relative;
+        top: auto;
+        left: auto;
+        right: auto;
+        width: 100%;
+        height: 28px;
+        margin: 0 0 16px;
+      }
+
+      .container,
+      .container:not(.dual),
+      .container.dual,
+      body.queue-mode .container,
+      body.queue-mode .container:not(.dual),
+      body.queue-mode .container.dual {
+        position: relative;
+        inset: auto;
+        top: auto;
+        left: auto;
+        transform: none;
+        width: min(100%, 520px);
+        max-width: 520px;
+        margin: 0 auto 42px;
+        padding: 0;
+      }
+
+      .panels,
+      .container.dual .panels,
+      body.queue-mode .panels {
+        width: 100%;
+        max-width: 520px;
+        height: auto;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 18px;
+      }
+
+      .panel,
+      .container.dual .panel,
+      body.queue-mode .panel.queue-tool {
+        width: 100%;
+        max-width: 520px;
+        height: auto;
+        flex: 0 1 auto;
+      }
+
+      .panel-card,
+      .container.dual .panel-card,
+      body.queue-mode .queue-tool .panel-card {
+        width: 100%;
+        max-width: 520px;
+        max-height: none;
+        margin: 0 auto;
+        overflow: visible;
+      }
+
+      .container.dual .panel.secondary {
+        align-self: center;
+      }
+    }
+
+    /* Phone-sized layouts: give the top controls their own rows so none of
+       the navigation/settings buttons can collide or hang off-screen. */
+    @media (max-width: 560px) {
+      body,
+      body.dark {
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+
+      .menu-buttons {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .menu-buttons .button {
+        width: 100%;
+        min-width: 0;
+        padding-left: 9px;
+        padding-right: 9px;
+        white-space: normal;
+        line-height: 1.15;
+      }
+
+      .menu-buttons .button:last-child {
+        grid-column: 1 / -1;
+      }
+
+      .header-right {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 9px;
+      }
+
+      .header-right > .button {
+        width: 100%;
+      }
+
+      .settings-card {
+        width: 100%;
+        max-width: none;
+      }
+
+      .headline-scroller {
+        margin-top: 2px;
+        margin-bottom: 14px;
+      }
+
+      .container,
+      .container:not(.dual),
+      .container.dual,
+      body.queue-mode .container,
+      body.queue-mode .container:not(.dual),
+      body.queue-mode .container.dual {
+        width: 100%;
+        max-width: 100%;
+      }
+
+      .panel,
+      .container.dual .panel,
+      .panel-card,
+      .container.dual .panel-card,
+      body.queue-mode .panel.queue-tool,
+      body.queue-mode .queue-tool .panel-card {
+        width: 100%;
+        max-width: 100%;
+      }
+
+      .panel-card,
+      .container.dual .panel-card {
+        padding: 24px 16px;
+      }
+
+      .queue-tool .queue-actions {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 390px) {
+      .queue-tool .queue-actions,
+      .menu-buttons {
+        grid-template-columns: 1fr;
+      }
+
+      .menu-buttons .button:last-child {
+        grid-column: auto;
+      }
+
+      .panel-card,
+      .container.dual .panel-card {
+        padding-left: 13px;
+        padding-right: 13px;
+      }
+    }
+
   </style>
 </head>
 
