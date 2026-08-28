@@ -1,0 +1,27 @@
+name: Build Hostinger ZIP
+
+on:
+  push:
+    branches: [hostinger-ready]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build flat Hostinger package
+        run: |
+          mkdir -p package
+          rsync -a --exclude='.git' --exclude='.github' --exclude='CNAME' ./ package/
+          cd package
+          zip -r ../TUUUCKYTV_HOSTINGER_READY.zip .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: TUUUCKYTV_HOSTINGER_READY
+          path: TUUUCKYTV_HOSTINGER_READY.zip
+          if-no-files-found: error
+          retention-days: 7
