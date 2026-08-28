@@ -1,0 +1,609 @@
+name: Build Hostinger Updater ZIP
+
+on:
+  push:
+    branches: [hostinger-updater-v1]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Hostinger version
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          root = Path('.')
+          index = (root / 'index.html').read_text(encoding='utf-8')
+
+          css = r'''
+
+              /* HOSTINGER UPDATER LOGIN MODAL */
+              .update-auth-modal {
+                position: fixed;
+                inset: 0;
+                z-index: 12000;
+                display: none;
+                align-items: center;
+                justify-content: center;
+                padding: 20px;
+                background: rgba(10, 24, 27, 0.62);
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
+              }
+              .update-auth-modal.active { display: flex; }
+              .update-auth-card {
+                width: min(92vw, 390px);
+                background: rgba(255,255,255,.97);
+                border: 1px solid rgba(15,133,142,.28);
+                border-radius: 14px;
+                box-shadow: 0 18px 55px rgba(0,0,0,.25);
+                padding: 24px;
+                text-align: left;
+              }
+              .update-auth-card h3 { margin: 0 0 7px; color: var(--accent); }
+              .update-auth-card p { margin: 0 0 16px; color: #555; }
+              .update-auth-card input {
+                width: 100%; padding: 11px 12px; border: 1px solid #bbb;
+                border-radius: 7px; font: inherit; outline: none; margin-bottom: 12px;
+              }
+              .update-auth-card input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(15,133,142,.14); }
+              .update-auth-actions { display: flex; gap: 10px; justify-content: flex-end; }
+              .update-auth-actions button {
+                border: 1px solid var(--accent); border-radius: 7px; padding: 9px 13px;
+                background: #fff; color: var(--accent); font: inherit; font-weight: 600; cursor: pointer;
+              }
+              .update-auth-actions .primary { background: var(--accent); color: #fff; }
+              #updateAuthError { min-height: 18px; color: #a52626; font-size: 13px; margin: -4px 0 10px; }
+          '''
+          if 'HOSTINGER UPDATER LOGIN MODAL' not in index:
+              index = index.replace('</style>', css + '\n  </style>', 1)
+
+          old_buttons = '''      <button class="button" onclick="loadPage('pipes')">Pipe Formatter</button>\n      <button class="button" onclick="loadPage('date')">Date Checker</button>'''
+          new_buttons = old_buttons + '''\n      <button class="button" onclick="openUpdaterLogin()">Site Update</button>'''
+          if 'onclick="openUpdaterLogin()"' not in index:
+              index = index.replace(old_buttons, new_buttons, 1)
+
+          modal = r'''
+
+              <div id="updateAuthModal" class="update-auth-modal" aria-hidden="true">
+                <div class="update-auth-card" role="dialog" aria-modal="true" aria-labelledby="updateAuthTitle">
+                  <h3 id="updateAuthTitle">Site Update</h3>
+                  <p>Enter the updater password to continue.</p>
+                  <form id="updateAuthForm" autocomplete="off">
+                    <input id="updateAuthPassword" type="password" name="password" placeholder="Updater password" required>
+                    <div id="updateAuthError" aria-live="polite"></div>
+                    <div class="update-auth-actions">
+                      <button type="button" id="updateAuthCancel">Cancel</button>
+                      <button type="submit" class="primary">Continue</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+          '''
+          if 'id="updateAuthModal"' not in index:
+              index = index.replace('<footer>Kyle Tuck Inc.</footer>', modal + '\n\n  <footer>Kyle Tuck Inc.</footer>', 1)
+
+          if 'path: "updater"' not in index:
+              needle = '{ name: "Date Checker", path: "date", hidden: false, aliases: [] },'
+              repl = needle + '\n      { name: "Site Update", path: "updater", hidden: false, aliases: ["update", "updater", "site update"] },'
+              index = index.replace(needle, repl, 1)
+
+          if 'if (path === "updater")' not in index:
+              index = index.replace('''    function loadPage(path) {\n      if (!path) return;''', '''    function loadPage(path) {\n      if (!path) return;\n\n      if (path === "updater") {\n        openUpdaterLogin();\n        return;\n      }''', 1)
+
+          updater_js = r'''
+
+              const updateAuthModal = document.getElementById('updateAuthModal');
+              const updateAuthForm = document.getElementById('updateAuthForm');
+              const updateAuthPassword = document.getElementById('updateAuthPassword');
+              const updateAuthError = document.getElementById('updateAuthError');
+              const updateAuthCancel = document.getElementById('updateAuthCancel');
+
+              function openUpdaterLogin() {
+                dismissMobileKeyboard();
+                updateAuthError.textContent = '';
+                updateAuthPassword.value = '';
+                updateAuthModal.classList.add('active');
+                updateAuthModal.setAttribute('aria-hidden', 'false');
+                setTimeout(() => updateAuthPassword.focus(), 50);
+              }
+              window.openUpdaterLogin = openUpdaterLogin;
+
+              function closeUpdaterLogin() {
+                updateAuthModal.classList.remove('active');
+                updateAuthModal.setAttribute('aria-hidden', 'true');
+                updateAuthError.textContent = '';
+              }
+
+              updateAuthCancel.addEventListener('click', closeUpdaterLogin);
+              updateAuthModal.addEventListener('mousedown', (e) => {
+                if (e.target === updateAuthModal) closeUpdaterLogin();
+              });
+
+              updateAuthForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                updateAuthError.textContent = 'Checking…';
+                try {
+                  const body = new URLSearchParams();
+                  body.set('action', 'login');
+                  body.set('password', updateAuthPassword.value);
+                  const response = await fetch('updater-auth.php', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'},
+                    body,
+                    credentials: 'same-origin'
+                  });
+                  const data = await response.json();
+                  if (!response.ok || !data.ok) throw new Error(data.message || 'Sign in failed.');
+                  window.location.assign('updater');
+                } catch (err) {
+                  updateAuthError.textContent = err.message || 'Sign in failed.';
+                  updateAuthPassword.select();
+                }
+              });
+          '''
+          if 'const updateAuthModal' not in index:
+              index = index.replace('    const pages = [', updater_js + '\n\n    const pages = [', 1)
+
+          (root / 'index.html').write_text(index, encoding='utf-8')
+
+          htaccess = r'''Options -Indexes -MultiViews
+          DirectoryIndex index.html
+
+          <IfModule mod_rewrite.c>
+              RewriteEngine On
+
+              # Updater routes always pass through the PHP session gate.
+              RewriteRule ^updater(?:\.html)?/?$ updater-gate.php [L,QSA,NC]
+
+              # Clean home URL.
+              RewriteCond %{THE_REQUEST} \s/+index\.html(?:[\s?]|$) [NC]
+              RewriteRule ^index\.html$ / [R=301,L]
+
+              # Clean HTML URLs: /pipes.html -> /pipes
+              RewriteCond %{THE_REQUEST} \s/+(.+?)\.html(?:[\s?]|$) [NC]
+              RewriteRule ^(.+)\.html$ /$1 [R=301,L,NE]
+
+              # /pipes -> pipes.html, /date -> date.html, etc.
+              RewriteCond %{REQUEST_FILENAME} !-f
+              RewriteCond %{REQUEST_FILENAME} !-d
+              RewriteCond %{REQUEST_FILENAME}.html -f
+              RewriteRule ^(.+?)/?$ $1.html [L]
+          </IfModule>
+
+          <IfModule mod_headers.c>
+              Header always set X-Content-Type-Options "nosniff"
+              Header always set X-Frame-Options "SAMEORIGIN"
+              Header always set Referrer-Policy "strict-origin-when-cross-origin"
+          </IfModule>
+          '''
+          (root / '.htaccess').write_text(htaccess, encoding='utf-8')
+
+          private = root / 'private'
+          private.mkdir(exist_ok=True)
+          (private / '.htaccess').write_text('Require all denied\n', encoding='utf-8')
+          (private / 'updater-auth.json').write_text('''{
+            "password_hash": "$2y$12$QXSkoprBmhdE13TX1.i9Oe1HkwU.r97oDE/O/wDrnFp.gBOo/z9S."
+          }\n''', encoding='utf-8')
+          (private / 'updater-version.txt').write_text('1.0.0\n', encoding='utf-8')
+          (private / 'updater-attempts.json').write_text('{}\n', encoding='utf-8')
+
+          lib = r'''<?php
+          declare(strict_types=1);
+
+          const TUU_IDLE = 900;
+          const TUU_MAX_ATTEMPTS = 5;
+          const TUU_ATTEMPT_WINDOW = 900;
+          const TUU_KEEP_BACKUPS = 5;
+          const TUU_MAX_ZIP = 31457280;
+          const TUU_MAX_EXPANDED = 125829120;
+          const TUU_MAX_FILES = 300;
+
+          $TUU_ROOT = dirname(__DIR__);
+          $TUU_PRIVATE = __DIR__;
+          $TUU_AUTH = __DIR__ . '/updater-auth.json';
+          $TUU_ATTEMPTS = __DIR__ . '/updater-attempts.json';
+          $TUU_VERSION = __DIR__ . '/updater-version.txt';
+          $TUU_BACKUPS = __DIR__ . '/updater-backups';
+
+          function tuu_https(): bool {
+              if (!empty($_SERVER['HTTPS']) && strtolower((string)$_SERVER['HTTPS']) !== 'off') return true;
+              return strtolower((string)($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '')) === 'https';
+          }
+
+          function tuu_session(): void {
+              if (session_status() === PHP_SESSION_ACTIVE) return;
+              session_name('tuu_updater');
+              session_set_cookie_params([
+                  'lifetime' => 0, 'path' => '/', 'domain' => '',
+                  'secure' => tuu_https(), 'httponly' => true, 'samesite' => 'Strict'
+              ]);
+              session_start();
+              if (!empty($_SESSION['tuu_auth'])) {
+                  $now = time();
+                  $last = (int)($_SESSION['tuu_last'] ?? 0);
+                  if ($last && ($now - $last) > TUU_IDLE) {
+                      $_SESSION = [];
+                      session_regenerate_id(true);
+                  } else {
+                      $_SESSION['tuu_last'] = $now;
+                  }
+              }
+          }
+
+          function tuu_json(array $data, int $status = 200): never {
+              http_response_code($status);
+              header('Content-Type: application/json; charset=utf-8');
+              header('Cache-Control: no-store');
+              header('X-Content-Type-Options: nosniff');
+              echo json_encode($data, JSON_UNESCAPED_SLASHES);
+              exit;
+          }
+
+          function tuu_read_json(string $file, array $fallback = []): array {
+              $raw = is_file($file) ? file_get_contents($file) : false;
+              if ($raw === false) return $fallback;
+              $v = json_decode($raw, true);
+              return is_array($v) ? $v : $fallback;
+          }
+
+          function tuu_atomic(string $file, string $data): void {
+              $dir = dirname($file);
+              if (!is_dir($dir) && !mkdir($dir, 0750, true)) throw new RuntimeException('Could not create storage directory.');
+              $tmp = $file . '.tmp-' . bin2hex(random_bytes(5));
+              if (file_put_contents($tmp, $data, LOCK_EX) === false) throw new RuntimeException('Could not write storage file.');
+              @chmod($tmp, 0640);
+              if (!rename($tmp, $file)) { @unlink($tmp); throw new RuntimeException('Could not replace storage file.'); }
+          }
+
+          function tuu_logged_in(): bool { return !empty($_SESSION['tuu_auth']); }
+
+          function tuu_require_login(): void {
+              tuu_session();
+              if (!tuu_logged_in()) tuu_json(['ok' => false, 'message' => 'Updater session expired. Return to the home page and sign in again.'], 401);
+          }
+
+          function tuu_csrf(): string {
+              if (empty($_SESSION['tuu_csrf'])) $_SESSION['tuu_csrf'] = bin2hex(random_bytes(32));
+              return (string)$_SESSION['tuu_csrf'];
+          }
+
+          function tuu_check_csrf(): void {
+              $sent = (string)($_POST['csrf'] ?? '');
+              $real = (string)($_SESSION['tuu_csrf'] ?? '');
+              if (!$sent || !$real || !hash_equals($real, $sent)) throw new RuntimeException('Security token expired. Refresh the updater page.');
+          }
+
+          function tuu_version(): string {
+              global $TUU_VERSION;
+              $v = is_file($TUU_VERSION) ? trim((string)file_get_contents($TUU_VERSION)) : '0.0.0';
+              return preg_match('/^\d+\.\d+\.\d+$/', $v) ? $v : '0.0.0';
+          }
+
+          function tuu_client_key(): string {
+              return hash('sha256', (string)($_SERVER['REMOTE_ADDR'] ?? 'unknown'));
+          }
+
+          function tuu_login_allowed(): array {
+              global $TUU_ATTEMPTS;
+              $all = tuu_read_json($TUU_ATTEMPTS, []);
+              $cut = time() - TUU_ATTEMPT_WINDOW;
+              foreach ($all as $k => $times) {
+                  if (!is_array($times)) { unset($all[$k]); continue; }
+                  $times = array_values(array_filter($times, fn($t) => is_int($t) && $t >= $cut));
+                  if ($times) $all[$k] = $times; else unset($all[$k]);
+              }
+              $key = tuu_client_key();
+              $count = isset($all[$key]) && is_array($all[$key]) ? count($all[$key]) : 0;
+              return [$count < TUU_MAX_ATTEMPTS, $all];
+          }
+
+          function tuu_login_fail(array $all): void {
+              global $TUU_ATTEMPTS;
+              $key = tuu_client_key();
+              if (!isset($all[$key]) || !is_array($all[$key])) $all[$key] = [];
+              $all[$key][] = time();
+              tuu_atomic($TUU_ATTEMPTS, json_encode($all, JSON_PRETTY_PRINT) . "\n");
+          }
+
+          function tuu_login_clear(array $all): void {
+              global $TUU_ATTEMPTS;
+              unset($all[tuu_client_key()]);
+              tuu_atomic($TUU_ATTEMPTS, json_encode($all, JSON_PRETTY_PRINT) . "\n");
+          }
+
+          function tuu_safe_path(string $path): string {
+              $path = str_replace('\\', '/', trim($path));
+              if (!$path || strlen($path) > 220 || str_contains($path, "\0")) throw new RuntimeException('Invalid package path.');
+              if ($path[0] === '/' || preg_match('/^[A-Za-z]:\//', $path) || preg_match('#(^|/)\.\.(/|$)#', $path)) throw new RuntimeException('Unsafe package path: ' . $path);
+              $lower = strtolower($path);
+              foreach (['private/', '.git/', '.github/'] as $prefix) if (str_starts_with($lower, $prefix)) throw new RuntimeException('Protected path: ' . $path);
+              $base = strtolower(basename($path));
+              if (in_array($base, ['.htaccess','updater.html','updater-auth.php','updater-api.php','updater-gate.php'], true)) throw new RuntimeException('Updater security files cannot be changed by normal packages.');
+              $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+              $allowed = ['html','htm','css','js','mjs','json','txt','xml','webmanifest','png','jpg','jpeg','gif','webp','svg','ico','mp3','mp4','webm','wav','ogg','ttf','otf','woff','woff2','csv','pdf','retro'];
+              if (!$ext || !in_array($ext, $allowed, true)) throw new RuntimeException('File type not allowed: ' . $path);
+              return $path;
+          }
+
+          function tuu_backup(array $paths, string $from, string $to): string {
+              global $TUU_ROOT, $TUU_BACKUPS;
+              if (!is_dir($TUU_BACKUPS) && !mkdir($TUU_BACKUPS, 0750, true)) throw new RuntimeException('Could not create backup storage.');
+              $name = 'from-' . $from . '-to-' . $to . '-' . gmdate('Ymd-His') . '-' . bin2hex(random_bytes(3));
+              $dir = $TUU_BACKUPS . '/' . $name;
+              if (!mkdir($dir . '/files', 0750, true)) throw new RuntimeException('Could not create backup.');
+              $meta = ['created' => gmdate('c'), 'from' => $from, 'to' => $to, 'paths' => []];
+              foreach (array_values(array_unique($paths)) as $rel) {
+                  $src = $TUU_ROOT . '/' . $rel;
+                  $exists = is_file($src);
+                  $meta['paths'][$rel] = ['existed' => $exists];
+                  if ($exists) {
+                      $dst = $dir . '/files/' . $rel;
+                      if (!is_dir(dirname($dst)) && !mkdir(dirname($dst), 0750, true)) throw new RuntimeException('Could not create backup folder.');
+                      if (!copy($src, $dst)) throw new RuntimeException('Could not back up ' . $rel);
+                  }
+              }
+              tuu_atomic($dir . '/meta.json', json_encode($meta, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n");
+              return $name;
+          }
+
+          function tuu_restore(string $name): void {
+              global $TUU_ROOT, $TUU_BACKUPS, $TUU_VERSION;
+              if (!preg_match('/^[A-Za-z0-9._-]+$/', $name)) throw new RuntimeException('Invalid backup name.');
+              $dir = $TUU_BACKUPS . '/' . $name;
+              $meta = tuu_read_json($dir . '/meta.json', []);
+              if (empty($meta['paths']) || !is_array($meta['paths'])) throw new RuntimeException('Backup is invalid.');
+              foreach ($meta['paths'] as $rel => $info) {
+                  $dest = $TUU_ROOT . '/' . $rel;
+                  if (!empty($info['existed'])) {
+                      $src = $dir . '/files/' . $rel;
+                      if (!is_file($src)) throw new RuntimeException('Backup file missing: ' . $rel);
+                      if (!is_dir(dirname($dest))) mkdir(dirname($dest), 0755, true);
+                      if (!copy($src, $dest)) throw new RuntimeException('Could not restore ' . $rel);
+                  } elseif (is_file($dest)) {
+                      @unlink($dest);
+                  }
+              }
+              $from = (string)($meta['from'] ?? '0.0.0');
+              tuu_atomic($TUU_VERSION, $from . "\n");
+          }
+
+          function tuu_backups(): array {
+              global $TUU_BACKUPS;
+              if (!is_dir($TUU_BACKUPS)) return [];
+              $out = [];
+              foreach (glob($TUU_BACKUPS . '/*', GLOB_ONLYDIR) ?: [] as $dir) {
+                  $m = tuu_read_json($dir . '/meta.json', []);
+                  if ($m) $out[] = ['name'=>basename($dir),'from'=>(string)($m['from']??'?'),'to'=>(string)($m['to']??'?'),'created'=>(string)($m['created']??'')];
+              }
+              usort($out, fn($a,$b) => strcmp($b['created'],$a['created']));
+              return array_slice($out, 0, TUU_KEEP_BACKUPS);
+          }
+
+          function tuu_remove_dir(string $dir): void {
+              if (!is_dir($dir)) return;
+              foreach (scandir($dir) ?: [] as $x) {
+                  if ($x === '.' || $x === '..') continue;
+                  $p = $dir . '/' . $x;
+                  if (is_dir($p)) tuu_remove_dir($p); else @unlink($p);
+              }
+              @rmdir($dir);
+          }
+
+          function tuu_prune(): void {
+              global $TUU_BACKUPS;
+              $dirs = glob($TUU_BACKUPS . '/*', GLOB_ONLYDIR) ?: [];
+              usort($dirs, fn($a,$b) => (filemtime($b) ?: 0) <=> (filemtime($a) ?: 0));
+              foreach (array_slice($dirs, TUU_KEEP_BACKUPS) as $d) tuu_remove_dir($d);
+          }
+
+          function tuu_install(string $zipFile): array {
+              global $TUU_ROOT, $TUU_VERSION;
+              if (!extension_loaded('zip')) throw new RuntimeException('Hostinger PHP ZIP extension is not enabled.');
+              $size = filesize($zipFile);
+              if ($size === false || $size <= 0 || $size > TUU_MAX_ZIP) throw new RuntimeException('Update ZIP is empty or too large.');
+              $zip = new ZipArchive();
+              if ($zip->open($zipFile) !== true) throw new RuntimeException('Could not open update ZIP.');
+              try {
+                  $raw = $zip->getFromName('manifest.json');
+                  if ($raw === false || strlen($raw) > 131072) throw new RuntimeException('manifest.json is missing or invalid.');
+                  $m = json_decode($raw, true, 32, JSON_THROW_ON_ERROR);
+                  if (($m['site'] ?? '') !== 'tuuuckytv') throw new RuntimeException('This package is for a different site.');
+                  $new = (string)($m['version'] ?? '');
+                  $min = (string)($m['min_version'] ?? '0.0.0');
+                  if (!preg_match('/^\d+\.\d+\.\d+$/', $new) || !preg_match('/^\d+\.\d+\.\d+$/', $min)) throw new RuntimeException('Invalid package version.');
+                  $current = tuu_version();
+                  if (version_compare($new, $current, '<=')) throw new RuntimeException('Package must be newer than installed version ' . $current . '.');
+                  if (version_compare($current, $min, '<')) throw new RuntimeException('Package requires site version ' . $min . ' or newer.');
+                  $files = $m['files'] ?? [];
+                  $delete = $m['delete'] ?? [];
+                  if (!is_array($files) || !$files || count($files) > TUU_MAX_FILES || !is_array($delete)) throw new RuntimeException('Invalid manifest file list.');
+
+                  $valid = []; $expanded = 0;
+                  foreach ($files as $rel => $hash) {
+                      if (!is_string($rel) || !is_string($hash) || !preg_match('/^[a-f0-9]{64}$/i', $hash)) throw new RuntimeException('Invalid manifest hash entry.');
+                      $rel = tuu_safe_path($rel);
+                      $name = 'payload/' . $rel;
+                      $idx = $zip->locateName($name);
+                      if ($idx === false) throw new RuntimeException('Payload missing: ' . $rel);
+                      $stat = $zip->statIndex($idx);
+                      $expanded += (int)($stat['size'] ?? 0);
+                      if ($expanded > TUU_MAX_EXPANDED) throw new RuntimeException('Expanded update is too large.');
+                      $data = $zip->getFromIndex($idx);
+                      if ($data === false || !hash_equals(strtolower($hash), hash('sha256', $data))) throw new RuntimeException('Integrity check failed: ' . $rel);
+                      $valid[$rel] = $data;
+                  }
+                  $del = [];
+                  foreach ($delete as $rel) { if (!is_string($rel)) throw new RuntimeException('Invalid delete path.'); $del[] = tuu_safe_path($rel); }
+
+                  $targets = array_values(array_unique(array_merge(array_keys($valid), $del)));
+                  $backup = tuu_backup($targets, $current, $new);
+                  try {
+                      foreach ($valid as $rel => $data) {
+                          $dest = $TUU_ROOT . '/' . $rel;
+                          if (!is_dir(dirname($dest)) && !mkdir(dirname($dest), 0755, true)) throw new RuntimeException('Could not create destination folder.');
+                          $tmp = $dest . '.new-' . bin2hex(random_bytes(4));
+                          if (file_put_contents($tmp, $data, LOCK_EX) === false || !rename($tmp, $dest)) throw new RuntimeException('Could not install ' . $rel);
+                      }
+                      foreach ($del as $rel) { $dest = $TUU_ROOT . '/' . $rel; if (is_file($dest)) @unlink($dest); }
+                      tuu_atomic($TUU_VERSION, $new . "\n");
+                  } catch (Throwable $e) {
+                      tuu_restore($backup);
+                      throw new RuntimeException('Install failed and was rolled back: ' . $e->getMessage());
+                  }
+                  tuu_prune();
+                  return ['previous'=>$current,'version'=>$new,'backup'=>$backup,'notes'=>(string)($m['notes']??'')];
+              } finally { $zip->close(); }
+          }
+          ''';
+          (private / 'updater-lib.php').write_text(lib, encoding='utf-8')
+
+          auth_php = r'''<?php
+          declare(strict_types=1);
+          require __DIR__ . '/private/updater-lib.php';
+          tuu_session();
+          header('X-Robots-Tag: noindex, nofollow, noarchive');
+
+          $action = (string)($_POST['action'] ?? $_GET['action'] ?? 'status');
+          try {
+              if ($action === 'status') tuu_json(['ok'=>true,'authenticated'=>tuu_logged_in()]);
+              if ($action === 'login') {
+                  [$allowed, $attempts] = tuu_login_allowed();
+                  if (!$allowed) throw new RuntimeException('Too many failed attempts. Try again in 15 minutes.');
+                  $auth = tuu_read_json($TUU_AUTH, []);
+                  $pass = (string)($_POST['password'] ?? '');
+                  if (!$pass || empty($auth['password_hash']) || !password_verify($pass, (string)$auth['password_hash'])) {
+                      tuu_login_fail($attempts); usleep(300000); throw new RuntimeException('Incorrect updater password.');
+                  }
+                  tuu_login_clear($attempts);
+                  session_regenerate_id(true);
+                  $_SESSION['tuu_auth'] = true; $_SESSION['tuu_last'] = time(); $_SESSION['tuu_csrf'] = bin2hex(random_bytes(32));
+                  tuu_json(['ok'=>true]);
+              }
+              if ($action === 'logout') {
+                  $_SESSION = []; session_destroy(); tuu_json(['ok'=>true]);
+              }
+              if ($action === 'change_password') {
+                  if (!tuu_logged_in()) tuu_json(['ok'=>false,'message'=>'Not signed in.'],401);
+                  tuu_check_csrf();
+                  $auth = tuu_read_json($TUU_AUTH, []);
+                  $current = (string)($_POST['current_password'] ?? '');
+                  $new = (string)($_POST['new_password'] ?? '');
+                  if (!password_verify($current, (string)($auth['password_hash'] ?? ''))) throw new RuntimeException('Current password is incorrect.');
+                  if (strlen($new) < 16 || strlen($new) > 200) throw new RuntimeException('New password must be 16–200 characters.');
+                  tuu_atomic($TUU_AUTH, json_encode(['password_hash'=>password_hash($new, PASSWORD_DEFAULT)], JSON_PRETTY_PRINT) . "\n");
+                  session_regenerate_id(true); $_SESSION['tuu_auth'] = true; $_SESSION['tuu_last'] = time();
+                  tuu_json(['ok'=>true,'message'=>'Password changed.']);
+              }
+              throw new RuntimeException('Unknown action.');
+          } catch (Throwable $e) { tuu_json(['ok'=>false,'message'=>$e->getMessage()],400); }
+          ''';
+          (root / 'updater-auth.php').write_text(auth_php, encoding='utf-8')
+
+          gate_php = r'''<?php
+          declare(strict_types=1);
+          require __DIR__ . '/private/updater-lib.php';
+          tuu_session();
+          header('X-Robots-Tag: noindex, nofollow, noarchive');
+          header('Cache-Control: no-store');
+          header('X-Frame-Options: DENY');
+          if (!tuu_logged_in()) {
+              http_response_code(403);
+              echo '<!doctype html><meta charset="utf-8"><title>Updater locked</title><style>body{font-family:system-ui;background:#eaf4f5;color:#333;padding:40px;max-width:700px;margin:auto}a{color:#0f858e}</style><h1>Updater locked</h1><p>Return to the home page and type <b>update</b> in the search box, then enter the updater password.</p><p><a href="./">Return home</a></p>';
+              exit;
+          }
+          readfile(__DIR__ . '/updater.html');
+          ''';
+          (root / 'updater-gate.php').write_text(gate_php, encoding='utf-8')
+
+          api_php = r'''<?php
+          declare(strict_types=1);
+          require __DIR__ . '/private/updater-lib.php';
+          tuu_require_login();
+          header('X-Robots-Tag: noindex, nofollow, noarchive');
+          $action = (string)($_POST['action'] ?? $_GET['action'] ?? 'status');
+          try {
+              if ($action === 'status') tuu_json(['ok'=>true,'version'=>tuu_version(),'csrf'=>tuu_csrf(),'backups'=>tuu_backups()]);
+              tuu_check_csrf();
+              if ($action === 'install') {
+                  if (empty($_FILES['package']) || (int)($_FILES['package']['error'] ?? 1) !== UPLOAD_ERR_OK) throw new RuntimeException('Choose a valid update ZIP.');
+                  $tmp = (string)$_FILES['package']['tmp_name'];
+                  if (!is_uploaded_file($tmp)) throw new RuntimeException('Upload could not be verified.');
+                  $result = tuu_install($tmp);
+                  tuu_json(['ok'=>true,'message'=>'Updated from ' . $result['previous'] . ' to ' . $result['version'] . '.','result'=>$result]);
+              }
+              if ($action === 'rollback') {
+                  $name = (string)($_POST['backup'] ?? '');
+                  tuu_restore($name);
+                  tuu_json(['ok'=>true,'message'=>'Rollback complete.','version'=>tuu_version()]);
+              }
+              throw new RuntimeException('Unknown action.');
+          } catch (Throwable $e) { tuu_json(['ok'=>false,'message'=>$e->getMessage()],400); }
+          ''';
+          (root / 'updater-api.php').write_text(api_php, encoding='utf-8')
+
+          updater_html = r'''<!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width,initial-scale=1.0">
+            <title>TUUUCKYTV Updater</title>
+            <link rel="icon" href="pipe.png" type="image/png">
+            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+            <style>
+              :root{--accent:#0f858e;--bg:#eaf4f5;--text:#333;--panel:rgba(255,255,255,.92);--line:rgba(15,133,142,.24)}
+              *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,sans-serif;padding:24px;min-height:100vh}
+              .wrap{max-width:900px;margin:auto}.top{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}.brand{color:var(--accent);margin:0}.muted{color:#667}
+              .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;margin:16px 0;box-shadow:0 10px 30px rgba(0,0,0,.06)}
+              button{border:2px solid var(--accent);background:transparent;color:var(--accent);border-radius:7px;padding:10px 14px;font-weight:600;cursor:pointer}button.primary{background:var(--accent);color:#fff}
+              input[type=file],input[type=password]{width:100%;padding:11px;border:1px solid #bbb;border-radius:7px;background:#fff;margin:6px 0 12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.status{padding:12px;border-radius:8px;background:#f6fbfb;border:1px solid #d4e9ea;min-height:45px}.backup{display:flex;justify-content:space-between;align-items:center;gap:12px;border-top:1px solid #ddd;padding:10px 0}.backup:first-child{border-top:0}code{background:#eef4f5;padding:2px 5px;border-radius:4px}@media(max-width:700px){.grid{grid-template-columns:1fr}}
+            </style>
+          </head>
+          <body>
+          <main class="wrap">
+            <div class="top"><div><h1 class="brand">TUUUCKYTV // UPDATER</h1><div class="muted">Installed version <strong id="version">…</strong></div></div><div><button id="home">Main</button> <button id="logout">Sign out</button></div></div>
+            <div id="status" class="status">Loading updater status…</div>
+            <div class="grid">
+              <section class="card"><h2>Install update</h2><p class="muted">Upload a TUUUCKYTV update package. Files are integrity-checked and backed up before installation.</p><form id="installForm"><input id="package" type="file" name="package" accept=".zip,application/zip" required><button class="primary" type="submit">Validate + Install</button></form></section>
+              <section class="card"><h2>Change password</h2><form id="passwordForm"><input id="currentPassword" type="password" placeholder="Current password" required><input id="newPassword" type="password" placeholder="New password (16+ characters)" minlength="16" required><button type="submit">Change password</button></form></section>
+            </div>
+            <section class="card"><h2>Recent backups</h2><div id="backups" class="muted">No backups yet.</div></section>
+            <section class="card"><h2>Update package format</h2><p class="muted">Future packages contain <code>manifest.json</code> plus a <code>payload/</code> folder. I can generate these packages for you from future changes.</p></section>
+          </main>
+          <script>
+          let csrf='';
+          const statusEl=document.getElementById('status'), versionEl=document.getElementById('version'), backupsEl=document.getElementById('backups');
+          function msg(t,bad=false){statusEl.textContent=t;statusEl.style.color=bad?'#a52626':'#285b5f'}
+          async function jsonFetch(url,options={}){const r=await fetch(url,{credentials:'same-origin',...options});const d=await r.json();if(!r.ok||!d.ok)throw new Error(d.message||'Request failed.');return d}
+          async function refresh(){try{const d=await jsonFetch('updater-api.php?action=status');csrf=d.csrf;versionEl.textContent=d.version;renderBackups(d.backups||[]);msg('Updater ready.');}catch(e){msg(e.message,true);if(/session/i.test(e.message))setTimeout(()=>location.assign('./'),1200)}}
+          function renderBackups(items){if(!items.length){backupsEl.textContent='No backups yet.';return}backupsEl.innerHTML='';items.forEach(b=>{const row=document.createElement('div');row.className='backup';const text=document.createElement('div');text.innerHTML='<strong>'+b.from+' → '+b.to+'</strong><br><span class="muted">'+b.created+'</span>';const btn=document.createElement('button');btn.textContent='Roll back';btn.onclick=()=>rollback(b.name);row.append(text,btn);backupsEl.append(row)})}
+          document.getElementById('installForm').addEventListener('submit',async e=>{e.preventDefault();const f=document.getElementById('package').files[0];if(!f)return;const fd=new FormData();fd.append('action','install');fd.append('csrf',csrf);fd.append('package',f);msg('Validating and installing…');try{const d=await jsonFetch('updater-api.php',{method:'POST',body:fd});msg(d.message);document.getElementById('package').value='';await refresh()}catch(err){msg(err.message,true)}});
+          async function rollback(name){if(!confirm('Rollback using this backup?'))return;const body=new URLSearchParams({action:'rollback',csrf,backup:name});try{const d=await jsonFetch('updater-api.php',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body});msg(d.message);await refresh()}catch(e){msg(e.message,true)}}
+          document.getElementById('passwordForm').addEventListener('submit',async e=>{e.preventDefault();const body=new URLSearchParams({action:'change_password',csrf,current_password:document.getElementById('currentPassword').value,new_password:document.getElementById('newPassword').value});try{const d=await jsonFetch('updater-auth.php',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body});msg(d.message);e.target.reset()}catch(err){msg(err.message,true)}});
+          document.getElementById('logout').onclick=async()=>{try{await jsonFetch('updater-auth.php',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({action:'logout'})})}catch(e){}location.assign('./')};
+          document.getElementById('home').onclick=()=>location.assign('./');
+          refresh();
+          </script>
+          </body></html>
+          ''';
+          (root / 'updater.html').write_text(updater_html, encoding='utf-8')
+
+          readme = '''TUUUCKYTV HOSTINGER + UPDATER\n\nUpload the contents of this ZIP directly into public_html.\n\nClean URLs are enabled, so pipes.html is shown at /pipes.\n\nUpdater access:\n- Click Site Update on the main page, OR type update in the search bar.\n- Enter the updater password.\n- Direct /updater and /updater.html access is blocked unless the PHP session is authenticated.\n\nThe initial password is supplied separately and is NOT stored in plaintext in this ZIP.\n\nInitial site/updater package version: 1.0.0\n'''
+          (root / 'HOSTINGER-README.txt').write_text(readme, encoding='utf-8')
+          PY
+
+          rm -f CNAME || true
+          zip -r TUUUCKYTV_HOSTINGER_UPDATER_READY.zip . \
+            -x '.git/*' '.github/*' 'TUUCKYTV_HOSTINGER_UPDATER_READY.zip'
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: TUUUCKYTV_HOSTINGER_UPDATER_READY
+          path: TUUUCKYTV_HOSTINGER_UPDATER_READY.zip
+          if-no-files-found: error
