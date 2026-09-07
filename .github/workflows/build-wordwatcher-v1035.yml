@@ -1,0 +1,59 @@
+name: Build WordWatcher v1.0.35
+
+on:
+  push:
+    branches:
+      - wordwatcher-build-v1035
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout build branch
+        uses: actions/checkout@v4
+
+      - name: Set up .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Extract WordWatcher source
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path tools/wordwatcher/source | Out-Null
+          Expand-Archive -Path wordwatcher-build-source.zip -DestinationPath tools/wordwatcher/source -Force
+
+      - name: Publish self-contained Windows x64 EXE
+        shell: pwsh
+        run: |
+          dotnet publish tools/wordwatcher/source/WordWatcher.csproj `
+            -c Release `
+            -r win-x64 `
+            --self-contained true `
+            -p:PublishSingleFile=true `
+            -p:PublishTrimmed=false `
+            -p:EnableCompressionInSingleFile=true `
+            -p:DebugType=None `
+            -p:DebugSymbols=false `
+            -o publish
+
+      - name: Prepare artifact
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path artifact | Out-Null
+          Copy-Item publish/WordWatcher.exe artifact/WordWatcher.exe
+          $hash = (Get-FileHash artifact/WordWatcher.exe -Algorithm SHA256).Hash.ToLowerInvariant()
+          "$hash  WordWatcher.exe" | Set-Content artifact/WordWatcher.sha256.txt -Encoding ascii
+          Get-Item artifact/WordWatcher.exe | Format-List Name,Length
+          Get-Content artifact/WordWatcher.sha256.txt
+
+      - name: Upload WordWatcher
+        uses: actions/upload-artifact@v4
+        with:
+          name: WordWatcher-win-x64
+          path: artifact/*
+          if-no-files-found: error
+          retention-days: 7
