@@ -1,0 +1,2 @@
+import {defineConfig} from "vite";import react from "@vitejs/plugin-react";import path from "node:path";
+export default defineConfig({base:"./",plugins:[react()],resolve:{alias:{"@":path.resolve(import.meta.dirname)}},build:{outDir:"../upload/assets-build",emptyOutDir:true,rollupOptions:{input:path.resolve(import.meta.dirname,"main.tsx"),output:{entryFileNames:"basement.js",chunkFileNames:"chunk-[hash].js",assetFileNames:"[name][extname]"}}}});
