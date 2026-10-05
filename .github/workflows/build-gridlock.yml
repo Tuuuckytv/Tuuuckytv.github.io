@@ -1,0 +1,62 @@
+name: Build GridLock APK
+
+on:
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout build branch
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle 9.6.1
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.6.1'
+
+      - name: Install Android SDK 36
+        shell: bash
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager "platforms;android-36" "build-tools;36.0.0"
+
+      - name: Download GridLock source bundle
+        shell: bash
+        run: |
+          curl --fail --location --retry 3 --retry-delay 2 \
+            "https://kyletuck.com/downloads/apks/GridLock_v1.0.0_SOURCE.zip" \
+            --output gridlock-source.zip
+          unzip -q gridlock-source.zip
+          test -f GridLock_v1.0.0/app/build.gradle
+
+      - name: Build installable debug APK
+        shell: bash
+        run: |
+          cd GridLock_v1.0.0
+          gradle --no-daemon :app:assembleDebug
+          cp app/build/outputs/apk/debug/app-debug.apk ../GridLock-v1.0.0.apk
+          cd ..
+          sha256sum GridLock-v1.0.0.apk > GridLock-v1.0.0.apk.sha256
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: GridLock-v1.0.0-apk
+          path: |
+            GridLock-v1.0.0.apk
+            GridLock-v1.0.0.apk.sha256
+          if-no-files-found: error
+          retention-days: 7
