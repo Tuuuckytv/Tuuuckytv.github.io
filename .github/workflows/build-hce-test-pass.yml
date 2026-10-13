@@ -1,0 +1,57 @@
+name: Build HCE Test Pass APK
+
+on:
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.10.2'
+
+      - name: Install Android SDK 36
+        shell: bash
+        run: |
+          ANDROID_HOME="$HOME/android-sdk"
+          echo "ANDROID_HOME=$ANDROID_HOME" >> "$GITHUB_ENV"
+          echo "ANDROID_SDK_ROOT=$ANDROID_HOME" >> "$GITHUB_ENV"
+          mkdir -p "$ANDROID_HOME/cmdline-tools"
+          curl --fail --location --retry 3             "https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip"             --output "$RUNNER_TEMP/cmdline-tools.zip"
+          unzip -q "$RUNNER_TEMP/cmdline-tools.zip" -d "$ANDROID_HOME/cmdline-tools"
+          mv "$ANDROID_HOME/cmdline-tools/cmdline-tools" "$ANDROID_HOME/cmdline-tools/latest"
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          yes | "$SDKMANAGER" --licenses >/dev/null || true
+          "$SDKMANAGER" "platform-tools" "platforms;android-36" "build-tools;36.0.0"
+
+      - name: Build APK
+        shell: bash
+        run: |
+          cd hce-test-pass
+          gradle --no-daemon :app:assembleDebug
+          cp app/build/outputs/apk/debug/app-debug.apk ../HCE-Test-Pass-v1.0.0.apk
+          cd ..
+          sha256sum HCE-Test-Pass-v1.0.0.apk > HCE-Test-Pass-v1.0.0.apk.sha256
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: HCE-Test-Pass-v1.0.0-apk
+          path: |
+            HCE-Test-Pass-v1.0.0.apk
+            HCE-Test-Pass-v1.0.0.apk.sha256
+          if-no-files-found: error
+          retention-days: 7
