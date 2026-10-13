@@ -8,8 +8,7 @@
         android:fullBackupContent="false"
         android:label="HCE Test Pass"
         android:theme="@style/AppTheme"
-        android:usesCleartextTraffic="false"
-        android:debuggable="false">
+        android:usesCleartextTraffic="false">
 
         <activity
             android:name=".MainActivity"
