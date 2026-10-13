@@ -1,0 +1,1 @@
+Temporary build files for a read-only NFC diagnostics app. No writing or emulation.
