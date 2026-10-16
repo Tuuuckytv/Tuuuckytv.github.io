@@ -17,22 +17,22 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 
 public class MainActivity extends Activity {
     private static final String HOME = "https://kyletuck.com/personal";
     private static final int FILE_CHOOSER = 1209;
+    private static final String MOBILE_BOOTSTRAP =
+        "(function(){if(document.getElementById('kyle-apk-mobile-profile'))return;" +
+        "var s=document.createElement('script');s.id='kyle-apk-mobile-profile';" +
+        "s.src='https://kyletuck.com/kyle-app-mobile.js?v=102';" +
+        "(document.head||document.documentElement).appendChild(s);})();";
     private WebView webView;
     private ValueCallback<Uri[]> fileCallback;
-    private String mobileScript = "";
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().setStatusBarColor(Color.rgb(8,10,12));
         getWindow().setNavigationBarColor(Color.rgb(8,10,12));
-        mobileScript = readAsset("kyle-mobile.js");
 
         webView = new WebView(this);
         webView.setBackgroundColor(Color.rgb(8,10,12));
@@ -76,9 +76,8 @@ public class MainActivity extends Activity {
 
             @Override public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                applyMobileProfile(view);
-                view.postDelayed(() -> applyMobileProfile(view), 180);
-                view.postDelayed(() -> applyMobileProfile(view), 700);
+                view.evaluateJavascript(MOBILE_BOOTSTRAP, null);
+                view.postDelayed(() -> view.evaluateJavascript(MOBILE_BOOTSTRAP, null), 250);
             }
 
             @Override public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
@@ -107,23 +106,6 @@ public class MainActivity extends Activity {
 
         if (savedInstanceState == null) webView.loadUrl(HOME);
         else webView.restoreState(savedInstanceState);
-    }
-
-    private void applyMobileProfile(WebView view) {
-        if (mobileScript == null || mobileScript.isEmpty()) return;
-        view.evaluateJavascript(mobileScript, null);
-    }
-
-    private String readAsset(String name) {
-        try (InputStream in = getAssets().open(name);
-             ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-            byte[] buffer = new byte[8192];
-            int count;
-            while ((count = in.read(buffer)) != -1) out.write(buffer, 0, count);
-            return out.toString(StandardCharsets.UTF_8.name());
-        } catch (Exception ignored) {
-            return "";
-        }
     }
 
     @Override protected void onSaveInstanceState(Bundle outState) {
