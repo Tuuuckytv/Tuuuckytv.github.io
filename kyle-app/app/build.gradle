@@ -1,0 +1,26 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.tuuuckytv.kyle'
+    compileSdk 36
+
+    defaultConfig {
+        applicationId 'com.tuuuckytv.kyle'
+        minSdk 26
+        targetSdk 36
+        versionCode 3
+        versionName '1.0.2'
+    }
+
+    buildTypes {
+        debug {
+            debuggable false
+        }
+        release {
+            minifyEnabled false
+            debuggable false
+        }
+    }
+}
